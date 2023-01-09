@@ -14,6 +14,7 @@
   "max_lr": 0.03,
   "scheduler": "cosanneal",
   "lr_finder": false,
+  "lr_finder_steps": 100,
   "momentum": 0.2,
   "weight_decay": 1e-4,
   "beta1": 0.9,
@@ -24,10 +25,10 @@
   "validate_every": 100,
   "n_steps_stop": 5000,
   "n_epochs_stop_after": 5,
-  "data_roots": "/esat/stadiustempdatasets/sleep_data/kkontras/Image_Dataset/Sleep_SHHS",
+  "data_roots": "/esat/smcdata/users/kkontras/Image_Dataset/Sleep_SHHS/",
   "data_view_dir": [
     [
-      "Version_6_shhs1_lights_30/train/image_stft_eeg_file_map.txt"
+      "V2_shhs1/train/image_stft_eeg_file_map.txt"
     ]
   ],
   "split_method": "patients_test",
@@ -45,7 +46,7 @@
   "verbose": true,
   "model_class": "EEG_SLEEP_EDF78",
   "post_proc_step": 15,
-  "seq_legth": [
+  "seq_length": [
     21,
     0
   ],
@@ -67,7 +68,9 @@
   "val_postprocessing": false,
   "test_on_tops": true,
   "dataloader_class": "SleepDataLoader_EDF",
-  "save_dir": "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/shhs1_sleepTransormer_eeg_bfc_eqweights.pth.tar",
+  "normalize": true,
+  "metrics_dir": "/esat/smcdata/users/kkontras/Image_Dataset/Sleep_SHHS/metrics_timefreq_shhs1_20log10_after_2.pkl",
+  "save_dir": "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/shhs1_tf_reproduce_normafter.pth.tar",
   "save_dir_encoder": [
     "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_emb.pth.tar",
     "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_seq_0.pth.tar"
@@ -92,10 +95,10 @@
   "augmentation": {},
   "save_plots": true,
   "plot_stft_num": 0,
-  "print_statistics": false,
-  "data_loader_workers": 12,
+  "print_statistics": true,
+  "data_loader_workers": 24,
   "pin_memory": true,
   "async_loading": true,
-  "tdqm_disable": true,
+  "tdqm_disable": false,
   "res": true
 }

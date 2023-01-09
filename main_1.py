@@ -11,7 +11,11 @@ import numpy as np
 
 def main():
     config_list = [
-        "./configs/sleepnet/eeg_1ch_small.json",
+        "./configs/shhs/single_channel/fourier_transformer_cls_eeg_mat_adv_perrecording.json",
+        # "./configs/shhs/single_channel/fourier_transformer_cls_eeg_mat_adv_totalnorm.json",
+        # "./configs/shhs/single_channel/mypreproc/fourier_transformer_cls_eeg_mat_adv_totalnorm.json",
+        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_rpos.json",
+        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_glearnedbias_rpos.json",
     ]
     finals = []
     for i in config_list:

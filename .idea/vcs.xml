@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Github_Project/vilbert-multi-task" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Github_Project/vilbert-multi-task/tools/refer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fairseq/fairseq" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/google-images-download" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/utils/vector_norms_hf/norm-analysis-of-transformer" vcs="Git" />
   </component>
 </project>

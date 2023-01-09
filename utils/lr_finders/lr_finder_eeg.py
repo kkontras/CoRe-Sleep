@@ -370,6 +370,8 @@ class LRFinder(object):
         for i in range(accumulation_steps):
             inputs, labels = next(train_iter)
             inputs = [inputs[i].float() for i in range(len(inputs))]
+            labels = labels.flatten()
+
             inputs, labels = self._move_to_device(
                 inputs, labels, non_blocking=non_blocking_transfer
             )
@@ -427,12 +429,13 @@ class LRFinder(object):
         with torch.no_grad():
             for inputs, labels in val_iter:
                 # Move data to the correct device
+                inputs = [inputs[i].float() for i in range(len(inputs))]
+                labels = labels.flatten()
                 inputs, labels = self._move_to_device(
                     # THIS LINE HAS BEEN CHANGED FOR THIS PROJECT [0]->view_1
                     # CHANGE THIS IN THE FUTURE
                     inputs, labels, non_blocking=non_blocking_transfer
                 )
-
                 # Forward pass and loss computation
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels)

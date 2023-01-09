@@ -12,7 +12,7 @@ import torch
 
 from torch.utils import data
 from torch.utils.data import DataLoader, TensorDataset
-import torchvision.transforms as standard_transforms
+# import torchvision.transforms as standard_transforms
 
 import utils.voc_utils as extended_transforms
 from utils.voc_utils import make_dataset

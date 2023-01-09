@@ -58,7 +58,7 @@ def get_config_from_json(json_file):
             exit(-1)
 
 
-def process_config(json_file):
+def process_config(json_file, printing = True):
     """
     Get the json file
     Processing it with EasyDict to be accessible as attributes
@@ -70,17 +70,17 @@ def process_config(json_file):
     :return: config object(namespace)
     """
     config, _ = get_config_from_json(json_file)
-    print(" THE Configuration of your experiment ..")
-    pprint(config)
-
-    # making sure that you have provided the exp_name.
-    try:
-        print(" *************************************** ")
-        print("The experiment name is {}".format(config.exp_name))
-        print(" *************************************** ")
-    except AttributeError:
-        print("ERROR!!..Please provide the exp_name in json file..")
-        exit(-1)
+    if printing:
+        print(" THE Configuration of your experiment ..")
+        pprint(config)
+        # making sure that you have provided the exp_name.
+        try:
+            print(" *************************************** ")
+            print("The experiment name is {}".format(config.exp_name))
+            print(" *************************************** ")
+        except AttributeError:
+            print("ERROR!!..Please provide the exp_name in json file..")
+            exit(-1)
 
     # create some important directories to be used for that experiment.
     config.summary_dir = os.path.join("experiments", config.exp_name, "summaries/")
@@ -92,9 +92,9 @@ def process_config(json_file):
     importlib.reload(logging)
     # setup logging in the project
     setup_logging(config.log_dir)
-
-    logging.getLogger().info("Hi, This is root.")
-    logging.getLogger().info("After the configurations are successfully processed and dirs are created.")
-    logging.getLogger().info("The pipeline of the project will begin now.")
+    if printing:
+        logging.getLogger().info("Hi, This is root.")
+        logging.getLogger().info("After the configurations are successfully processed and dirs are created.")
+        logging.getLogger().info("The pipeline of the project will begin now.")
 
     return config

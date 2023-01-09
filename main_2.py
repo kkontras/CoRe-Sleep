@@ -11,8 +11,10 @@ import numpy as np
 
 def main():
     config_list = [
-        "./configs/sleepnet/transformers/transformer2_viproj_big_smallff.json",
-    ]
+        "./configs/shhs/single_channel/fourier_transformer_cls_eeg_conv.json"
+        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_rpos.json",
+        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_glearnedbias_rpos.json",
+        ]
     finals = []
     for i in config_list:
         config = process_config(i)

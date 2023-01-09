@@ -1,38 +1,21 @@
-#### Copy this file for each experiment as 'YYYYMMDD_experiment_name.job'
-#### and edit the lines with '## EDIT' with your configuration.
-#### Add one or more python opts_files to the list at the bottom (not comma-seperated)
-#### Check https://wiki.esat.kuleuven.be/visics/condor for more information about requirements
-
-
-##################################
-######### FIXED SETTINGS #########
-##################################
-# Normal execution
-Universe = Vanilla
-# Mail me for everything
-Notification = Always
-# executable or script to run
+Notification = Error
 executable = /users/sista/kkontras/Documents/Sleep_Project/condor_logs/script.sh
-# The job will 'cd' to this directory before starting, make sure to have _write_ access here.
 initialdir = /users/sista/kkontras/Documents/Sleep_Project/condor_logs
-# Log, Output and Error of condor handling of the jobs, saved in 'initifaaldir'
 Log          = $(ClusterId)_$(Process).log
 Output       = $(ClusterId)_$(Process).out
 Error        = $(ClusterId)_$(Process).err
 
-
-##################################
-####### VARIABLE SETTINGS ########
-##################################
-# Specify Requirements
-RequestCpus    = 12
-RequestMemory  = 10G
-+RequestWalltime = 259198
+RequestCpus    = 16
+RequestMemory  = 16G
++RequestWalltime = 259199
 Request_GPUs   = 1
-NiceUser = true
-Requirements = ( machineowner == "Visics" ) && ( CUDAGlobalMemoryMb > 8000 || CUDA0GlobalMemoryMb > 8000 ) && (distribution == "Fedora") && (machine != "spinel.esat.kuleuven.be")
-
-# Queue jobs (relative to <root-directory>/train_files/)
+NiceUser = false
+Requirements = ( CUDAGlobalMemoryMb > 5000 || CUDA0GlobalMemoryMb > 5000 ) && (machine != "stadius-nc-4.esat.kuleuven.be")
 Queue Arguments from (
-        /users/sista/kkontras/Documents/Sleep_Project/main_folds_3.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper_1.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper_2.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper_3.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper_4.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper_5.py
 )

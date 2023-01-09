@@ -11,7 +11,7 @@ import numpy as np
 
 def main():
     config_list = [
-        "./configs/sleepnet/transformers/transformer_viproj_big_bigff.json",
+        "./configs/shhs2/fourier_transformer_eeg_eog_mat_BIOBLIP.json"
     ]
     finals = []
     for i in config_list:
