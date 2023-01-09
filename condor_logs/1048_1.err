@@ -1,0 +1,141 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/28 10:41:40	INFO	wandb	multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2022/12/28 10:41:42	INFO	wandb	communicating current version
+2022/12/28 10:41:42	INFO	wandb	got version response upgrade_message: "wandb version 0.13.7 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2022/12/28 10:41:45	INFO	wandb	atexit reg
+2022/12/28 10:41:45	INFO	wandb	redirect: SettingsConsole.WRAP_RAW
+2022/12/28 10:41:45	INFO	wandb	Wrapping output streams.
+2022/12/28 10:41:45	INFO	wandb	Redirects installed.
+2022/12/28 10:41:53	INFO	wandb	Watching
+2022/12/29 06:24:40	INFO	wandb	finishing run kkontras/sleep_transformers/o0uo6xna
+2022/12/29 06:24:40	INFO	wandb	got exitcode: 0
+2022/12/29 06:24:40	INFO	wandb	restore
+2022/12/29 06:24:40	INFO	wandb	restore done
+2022/12/29 06:24:40	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 636
+}
+
+2022/12/29 06:24:40	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 636
+}
+
+2022/12/29 06:24:42	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 636
+}
+
+2022/12/29 06:24:43	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 636
+}
+
+2022/12/29 06:24:43	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 494092
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 636
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587720
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:44	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:45	INFO	wandb	got exit ret: file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+
+2022/12/29 06:24:46	INFO	wandb	got exit ret: done: true
+exit_result {
+}
+file_counts {
+  wandb_count: 6
+}
+pusher_stats {
+  uploaded_bytes: 1587808
+  total_bytes: 1587808
+}
+local_info {
+}
+

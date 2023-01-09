@@ -1,0 +1,109 @@
+{
+  "exp_name": "Sleep EEG CNN Signle View Experiment",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+  "cuda": true,
+  "gpu_device": [
+    0
+  ],
+  "seed": 28,
+  "batch_size": 32,
+  "test_batch_size": 32,
+  "num_classes": 5,
+  "learning_rate": 0.0001,
+  "max_lr": 0.03,
+  "scheduler": "cosanneal",
+  "lr_finder": false,
+  "lr_finder_steps": 100,
+  "momentum": 0.2,
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+  "max_epoch": 1000,
+  "log_interval": 10,
+  "save_every": 10,
+  "validate_every": 200,
+  "validate_after": 0,
+  "n_steps_stop": 200,
+  "n_steps_stop_after": 5000,
+  "data_roots": "/esat/biomeddata/SHHS_Dataset/no_backup",
+  "data_view_dir": [
+    {"list_dir": "patient_mat_list.txt", "data_type": "stft", "mod":  "eeg", "num_ch": 1},
+    {"list_dir": "patient_eog_mat_list.txt", "data_type": "stft", "mod":  "eog", "num_ch": 1}
+  ],
+  "split_method": "patients_huy",
+  "folds_file": "/users/sista/kkontras/Documents/Huy_shhs1/HUY SHHS1 CODE/data_split_eval.mat",
+  "val_patient_num": 3,
+  "folds_num": 7,
+  "fold": 0,
+  "val_split_rate": 0.016920,
+  "test_split_rate": 0.3,
+  "rand_splits": 13,
+  "rand_split": 0,
+  "validation": true,
+  "rec_test": false,
+  "use_test_set": true,
+  "verbose": true,
+  "post_proc_step": 15,
+  "seq_length": [
+    21,
+    0
+  ],
+  "shuffle_train": true,
+  "seq_views": [
+    false
+  ],
+  "keep_view": [
+    1,
+    0
+  ],
+  "inner_overlap": [
+    0.5,
+    0.5
+  ],
+  "num_modalities": 1,
+  "test_postprocessing": false,
+  "val_postprocessing": false,
+  "test_on_tops": true,
+  "dataloader_class": "SleepDataLoader_mat_huy",
+  "cache_datasets": {"train": false, "valid": false, "test": false},
+  "huy_data": true,
+  "use_adversarial": false,
+  "adv_epsilon": 0.01,
+  "normalization": {
+    "use": true,
+    "calculate_metrics": false,
+    "metrics_type": "train_dataset",
+    "save_metrics": false,
+    "dir": "/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl"
+  },
+  "model": {
+    "model_class": "Transformer_Sleep_GM",
+    "args": {"dmodel": 256, "num_classes": 5, "fc_inner": 1024, "training_type": "alignment_order_multisupervised",
+            "multi_loss": {"multi_loss_weights":
+            {"multi_supervised_loss": {"combined": 4},
+              "alignment_loss": 1,
+              "order_loss": 0}},
+    "load_ongoing": false,
+    "pretrained_model": {"dir": "", "use": false},
+    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/shhs1/multi_modal/fourier_transformer_cls_eeg_eog_cocatrue_alignment.pth.tar",
+    "encoders": [
+      {
+        "model": "SleepEnc_COCA_true_EEG_EOG",
+        "args": {"dmodel": 128, "rpos": true, "outer_biased": false, "inner_biased": false, "outer_rep": true},
+        "pretrainedEncoder": {"dir": "", "use": false},
+        "savetrainedEncoder": {"dir": "","save": false},
+        "freeze_encoder": false
+      }
+    ]
+  },
+  "augmentation": {},
+  "save_plots": true,
+  "plot_stft_num": 0,
+  "statistics": {"print": false, "ce_weights": {"use": false,"temp": 0.1}},
+  "data_loader_workers": 8,
+  "pin_memory": true,
+  "async_loading": true,
+  "tdqm_disable": false,
+  "res": true
+}

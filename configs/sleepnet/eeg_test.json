@@ -1,0 +1,31 @@
+{
+  "exp_name": "Sleep EEG CNN Signle View Experiment Testing",
+  "agent": "Sleep_Agent_Test",
+
+  "cuda": true,
+  "gpu_device": [0],
+  "seed": 9,
+
+  "batch_size": 512,
+  "test_batch_size": 512,
+  "num_classes": 2,
+
+  "data_roots": "/esat/stadiustempdatasets/sleep_data/kkontras/Image_Dataset/Version_1",
+  "data_view_dir": [["train/image_file_map.txt", "test/image_file_map.txt"]],
+  "split_method": "random",
+  "val_patient_num": 3,
+  "split_rate": 0.05,
+  "validation": true,
+  "post_proc_step": 15,
+  "test_each": false,
+
+  "num_modalities": 1,
+  "data_loader": "SleepDataLoader",
+  "data_loader_workers": 12,
+  "pin_memory": true,
+  "async_loading": true,
+  "load_ongoing": false,
+
+  "tdqm_disable": false,
+  "res": false
+}

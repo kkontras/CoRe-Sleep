@@ -1,0 +1,80 @@
+{
+  "exp_name": "Sleep EEG CNN Signle View Experiment",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+
+  "cuda": true,
+  "gpu_device": [0],
+  "seed": 28,
+
+  "batch_size": 16,
+  "test_batch_size": 16,
+  "num_classes": 5,
+
+  "learning_rate": 0.00005,
+  "max_lr":  0.03,
+  "scheduler": "cosanneal",
+  "lr_finder": false,
+
+  "momentum": 0.2,
+
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+
+  "max_epoch": 251,
+
+  "log_interval": 10,
+  "save_every": 5,
+  "validate_every": 300,
+  "n_epochs_stop": 30,
+
+  "data_roots": "/esat/stadiustempdatasets/sleep_data/kkontras/Image_Dataset/Sleep_EDF78",
+  "data_view_dir": [["Version_2/train/image_eeg_file_map.txt"],["Version_2/train/image_eog_file_map.txt"]],
+  "split_method": "random",
+  "val_patient_num": 3,
+  "fold_size": 7,
+  "fold": 0,
+  "val_split_rate": 0.15,
+  "test_split_rate": 0.0,
+  "rand_splits": 13,
+  "rand_split": 0,
+  "validation": true,
+  "rec_test": false,
+  "use_test_set": false,
+  "verbose": true,
+  "model_class": "EEG_SLEEP_EDF_Fusion",
+  "post_proc_step": 15,
+  "seq_legth": [21,0],
+  "shuffle_train": false,
+  "seq_views": [false],
+  "keep_view": [1, 0],
+  "inner_overlap": [0.5,0.5],
+  "num_modalities": 1,
+  "channel": 0,
+
+  "test_postprocessing": true,
+  "val_postprocessing": false,
+  "test_on_tops": true,
+  "dataloader_class": "SleepDataLoader_EDF",
+
+  "save_dir": "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/0ch1d_4.pth.tar",
+  "save_dir_encoder": ["/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_emb.pth.tar","/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_seq_0.pth.tar"],
+
+  "encoder_models": [["EEG_Embedding_Fusion_EDF",2,""],["EEG_Embedding_Fusion_EDF",1,""],["EEG_TransferTransformer_Fusion",1, "My_Transformers_SEDF_Big_SmallFF"]],
+  "pretrainedEncoder":  [false, false, false],
+  "savetrainedEncoder": [false, false, false],
+  "freeze_encoders": [false,false, false],
+  "load_ongoing": false,
+
+  "augmentation": { },
+
+  "save_plots": true,
+
+  "data_loader_workers": 12,
+  "pin_memory": true,
+  "async_loading": true,
+
+  "tdqm_disable": false,
+  "res": true
+}

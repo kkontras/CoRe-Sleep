@@ -1,0 +1,108 @@
+000 (637.002.000) 2023-01-05 16:13:24 Job submitted from host: <10.87.28.151:9618?addrs=10.87.28.151-9618&alias=brigand.esat.kuleuven.be&noUDP&sock=schedd_2187_adb6>
+...
+001 (637.002.000) 2023-01-05 16:14:36 Job executing on host: <10.87.28.118:9618?addrs=10.87.28.118-9618&alias=stadius-nc-5.esat.kuleuven.be&noUDP&sock=startd_4288_ca31>
+...
+006 (637.002.000) 2023-01-05 16:14:45 Image size of job updated: 3566028
+	3459  -  MemoryUsage of job (MB)
+	3541380  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 16:19:46 Image size of job updated: 94007028
+	3515  -  MemoryUsage of job (MB)
+	3599324  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 17:19:52 Image size of job updated: 94007028
+	3557  -  MemoryUsage of job (MB)
+	3641636  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 17:24:53 Image size of job updated: 94007028
+	3567  -  MemoryUsage of job (MB)
+	3651732  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 17:34:53 Image size of job updated: 94007028
+	3581  -  MemoryUsage of job (MB)
+	3666768  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 17:54:56 Image size of job updated: 94007028
+	3619  -  MemoryUsage of job (MB)
+	3705116  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 17:59:57 Image size of job updated: 94007028
+	3661  -  MemoryUsage of job (MB)
+	3747848  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 18:09:57 Image size of job updated: 94007028
+	3688  -  MemoryUsage of job (MB)
+	3776036  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 18:35:00 Image size of job updated: 94007028
+	3773  -  MemoryUsage of job (MB)
+	3863244  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 18:45:01 Image size of job updated: 94007028
+	3791  -  MemoryUsage of job (MB)
+	3881288  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 18:50:02 Image size of job updated: 94007028
+	3799  -  MemoryUsage of job (MB)
+	3889408  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 19:10:04 Image size of job updated: 94007028
+	3880  -  MemoryUsage of job (MB)
+	3972512  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 19:15:04 Image size of job updated: 94007028
+	3884  -  MemoryUsage of job (MB)
+	3976540  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 19:25:06 Image size of job updated: 94007028
+	3909  -  MemoryUsage of job (MB)
+	4002720  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 19:45:08 Image size of job updated: 94007028
+	3961  -  MemoryUsage of job (MB)
+	4055244  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 19:50:09 Image size of job updated: 94007028
+	3997  -  MemoryUsage of job (MB)
+	4091936  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 20:00:10 Image size of job updated: 94007028
+	4022  -  MemoryUsage of job (MB)
+	4118104  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 20:20:11 Image size of job updated: 94007028
+	4048  -  MemoryUsage of job (MB)
+	4144216  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 20:25:12 Image size of job updated: 94007028
+	4085  -  MemoryUsage of job (MB)
+	4182900  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 20:35:13 Image size of job updated: 94007028
+	4107  -  MemoryUsage of job (MB)
+	4205176  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 21:00:16 Image size of job updated: 94007028
+	4141  -  MemoryUsage of job (MB)
+	4239924  -  ResidentSetSize of job (KB)
+...
+006 (637.002.000) 2023-01-05 21:15:17 Image size of job updated: 94007028
+	4143  -  MemoryUsage of job (MB)
+	4241964  -  ResidentSetSize of job (KB)
+...
+004 (637.002.000) 2023-01-06 10:46:00 Job was evicted.
+	(0) CPU times
+		Usr 0 00:01:09, Sys 0 00:03:37  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     0.00       16        16 
+	   Disk (KB)            :     1           1   1823526 
+	   Gpus (Average)       :     0.00        1         1 "CUDA1"
+	   GpusMemory (MB)      :   998                       
+	   Memory (MB)          :  4143       16384     16384 
+...
+009 (637.002.000) 2023-01-06 10:46:00 Job was aborted.
+	via condor_rm (by user kkontras)
+...

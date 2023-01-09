@@ -1,0 +1,32 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/29 23:21:44	INFO	wandb	Watching
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/30 01:39:19	INFO	wandb	Watching
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/30 04:05:02	INFO	wandb	Watching
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/30 06:43:38	INFO	wandb	Watching
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/30 09:20:46	INFO	wandb	Watching
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/sklearn/metrics/_classification.py:663: RuntimeWarning: invalid value encountered in true_divide
+  k = np.sum(w_mat * confusion) / np.sum(w_mat * expected)
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/sklearn/metrics/_classification.py:663: RuntimeWarning: invalid value encountered in true_divide
+  k = np.sum(w_mat * confusion) / np.sum(w_mat * expected)
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/sklearn/metrics/_classification.py:663: RuntimeWarning: invalid value encountered in true_divide
+  k = np.sum(w_mat * confusion) / np.sum(w_mat * expected)
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/sklearn/metrics/_classification.py:663: RuntimeWarning: invalid value encountered in true_divide
+  k = np.sum(w_mat * confusion) / np.sum(w_mat * expected)
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/30 13:19:53	INFO	wandb	Watching

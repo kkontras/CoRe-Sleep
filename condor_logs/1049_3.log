@@ -1,0 +1,105 @@
+000 (1049.003.000) 2022-12-29 14:07:09 Job submitted from host: <10.87.28.129:9618?addrs=10.87.28.129-9618&alias=timmermans.esat.kuleuven.be&noUDP&sock=schedd_2118_59ad>
+...
+001 (1049.003.000) 2022-12-29 14:07:16 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1789_af05>
+...
+022 (1049.003.000) 2022-12-29 14:13:32 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@gauss.esat.kuleuven.be <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1789_af05>
+...
+024 (1049.003.000) 2022-12-29 14:53:32 Job reconnection failed
+    Job disconnected too long: JobLeaseDuration (2400 seconds) expired
+    Can not reconnect to slot1@gauss.esat.kuleuven.be, rescheduling job
+...
+001 (1049.003.000) 2022-12-29 23:19:09 Job executing on host: <10.87.24.49:9618?addrs=10.87.24.49-9618&alias=euler.esat.kuleuven.be&noUDP&sock=startd_1771_5650>
+...
+006 (1049.003.000) 2022-12-29 23:19:17 Image size of job updated: 6940
+	4  -  MemoryUsage of job (MB)
+	3912  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-29 23:24:17 Image size of job updated: 386092028
+	8537  -  MemoryUsage of job (MB)
+	8741692  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-29 23:29:17 Image size of job updated: 389199228
+	8537  -  MemoryUsage of job (MB)
+	8741704  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-29 23:34:18 Image size of job updated: 441725624
+	8537  -  MemoryUsage of job (MB)
+	8741704  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 00:19:23 Image size of job updated: 442133824
+	8537  -  MemoryUsage of job (MB)
+	8741704  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 01:39:32 Image size of job updated: 442133824
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 01:44:32 Image size of job updated: 451402560
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 01:49:32 Image size of job updated: 458930488
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 01:54:33 Image size of job updated: 460219220
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 02:54:39 Image size of job updated: 460371060
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 03:39:44 Image size of job updated: 460424892
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 04:09:47 Image size of job updated: 463039864
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 04:14:48 Image size of job updated: 469164688
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 04:34:50 Image size of job updated: 469607184
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 04:44:51 Image size of job updated: 469773632
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 05:04:53 Image size of job updated: 469774140
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 05:24:55 Image size of job updated: 470785544
+	9575  -  MemoryUsage of job (MB)
+	9804276  -  ResidentSetSize of job (KB)
+...
+006 (1049.003.000) 2022-12-30 13:20:45 Image size of job updated: 470785544
+	9952  -  MemoryUsage of job (MB)
+	10190712  -  ResidentSetSize of job (KB)
+...
+005 (1049.003.000) 2022-12-30 17:20:53 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 2 20:32:57, Sys 0 16:20:16  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 2 20:32:57, Sys 0 16:20:16  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     5.97       16        16 
+	   Disk (KB)            :     1           1   7367279 
+	   Gpus (Average)       :     0.45        1         1 "CUDA1"
+	   GpusMemory (MB)      :  7607                       
+	   Memory (MB)          :  9952       16384     16384 
+
+	Job terminated of its own accord at 2022-12-30T16:20:53Z.
+...

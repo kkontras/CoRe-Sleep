@@ -1,0 +1,4 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/26 11:51:52	INFO	wandb	Watching

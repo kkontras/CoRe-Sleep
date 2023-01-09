@@ -1,0 +1,109 @@
+{
+  "exp_name": "Sleep EEG Neonatal Single Modality Experiment",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+  "cuda": true,
+  "gpu_device": [
+    0
+  ],
+  "seed": 28,
+  "batch_size": 3,
+  "test_batch_size": 3,
+  "num_classes": 2,
+  "learning_rate": 0.0001,
+  "max_lr": 0.03,
+  "scheduler": "cosanneal",
+  "lr_finder": false,
+  "lr_finder_steps": 100,
+  "momentum": 0.2,
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+  "max_epoch": 1000,
+  "log_interval": 10,
+  "save_every": 5,
+  "validate_every": 82,
+  "validate_after": 0,
+  "n_steps_stop": 400,
+  "n_steps_stop_after": 1000,
+  "data_roots": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/Neonatal",
+  "data_view_dir": [
+    [
+      "Version_1/train/stft_eeg_file_map.txt"
+    ]
+  ],
+  "neonatal_test_views": [["Version_1/test/stft_eeg_file_map.txt"]],
+  "split_method": "neonatal",
+  "val_patient_num": 3,
+  "fold_size": 7,
+  "fold": 0,
+  "val_split_rate": 0.016920,
+  "test_split_rate": 0.3,
+  "rand_splits": 13,
+  "rand_split": 0,
+  "validation": true,
+  "rec_test": true,
+  "use_test_set": true,
+  "verbose": true,
+  "model_class": "EEG_SleepTransformer_Neonatal",
+  "post_proc_step": 15,
+  "seq_length": [
+    21,
+    0
+  ],
+  "shuffle_train": true,
+  "seq_views": [
+    false
+  ],
+  "keep_view": [
+    1,
+    0
+  ],
+  "inner_overlap": [
+    0.5,
+    0.5
+  ],
+  "num_modalities": 1,
+  "channel": 0,
+  "test_postprocessing": false,
+  "val_postprocessing": false,
+  "test_on_tops": true,
+  "dataloader_class": "SleepDataLoader_mat_huy",
+  "huy_data": false,
+  "use_adversarial": false,
+  "normalize": true,
+  "calculate_metrics": false,
+  "save_metrics": false,
+  "metrics_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/Neonatal/Version_1/metrics.pkl",
+  "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/neonatal/eeg.pth.tar",
+  "save_dir_encoder": [
+    "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_emb.pth.tar",
+    "/users/sista/kkontras/Documents/Sleep_dProject/data/2021_data/tf_seq_0.pth.tar"
+  ],
+  "encoder_models": [],
+  "pretrainedEncoder": [
+    false,
+    false,
+    false
+  ],
+  "savetrainedEncoder": [
+    false,
+    false,
+    false
+  ],
+  "freeze_encoders": [
+    false,
+    false,
+    false
+  ],
+  "load_ongoing": false,
+  "augmentation": {},
+  "save_plots": true,
+  "plot_stft_num": 0,
+  "print_statistics": false,
+  "data_loader_workers": 12,
+  "pin_memory": true,
+  "async_loading": true,
+  "tdqm_disable": false,
+  "res": true
+}

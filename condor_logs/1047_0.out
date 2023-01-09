@@ -1,0 +1,186 @@
+Starting Job
+/users/sista/kkontras/Documents/Sleep_Project/main_paper_4.py
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/bin/python
+Python 3.7.10
+/users/sista/kkontras/Documents/Sleep_Project
+0
+ THE Configuration of your experiment ..
+{'agent': 'Sleep_Agent_Init_Train',
+ 'augmentation': {},
+ 'channel': 0,
+ 'dataset': {'cache_datasets': {'test': False, 'train': False, 'valid': False},
+             'data_roots': '/esat/biomeddata/SHHS_Dataset/no_backup',
+             'data_split': {'fold': 0,
+                            'fold_size': 7,
+                            'folds_file': '/users/sista/kkontras/Documents/Huy_shhs1/HUY '
+                                          'SHHS1 CODE/data_split_eval.mat',
+                            'rand_split': 0,
+                            'rand_splits': 13,
+                            'split_method': 'patients_huy',
+                            'test_split_rate': 0.3,
+                            'val_patient_num': 3,
+                            'val_split_rate': 0.01692},
+             'data_view_dir': [{'data_type': 'stft',
+                                'list_dir': 'patient_mat_list.txt',
+                                'mod': 'eeg',
+                                'num_ch': 1},
+                               {'data_type': 'stft',
+                                'list_dir': 'patient_eog_mat_list.txt',
+                                'mod': 'eog',
+                                'num_ch': 1}],
+             'dataloader_class': 'SleepDataLoader_mat_huy',
+             'huy_data': True,
+             'inner_overlap': [0.5, 0.5],
+             'keep_view': [1, 0],
+             'seq_length': [21, 0],
+             'seq_views': [False],
+             'shuffle_train': True},
+ 'early_stopping': {'log_interval': 10,
+                    'max_epoch': 1000,
+                    'n_steps_stop': 250,
+                    'n_steps_stop_after': 400,
+                    'save_every': 1,
+                    'validate_after': 0,
+                    'validate_every': 400},
+ 'exp_name': 'Sleep EEG-EOG BLIP Experiment',
+ 'lr_finder': False,
+ 'lr_finder_steps': 100,
+ 'mode': 'train',
+ 'model': {'args': {'augment_within': False,
+                    'dmodel': 128,
+                    'dropout': 0.3,
+                    'fc_inner': 1024,
+                    'ignore_alignment_val': True,
+                    'multi_loss': {'multi_loss_weights': {'alignment_loss': 0.1,
+                                                          'multi_supervised_loss': {'combined': 1,
+                                                                                    'eeg': 0,
+                                                                                    'eog': 0},
+                                                          'order_loss': 0}},
+                    'num_classes': 5,
+                    'shared_pred': False,
+                    'three_modes': True,
+                    'training_type': 'alignment_order_multisupervised'},
+           'encoders': [{'args': {'align_inner': True,
+                                  'd_model': 128,
+                                  'dim_feedforward': 1024,
+                                  'dim_proj': 128,
+                                  'dropout': 0.3,
+                                  'inner_biased': False,
+                                  'mod_token': True,
+                                  'num_heads': 8,
+                                  'num_layers': 4,
+                                  'outer_biased': False,
+                                  'outer_rep': False,
+                                  'pos': False,
+                                  'rpos': True,
+                                  'shared': True,
+                                  'skip_random_mod': False},
+                         'encoders': [],
+                         'freeze_encoder': False,
+                         'model': 'SleepEnc_EarlyConcat_3pass_EEG_EOG_free_cliplike',
+                         'pretrainedEncoder': {'dir': '', 'use': False},
+                         'savetrainedEncoder': {'dir': '', 'save': False}}],
+           'load_ongoing': False,
+           'model_class': 'EEG_SLEEP_BLIP_GM_MultiMode',
+           'pretrained_model': {'dir': '', 'use': False},
+           'save_dir': '/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/shhs1/multi_modal/paper_models/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_rpos_nopos_nonsharedpreds_Early_nomult_al01_aligninner_v2_trial1.pth.tar'},
+ 'normalization': {'calculate_metrics': False,
+                   'dir': '/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl',
+                   'metrics_type': 'train_dataset',
+                   'save_metrics': False,
+                   'use': True},
+ 'num_classes': 5,
+ 'num_modalities': 1,
+ 'optimizer': {'beta1': 0.9,
+               'beta2': 0.999,
+               'learning_rate': 0.0001,
+               'momentum': 0.2,
+               'type': 'Adam',
+               'weight_decay': 0.0001},
+ 'plots': {'plot_stft_num': 0, 'save': False},
+ 'post_proc': {'post_proc_step': 15,
+               'test_postprocessing': False,
+               'val_postprocessing': False},
+ 'scheduler': {'max_lr': 0.03, 'type': 'cosanneal', 'warm_up': 55},
+ 'statistics': {'ce_weights': {'temp': 0.1, 'use': False}, 'print': False},
+ 'training_params': {'adversarial_training': {'adv_epsilon': 0.01,
+                                              'use': False},
+                     'async_loading': True,
+                     'batch_size': 16,
+                     'cuda': True,
+                     'data_loader_workers': 16,
+                     'gpu_device': [0],
+                     'pin_memory': True,
+                     'rec_test': False,
+                     'res': True,
+                     'seed': 28,
+                     'tdqm_disable': True,
+                     'test_batch_size': 16,
+                     'test_on_tops': True,
+                     'use_test_set': True,
+                     'validation': True,
+                     'verbose': True,
+                     'wandb_disable': True}}
+ *************************************** 
+The experiment name is Sleep EEG-EOG BLIP Experiment
+ *************************************** 
+We are splitting dataset by huy splits
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+Loading metrics from /esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl
+Weights are [1. 1. 1. 1. 1.]
+11070
+400
+28
+tensor([1., 1., 1., 1., 1.], device='cuda:0')
+We are not shuffling the data
+Training function is sleep_train_one_step_alignment_order_multisupervised
+Loss Weights are {'combined': 1, 'eeg': 0, 'eog': 0, 'alignments': 0.1, 'order': 0, 'consistency': 0, 'reconstruction': 0}
+We are not shuffling the data
+<class 'graphs.models.attention_models.BLIP.SleepEnc_EarlyConcat_3pass_EEG_EOG_free_cliplike'>
+Total number of trainable parameters are: 6781711
+Available cuda devices: 1, current device:0
+Total number of trainable parameters are: 6781711
+[37mEpoch 0 step 1 with [31mce_loss_combined : 0.838836 [31mce_loss_eeg : 1.495733 [31mce_loss_eog : 1.514785 [31mtotal : 0.838836 [94mAcc_combined: 70.06 [94mAcc_eeg: 54.52 [94mAcc_eog: 50.41 [92mF1_combined: 51.75 [92mF1_eeg: 36.00 [92mF1_eog: 30.38 [92mK_combined: 0.5743 [92mK_eeg: 0.3047 [92mK_eog: 0.2209 [34mF1_perclass_combined: [84.47, 0.0, 69.25, 73.18, 31.87] [34mF1_perclass_eeg: [41.33, 0.0, 60.99, 76.89, 0.81] [34mF1_perclass_eog: [38.55, 0.0, 61.72, 45.9, 5.75] 
+[37mEpoch 0 step 3 with [31mce_loss_combined : 0.537759 [31mce_loss_eeg : 1.519851 [31mce_loss_eog : 1.509486 [31mtotal : 0.537759 [94mAcc_combined: 81.41 [94mAcc_eeg: 50.93 [94mAcc_eog: 58.18 [92mF1_combined: 66.40 [92mF1_eeg: 31.59 [92mF1_eog: 39.65 [92mK_combined: 0.7376 [92mK_eeg: 0.2465 [92mK_eog: 0.3622 [34mF1_perclass_combined: [86.36, 3.54, 82.7, 81.74, 77.63] [34mF1_perclass_eeg: [19.45, 0.0, 59.17, 79.29, 0.04] [34mF1_perclass_eog: [57.59, 0.0, 66.52, 63.87, 10.27] 
+[37mEpoch 0 step 4 with [31mce_loss_combined : 0.515578 [31mce_loss_eeg : 1.503996 [31mce_loss_eog : 1.519228 [31mtotal : 0.515578 [94mAcc_combined: 81.97 [94mAcc_eeg: 51.48 [94mAcc_eog: 57.90 [92mF1_combined: 71.43 [92mF1_eeg: 32.09 [92mF1_eog: 39.84 [92mK_combined: 0.7517 [92mK_eeg: 0.2486 [92mK_eog: 0.3728 [34mF1_perclass_combined: [87.65, 24.52, 82.71, 82.28, 79.98] [34mF1_perclass_eeg: [22.22, 0.0, 60.76, 77.48, 0.01] [34mF1_perclass_eog: [55.38, 0.0, 63.9, 71.08, 8.86] 
+[37mEpoch 0 step 6 with [31mce_loss_combined : 0.491103 [31mce_loss_eeg : 1.494829 [31mce_loss_eog : 1.493170 [31mtotal : 0.491103 [94mAcc_combined: 83.17 [94mAcc_eeg: 49.70 [94mAcc_eog: 56.47 [92mF1_combined: 67.28 [92mF1_eeg: 29.16 [92mF1_eog: 39.68 [92mK_combined: 0.7625 [92mK_eeg: 0.2128 [92mK_eog: 0.3381 [34mF1_perclass_combined: [88.53, 0.11, 84.18, 81.64, 81.94] [34mF1_perclass_eeg: [6.41, 0.0, 60.6, 78.74, 0.03] [34mF1_perclass_eog: [41.96, 0.0, 64.91, 70.0, 21.52] 
+[37mEpoch 0 step 9 with [31mce_loss_combined : 0.454419 [31mce_loss_eeg : 1.500794 [31mce_loss_eog : 1.515584 [31mtotal : 0.454419 [94mAcc_combined: 83.67 [94mAcc_eeg: 55.08 [94mAcc_eog: 56.74 [92mF1_combined: 68.88 [92mF1_eeg: 36.05 [92mF1_eog: 38.34 [92mK_combined: 0.7728 [92mK_eeg: 0.3112 [92mK_eog: 0.3651 [34mF1_perclass_combined: [88.88, 4.29, 83.47, 83.37, 84.38] [34mF1_perclass_eeg: [37.73, 0.0, 62.85, 79.61, 0.04] [34mF1_perclass_eog: [57.17, 0.0, 62.44, 67.03, 5.07] 
+[37mEpoch 0 step 11 with [31mce_loss_combined : 0.450629 [31mce_loss_eeg : 1.491706 [31mce_loss_eog : 1.497000 [31mtotal : 0.450629 [94mAcc_combined: 84.35 [94mAcc_eeg: 55.47 [94mAcc_eog: 61.05 [92mF1_combined: 73.59 [92mF1_eeg: 35.96 [92mF1_eog: 40.97 [92mK_combined: 0.7794 [92mK_eeg: 0.3103 [92mK_eog: 0.4164 [34mF1_perclass_combined: [89.63, 28.79, 85.39, 78.3, 85.86] [34mF1_perclass_eeg: [43.47, 0.0, 64.58, 71.5, 0.23] [34mF1_perclass_eog: [64.52, 0.0, 66.84, 70.03, 3.46] 
+[37mEpoch 0 step 13 with [31mce_loss_combined : 0.425495 [31mce_loss_eeg : 1.484347 [31mce_loss_eog : 1.491916 [31mtotal : 0.425495 [94mAcc_combined: 84.67 [94mAcc_eeg: 54.17 [94mAcc_eog: 59.60 [92mF1_combined: 69.83 [92mF1_eeg: 33.49 [92mF1_eog: 38.61 [92mK_combined: 0.7814 [92mK_eeg: 0.2859 [92mK_eog: 0.3895 [34mF1_perclass_combined: [90.65, 6.85, 85.15, 79.84, 86.66] [34mF1_perclass_eeg: [46.32, 0.0, 65.34, 55.6, 0.2] [34mF1_perclass_eog: [65.5, 0.0, 68.11, 49.83, 9.64] 
+[37mEpoch 0 step 14 with [31mce_loss_combined : 0.414382 [31mce_loss_eeg : 1.501982 [31mce_loss_eog : 1.502913 [31mtotal : 0.414382 [94mAcc_combined: 85.76 [94mAcc_eeg: 58.03 [94mAcc_eog: 59.01 [92mF1_combined: 76.24 [92mF1_eeg: 35.77 [92mF1_eog: 36.29 [92mK_combined: 0.8013 [92mK_eeg: 0.3601 [92mK_eog: 0.3858 [34mF1_perclass_combined: [90.13, 34.08, 86.48, 84.16, 86.33] [34mF1_perclass_eeg: [61.76, 0.0, 68.62, 47.6, 0.88] [34mF1_perclass_eog: [66.46, 0.0, 69.12, 40.45, 5.4] 
+[37mEpoch 0 step 19 with [31mce_loss_combined : 0.393091 [31mce_loss_eeg : 1.531251 [31mce_loss_eog : 1.530779 [31mtotal : 0.393091 [94mAcc_combined: 86.11 [94mAcc_eeg: 41.62 [94mAcc_eog: 48.18 [92mF1_combined: 75.22 [92mF1_eeg: 22.25 [92mF1_eog: 30.08 [92mK_combined: 0.8069 [92mK_eeg: 0.1133 [92mK_eog: 0.2278 [34mF1_perclass_combined: [90.76, 27.51, 86.66, 85.07, 86.11] [34mF1_perclass_eeg: [24.18, 0.05, 61.75, 23.18, 2.08] [34mF1_perclass_eog: [44.55, 0.0, 63.6, 22.88, 19.39] 
+[37mEpoch 0 step 27 with [31mce_loss_combined : 0.377319 [31mce_loss_eeg : 1.524845 [31mce_loss_eog : 1.528355 [31mtotal : 0.377319 [94mAcc_combined: 86.58 [94mAcc_eeg: 45.49 [94mAcc_eog: 52.74 [92mF1_combined: 79.13 [92mF1_eeg: 28.16 [92mF1_eog: 34.11 [92mK_combined: 0.8156 [92mK_eeg: 0.1917 [92mK_eog: 0.2985 [34mF1_perclass_combined: [91.27, 44.9, 86.9, 85.19, 87.39] [34mF1_perclass_eeg: [30.23, 0.1, 64.59, 43.59, 2.28] [34mF1_perclass_eog: [54.54, 0.0, 63.2, 46.87, 5.94] 
+[37mEpoch 1 step 32 with [31mce_loss_combined : 0.375695 [31mce_loss_eeg : 1.542221 [31mce_loss_eog : 1.525121 [31mtotal : 0.375695 [94mAcc_combined: 86.41 [94mAcc_eeg: 44.37 [94mAcc_eog: 54.57 [92mF1_combined: 77.54 [92mF1_eeg: 28.06 [92mF1_eog: 35.20 [92mK_combined: 0.8114 [92mK_eeg: 0.1872 [92mK_eog: 0.3259 [34mF1_perclass_combined: [91.87, 37.2, 86.28, 84.45, 87.89] [34mF1_perclass_eeg: [35.57, 0.0, 62.93, 38.05, 3.75] [34mF1_perclass_eog: [58.54, 0.06, 65.86, 40.37, 11.19] 
+[37mEpoch 1 step 36 with [31mce_loss_combined : 0.365441 [31mce_loss_eeg : 1.525442 [31mce_loss_eog : 1.526336 [31mtotal : 0.365441 [94mAcc_combined: 87.17 [94mAcc_eeg: 53.20 [94mAcc_eog: 51.74 [92mF1_combined: 79.26 [92mF1_eeg: 31.78 [92mF1_eog: 32.74 [92mK_combined: 0.8218 [92mK_eeg: 0.3049 [92mK_eog: 0.2943 [34mF1_perclass_combined: [91.66, 43.63, 87.76, 85.01, 88.25] [34mF1_perclass_eeg: [60.87, 0.0, 65.89, 27.91, 4.21] [34mF1_perclass_eog: [61.07, 0.33, 60.71, 31.5, 10.09] 
+[37mEpoch 1 step 39 with [31mce_loss_combined : 0.362082 [31mce_loss_eeg : 1.518478 [31mce_loss_eog : 1.517867 [31mtotal : 0.362082 [94mAcc_combined: 87.04 [94mAcc_eeg: 49.89 [94mAcc_eog: 56.41 [92mF1_combined: 78.21 [92mF1_eeg: 30.63 [92mF1_eog: 35.04 [92mK_combined: 0.8192 [92mK_eeg: 0.2558 [92mK_eog: 0.3492 [34mF1_perclass_combined: [91.93, 39.2, 87.54, 83.56, 88.84] [34mF1_perclass_eeg: [46.59, 0.0, 67.83, 33.22, 5.5] [34mF1_perclass_eog: [62.68, 0.65, 67.58, 34.24, 10.06] 
+[37mEpoch 1 step 40 with [31mce_loss_combined : 0.355173 [31mce_loss_eeg : 1.534369 [31mce_loss_eog : 1.527675 [31mtotal : 0.355173 [94mAcc_combined: 87.13 [94mAcc_eeg: 46.40 [94mAcc_eog: 53.89 [92mF1_combined: 80.41 [92mF1_eeg: 26.54 [92mF1_eog: 32.73 [92mK_combined: 0.8220 [92mK_eeg: 0.2028 [92mK_eog: 0.3197 [34mF1_perclass_combined: [91.65, 48.91, 87.4, 85.71, 88.4] [34mF1_perclass_eeg: [42.21, 0.0, 65.76, 20.8, 3.92] [34mF1_perclass_eog: [60.74, 0.38, 65.73, 19.51, 17.27] 
+[37mEpoch 2 step 56 with [31mce_loss_combined : 0.349038 [31mce_loss_eeg : 1.541863 [31mce_loss_eog : 1.541492 [31mtotal : 0.349038 [94mAcc_combined: 87.48 [94mAcc_eeg: 43.64 [94mAcc_eog: 46.47 [92mF1_combined: 77.04 [92mF1_eeg: 26.81 [92mF1_eog: 29.58 [92mK_combined: 0.8238 [92mK_eeg: 0.1643 [92mK_eog: 0.1913 [34mF1_perclass_combined: [92.37, 30.88, 87.75, 85.63, 88.56] [34mF1_perclass_eeg: [12.0, 0.0, 64.59, 52.08, 5.41] [34mF1_perclass_eog: [28.91, 0.11, 61.93, 46.72, 10.24] 
+[37mEpoch 2 step 57 with [31mce_loss_combined : 0.337333 [31mce_loss_eeg : 1.540436 [31mce_loss_eog : 1.540434 [31mtotal : 0.337333 [94mAcc_combined: 87.76 [94mAcc_eeg: 42.57 [94mAcc_eog: 45.25 [92mF1_combined: 79.90 [92mF1_eeg: 26.37 [92mF1_eog: 28.05 [92mK_combined: 0.8295 [92mK_eeg: 0.1471 [92mK_eog: 0.1700 [34mF1_perclass_combined: [92.21, 43.88, 88.1, 85.98, 89.32] [34mF1_perclass_eeg: [24.5, 0.0, 61.3, 38.06, 7.97] [34mF1_perclass_eog: [29.11, 0.54, 60.41, 41.25, 8.96] 
+[37mEpoch 2 step 64 with [31mce_loss_combined : 0.333895 [31mce_loss_eeg : 1.539071 [31mce_loss_eog : 1.547601 [31mtotal : 0.333895 [94mAcc_combined: 88.05 [94mAcc_eeg: 47.18 [94mAcc_eog: 46.07 [92mF1_combined: 80.22 [92mF1_eeg: 28.16 [92mF1_eog: 27.10 [92mK_combined: 0.8331 [92mK_eeg: 0.2220 [92mK_eog: 0.2043 [34mF1_perclass_combined: [92.57, 44.98, 88.42, 85.9, 89.22] [34mF1_perclass_eeg: [48.72, 0.05, 64.51, 18.22, 9.31] [34mF1_perclass_eog: [51.61, 2.15, 59.98, 14.38, 7.37] 
+[37mEpoch 2 step 65 with [31mce_loss_combined : 0.332555 [31mce_loss_eeg : 1.540598 [31mce_loss_eog : 1.547546 [31mtotal : 0.332555 [94mAcc_combined: 87.92 [94mAcc_eeg: 46.26 [94mAcc_eog: 46.46 [92mF1_combined: 79.55 [92mF1_eeg: 27.78 [92mF1_eog: 27.36 [92mK_combined: 0.8316 [92mK_eeg: 0.2090 [92mK_eog: 0.2064 [34mF1_perclass_combined: [92.6, 41.79, 88.09, 86.11, 89.14] [34mF1_perclass_eeg: [46.73, 0.05, 63.71, 19.59, 8.82] [34mF1_perclass_eog: [50.69, 1.85, 60.6, 17.21, 6.46] 
+[37mEpoch 2 step 73 with [31mce_loss_combined : 0.328974 [31mce_loss_eeg : 1.538512 [31mce_loss_eog : 1.547139 [31mtotal : 0.328974 [94mAcc_combined: 88.34 [94mAcc_eeg: 47.03 [94mAcc_eog: 45.31 [92mF1_combined: 80.92 [92mF1_eeg: 28.59 [92mF1_eog: 26.17 [92mK_combined: 0.8377 [92mK_eeg: 0.2083 [92mK_eog: 0.1810 [34mF1_perclass_combined: [93.03, 47.62, 88.79, 85.71, 89.47] [34mF1_perclass_eeg: [47.12, 0.0, 61.65, 28.7, 5.49] [34mF1_perclass_eog: [45.26, 1.42, 60.26, 19.06, 4.84] 
+[37mEpoch 2 step 75 with [31mce_loss_combined : 0.326300 [31mce_loss_eeg : 1.538795 [31mce_loss_eog : 1.545106 [31mtotal : 0.326300 [94mAcc_combined: 88.40 [94mAcc_eeg: 46.82 [94mAcc_eog: 45.91 [92mF1_combined: 81.02 [92mF1_eeg: 28.99 [92mF1_eog: 26.48 [92mK_combined: 0.8389 [92mK_eeg: 0.2070 [92mK_eog: 0.1857 [34mF1_perclass_combined: [93.05, 47.62, 88.73, 86.11, 89.59] [34mF1_perclass_eeg: [46.9, 0.0, 61.1, 30.67, 6.3] [34mF1_perclass_eog: [44.68, 0.97, 60.92, 20.64, 5.18] 
+[37mEpoch 3 step 91 with [31mce_loss_combined : 0.325551 [31mce_loss_eeg : 1.551183 [31mce_loss_eog : 1.554904 [31mtotal : 0.325551 [94mAcc_combined: 88.15 [94mAcc_eeg: 40.44 [94mAcc_eog: 38.85 [92mF1_combined: 79.98 [92mF1_eeg: 22.35 [92mF1_eog: 20.22 [92mK_combined: 0.8352 [92mK_eeg: 0.1016 [92mK_eog: 0.0696 [34mF1_perclass_combined: [92.72, 43.15, 88.38, 86.26, 89.41] [34mF1_perclass_eeg: [32.51, 0.2, 57.71, 16.95, 4.38] [34mF1_perclass_eog: [29.98, 1.27, 56.03, 10.6, 3.23] 
+[37mEpoch 3 step 92 with [31mce_loss_combined : 0.325191 [31mce_loss_eeg : 1.549330 [31mce_loss_eog : 1.555281 [31mtotal : 0.325191 [94mAcc_combined: 88.16 [94mAcc_eeg: 40.83 [94mAcc_eog: 39.26 [92mF1_combined: 79.92 [92mF1_eeg: 22.98 [92mF1_eog: 20.91 [92mK_combined: 0.8347 [92mK_eeg: 0.1088 [92mK_eog: 0.0794 [34mF1_perclass_combined: [92.86, 43.04, 88.46, 86.03, 89.2] [34mF1_perclass_eeg: [33.92, 0.16, 57.63, 17.91, 5.27] [34mF1_perclass_eog: [31.72, 1.32, 56.19, 11.65, 3.65] 
+[37mEpoch 3 step 93 with [31mce_loss_combined : 0.321822 [31mce_loss_eeg : 1.550722 [31mce_loss_eog : 1.557436 [31mtotal : 0.321822 [94mAcc_combined: 88.43 [94mAcc_eeg: 40.77 [94mAcc_eog: 38.47 [92mF1_combined: 80.53 [92mF1_eeg: 22.81 [92mF1_eog: 20.58 [92mK_combined: 0.8386 [92mK_eeg: 0.1073 [92mK_eog: 0.0695 [34mF1_perclass_combined: [93.1, 44.96, 88.68, 86.13, 89.8] [34mF1_perclass_eeg: [34.03, 0.25, 57.58, 17.72, 4.46] [34mF1_perclass_eog: [30.36, 1.66, 55.55, 11.91, 3.44] 
+[37mEpoch 3 step 94 with [31mce_loss_combined : 0.321514 [31mce_loss_eeg : 1.549212 [31mce_loss_eog : 1.556162 [31mtotal : 0.321514 [94mAcc_combined: 88.38 [94mAcc_eeg: 41.11 [94mAcc_eog: 38.96 [92mF1_combined: 80.29 [92mF1_eeg: 23.32 [92mF1_eog: 20.87 [92mK_combined: 0.8378 [92mK_eeg: 0.1120 [92mK_eog: 0.0752 [34mF1_perclass_combined: [93.09, 43.86, 88.7, 86.18, 89.63] [34mF1_perclass_eeg: [33.5, 0.25, 57.89, 20.2, 4.74] [34mF1_perclass_eog: [29.9, 1.47, 56.2, 13.14, 3.65] 
+[37mEpoch 4 step 112 with [31mce_loss_combined : 0.319971 [31mce_loss_eeg : 1.555321 [31mce_loss_eog : 1.561632 [31mtotal : 0.319971 [94mAcc_combined: 88.45 [94mAcc_eeg: 36.12 [94mAcc_eog: 34.99 [92mF1_combined: 79.81 [92mF1_eeg: 20.27 [92mF1_eog: 19.39 [92mK_combined: 0.8387 [92mK_eeg: 0.0393 [92mK_eog: 0.0181 [34mF1_perclass_combined: [93.11, 41.38, 88.81, 86.23, 89.53] [34mF1_perclass_eeg: [21.29, 0.16, 53.25, 14.3, 12.38] [34mF1_perclass_eog: [18.08, 0.79, 52.06, 16.32, 9.71] 
+[37mEpoch 4 step 127 with [31mce_loss_combined : 0.319667 [31mce_loss_eeg : 1.549994 [31mce_loss_eog : 1.554456 [31mtotal : 0.319667 [94mAcc_combined: 88.40 [94mAcc_eeg: 40.43 [94mAcc_eog: 40.72 [92mF1_combined: 80.28 [92mF1_eeg: 25.24 [92mF1_eog: 25.23 [92mK_combined: 0.8381 [92mK_eeg: 0.1079 [92mK_eog: 0.1099 [34mF1_perclass_combined: [93.25, 43.77, 88.67, 85.98, 89.74] [34mF1_perclass_eeg: [30.51, 0.39, 55.55, 28.96, 10.8] [34mF1_perclass_eog: [29.94, 1.6, 56.13, 26.71, 11.8] 
+[37mEpoch 4 step 130 with [31mce_loss_combined : 0.316512 [31mce_loss_eeg : 1.549754 [31mce_loss_eog : 1.554530 [31mtotal : 0.316512 [94mAcc_combined: 88.71 [94mAcc_eeg: 39.58 [94mAcc_eog: 40.55 [92mF1_combined: 81.42 [92mF1_eeg: 24.34 [92mF1_eog: 24.61 [92mK_combined: 0.8434 [92mK_eeg: 0.0930 [92mK_eog: 0.1023 [34mF1_perclass_combined: [93.41, 48.23, 88.99, 86.47, 90.03] [34mF1_perclass_eeg: [29.16, 0.4, 54.81, 28.24, 9.09] [34mF1_perclass_eog: [27.5, 1.06, 56.3, 27.14, 11.04] 
+[37mEpoch 4 step 132 with [31mce_loss_combined : 0.314779 [31mce_loss_eeg : 1.549681 [31mce_loss_eog : 1.554318 [31mtotal : 0.314779 [94mAcc_combined: 88.65 [94mAcc_eeg: 39.85 [94mAcc_eog: 41.30 [92mF1_combined: 81.26 [92mF1_eeg: 24.83 [92mF1_eog: 25.40 [92mK_combined: 0.8419 [92mK_eeg: 0.0991 [92mK_eog: 0.1126 [34mF1_perclass_combined: [93.44, 47.84, 88.97, 86.09, 89.98] [34mF1_perclass_eeg: [30.26, 0.49, 54.81, 27.94, 10.66] [34mF1_perclass_eog: [27.62, 0.96, 56.71, 29.59, 12.13] 
+[37mEpoch 4 step 133 with [31mce_loss_combined : 0.314070 [31mce_loss_eeg : 1.550599 [31mce_loss_eog : 1.554150 [31mtotal : 0.314070 [94mAcc_combined: 88.67 [94mAcc_eeg: 39.23 [94mAcc_eog: 41.30 [92mF1_combined: 81.17 [92mF1_eeg: 24.62 [92mF1_eog: 25.55 [92mK_combined: 0.8423 [92mK_eeg: 0.0928 [92mK_eog: 0.1148 [34mF1_perclass_combined: [93.47, 47.11, 88.93, 86.3, 90.02] [34mF1_perclass_eeg: [30.79, 0.49, 53.88, 26.79, 11.16] [34mF1_perclass_eog: [28.65, 0.86, 56.65, 29.26, 12.31] 
+[37mEpoch 4 step 134 with [31mce_loss_combined : 0.313781 [31mce_loss_eeg : 1.550397 [31mce_loss_eog : 1.554296 [31mtotal : 0.313781 [94mAcc_combined: 88.71 [94mAcc_eeg: 39.60 [94mAcc_eog: 40.89 [92mF1_combined: 81.21 [92mF1_eeg: 24.72 [92mF1_eog: 25.46 [92mK_combined: 0.8429 [92mK_eeg: 0.0972 [92mK_eog: 0.1101 [34mF1_perclass_combined: [93.47, 47.26, 89.01, 86.21, 90.08] [34mF1_perclass_eeg: [31.26, 0.48, 54.33, 26.8, 10.75] [34mF1_perclass_eog: [28.41, 1.14, 56.18, 28.87, 12.69] 
+[37mEpoch 4 step 135 with [31mce_loss_combined : 0.313715 [31mce_loss_eeg : 1.550901 [31mce_loss_eog : 1.554680 [31mtotal : 0.313715 [94mAcc_combined: 88.64 [94mAcc_eeg: 39.34 [94mAcc_eog: 40.52 [92mF1_combined: 81.24 [92mF1_eeg: 24.53 [92mF1_eog: 25.10 [92mK_combined: 0.8420 [92mK_eeg: 0.0933 [92mK_eog: 0.1045 [34mF1_perclass_combined: [93.44, 47.65, 88.87, 86.24, 90.03] [34mF1_perclass_eeg: [30.54, 0.49, 54.16, 26.52, 10.96] [34mF1_perclass_eog: [27.83, 1.18, 55.97, 27.99, 12.52] 
+[37mEpoch 4 step 136 with [31mce_loss_combined : 0.313669 [31mce_loss_eeg : 1.550930 [31mce_loss_eog : 1.554887 [31mtotal : 0.313669 [94mAcc_combined: 88.66 [94mAcc_eeg: 39.36 [94mAcc_eog: 40.33 [92mF1_combined: 81.29 [92mF1_eeg: 24.56 [92mF1_eog: 25.01 [92mK_combined: 0.8424 [92mK_eeg: 0.0937 [92mK_eog: 0.1024 [34mF1_perclass_combined: [93.45, 47.82, 88.88, 86.25, 90.06] [34mF1_perclass_eeg: [30.54, 0.49, 54.2, 26.49, 11.06] [34mF1_perclass_eog: [27.84, 1.18, 55.76, 27.63, 12.65] 
+[37mEpoch 7 step 195 with [31mce_loss_combined : 0.310553 [31mce_loss_eeg : 1.558614 [31mce_loss_eog : 1.561628 [31mtotal : 0.310553 [94mAcc_combined: 88.84 [94mAcc_eeg: 36.02 [94mAcc_eog: 36.93 [92mF1_combined: 81.21 [92mF1_eeg: 18.89 [92mF1_eog: 19.51 [92mK_combined: 0.8449 [92mK_eeg: 0.0219 [92mK_eog: 0.0359 [34mF1_perclass_combined: [93.61, 46.67, 89.04, 86.61, 90.14] [34mF1_perclass_eeg: [21.58, 0.68, 52.94, 12.19, 7.07] [34mF1_perclass_eog: [24.3, 0.73, 53.48, 11.86, 7.19] 
+[37mEpoch 11 step 325 with [31mce_loss_combined : 0.308192 [31mce_loss_eeg : 1.567826 [31mce_loss_eog : 1.571355 [31mtotal : 0.308192 [94mAcc_combined: 88.91 [94mAcc_eeg: 36.85 [94mAcc_eog: 37.10 [92mF1_combined: 82.03 [92mF1_eeg: 17.33 [92mF1_eog: 17.54 [92mK_combined: 0.8460 [92mK_eeg: 0.0199 [92mK_eog: 0.0254 [34mF1_perclass_combined: [93.6, 50.7, 89.26, 86.37, 90.21] [34mF1_perclass_eeg: [21.25, 0.69, 54.05, 4.91, 5.74] [34mF1_perclass_eog: [21.95, 0.42, 54.44, 5.72, 5.14] 
+[37mEpoch 11 step 328 with [31mce_loss_combined : 0.307557 [31mce_loss_eeg : 1.565237 [31mce_loss_eog : 1.567760 [31mtotal : 0.307557 [94mAcc_combined: 88.90 [94mAcc_eeg: 37.72 [94mAcc_eog: 37.88 [92mF1_combined: 81.18 [92mF1_eeg: 16.74 [92mF1_eog: 16.77 [92mK_combined: 0.8456 [92mK_eeg: 0.0187 [92mK_eog: 0.0219 [34mF1_perclass_combined: [93.6, 46.18, 89.18, 86.76, 90.16] [34mF1_perclass_eeg: [20.04, 0.64, 54.45, 4.55, 4.01] [34mF1_perclass_eog: [19.0, 0.22, 54.99, 5.73, 3.91] 
+[37mEpoch 12 step 353 with [31mce_loss_combined : 0.307186 [31mce_loss_eeg : 1.567551 [31mce_loss_eog : 1.570211 [31mtotal : 0.307186 [94mAcc_combined: 88.94 [94mAcc_eeg: 36.38 [94mAcc_eog: 36.93 [92mF1_combined: 82.14 [92mF1_eeg: 17.13 [92mF1_eog: 17.29 [92mK_combined: 0.8470 [92mK_eeg: 0.0130 [92mK_eog: 0.0207 [34mF1_perclass_combined: [93.62, 50.83, 89.21, 86.78, 90.25] [34mF1_perclass_eeg: [20.25, 0.69, 53.78, 5.75, 5.18] [34mF1_perclass_eog: [21.29, 0.42, 54.32, 5.86, 4.58] 
+[37mEpoch 13 step 361 with [31mce_loss_combined : 0.305316 [31mce_loss_eeg : 1.568667 [31mce_loss_eog : 1.571137 [31mtotal : 0.305316 [94mAcc_combined: 89.07 [94mAcc_eeg: 36.72 [94mAcc_eog: 36.67 [92mF1_combined: 81.45 [92mF1_eeg: 17.61 [92mF1_eog: 17.33 [92mK_combined: 0.8478 [92mK_eeg: 0.0212 [92mK_eog: 0.0193 [34mF1_perclass_combined: [93.79, 47.1, 89.35, 86.63, 90.37] [34mF1_perclass_eeg: [21.74, 0.63, 53.96, 6.53, 5.18] [34mF1_perclass_eog: [21.52, 0.52, 54.05, 6.43, 4.13] 
+[37mEpoch 21 step 602 with [31mce_loss_combined : 0.303757 [31mce_loss_eeg : 1.572013 [31mce_loss_eog : 1.574006 [31mtotal : 0.303757 [94mAcc_combined: 89.03 [94mAcc_eeg: 36.56 [94mAcc_eog: 36.26 [92mF1_combined: 82.03 [92mF1_eeg: 15.98 [92mF1_eog: 15.67 [92mK_combined: 0.8478 [92mK_eeg: 0.0022 [92mK_eog: -0.0020 [34mF1_perclass_combined: [93.65, 49.95, 89.35, 86.7, 90.48] [34mF1_perclass_eeg: [15.0, 1.32, 54.07, 5.66, 3.82] [34mF1_perclass_eog: [14.77, 0.74, 53.75, 5.73, 3.37] 
+{'val_loss': {'ce_loss_combined': 0.30375665, 'ce_loss_eeg': 1.5720127, 'ce_loss_eog': 1.5740056, 'total': 0.30375665}, 'val_acc': {'combined': 0.8903376297138073, 'eeg': 0.3655512026874807, 'eog': 0.3625905878365581}, 'val_f1': {'combined': 0.8202771177125101, 'eeg': 0.15975899876392655, 'eog': 0.15672161108523114}, 'val_k': {'combined': 0.8477893847000393, 'eeg': 0.0021684895125531067, 'eog': -0.0019669490978708737}, 'val_perclassf1': {'combined': array([0.93654338, 0.49953517, 0.89347937, 0.86702374, 0.90480393]), 'eeg': array([0.14995277, 0.01324179, 0.5407201 , 0.05663206, 0.03824827]), 'eog': array([0.14770619, 0.00743126, 0.53750433, 0.0573135 , 0.03365277])}}
+We are in the final state.
+Job finished

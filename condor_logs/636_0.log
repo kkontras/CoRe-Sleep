@@ -1,0 +1,28 @@
+000 (636.000.000) 2023-01-05 15:59:33 Job submitted from host: <10.87.28.151:9618?addrs=10.87.28.151-9618&alias=brigand.esat.kuleuven.be&noUDP&sock=schedd_2187_adb6>
+...
+001 (636.000.000) 2023-01-05 15:59:43 Job executing on host: <10.87.28.118:9618?addrs=10.87.28.118-9618&alias=stadius-nc-5.esat.kuleuven.be&noUDP&sock=startd_4288_ca31>
+...
+006 (636.000.000) 2023-01-05 15:59:51 Image size of job updated: 341708
+	19  -  MemoryUsage of job (MB)
+	19084  -  ResidentSetSize of job (KB)
+...
+006 (636.000.000) 2023-01-05 16:04:51 Image size of job updated: 189550860
+	4166  -  MemoryUsage of job (MB)
+	4265208  -  ResidentSetSize of job (KB)
+...
+004 (636.000.000) 2023-01-05 16:13:32 Job was evicted.
+	(0) CPU times
+		Usr 0 00:54:02, Sys 0 00:09:38  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     5.96       16        16 
+	   Disk (KB)            :     1           1   1823526 
+	   Gpus (Average)       :     0.38        1         1 "CUDA1"
+	   GpusMemory (MB)      :  1866                       
+	   Memory (MB)          :  4166       16384     16384 
+...
+009 (636.000.000) 2023-01-05 16:13:32 Job was aborted.
+	via condor_rm (by user kkontras)
+...

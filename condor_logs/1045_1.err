@@ -1,0 +1,27 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/cuda/__init__.py:132: UserWarning: 
+    Found GPU0 NVIDIA GeForce GTX 680 which is of cuda capability 3.0.
+    PyTorch no longer supports this GPU because it is too old.
+    The minimum cuda capability supported by this library is 3.7.
+    
+  warnings.warn(old_gpu_warn % (d, name, major, minor, min_arch // 10, min_arch % 10))
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_1.py", line 39, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_1.py", line 33, in main
+    agent = agent_class(config)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 87, in __init__
+    print(self.loss.weight)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/_tensor.py", line 426, in __repr__
+    return torch._tensor_str._str(self, tensor_contents=tensor_contents)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/_tensor_str.py", line 637, in _str
+    return _str_intern(self, tensor_contents=tensor_contents)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/_tensor_str.py", line 568, in _str_intern
+    tensor_str = _tensor_str(self, indent)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/_tensor_str.py", line 328, in _tensor_str
+    formatter = _Formatter(get_summarized_data(self) if summarize else self)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/_tensor_str.py", line 116, in __init__
+    tensor_view, torch.isfinite(tensor_view) & tensor_view.ne(0)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 7.98 GiB (GPU 0; 3.94 GiB total capacity; 1.50 KiB already allocated; 3.90 GiB free; 2.00 MiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF

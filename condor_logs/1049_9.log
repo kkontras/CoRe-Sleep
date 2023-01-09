@@ -1,0 +1,171 @@
+000 (1049.009.000) 2022-12-29 14:07:10 Job submitted from host: <10.87.28.129:9618?addrs=10.87.28.129-9618&alias=timmermans.esat.kuleuven.be&noUDP&sock=schedd_2118_59ad>
+...
+001 (1049.009.000) 2022-12-29 23:47:10 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1803_4958>
+...
+006 (1049.009.000) 2022-12-29 23:47:19 Image size of job updated: 283992
+	276  -  MemoryUsage of job (MB)
+	282456  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-29 23:52:20 Image size of job updated: 387103808
+	11022  -  MemoryUsage of job (MB)
+	11286392  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-29 23:57:21 Image size of job updated: 388353660
+	11048  -  MemoryUsage of job (MB)
+	11313016  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:02:21 Image size of job updated: 388353660
+	11124  -  MemoryUsage of job (MB)
+	11390940  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:07:21 Image size of job updated: 388353660
+	11217  -  MemoryUsage of job (MB)
+	11486024  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:12:22 Image size of job updated: 388519344
+	11217  -  MemoryUsage of job (MB)
+	11486024  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:17:23 Image size of job updated: 437989604
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:22:23 Image size of job updated: 438264596
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:32:25 Image size of job updated: 439114624
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:42:25 Image size of job updated: 439121556
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:47:26 Image size of job updated: 439349748
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 00:52:26 Image size of job updated: 439509724
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 01:37:31 Image size of job updated: 439628360
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 01:42:31 Image size of job updated: 440208296
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 01:52:32 Image size of job updated: 440644412
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 02:02:33 Image size of job updated: 440813544
+	11769  -  MemoryUsage of job (MB)
+	12051000  -  ResidentSetSize of job (KB)
+...
+022 (1049.009.000) 2022-12-30 02:39:00 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@gauss.esat.kuleuven.be <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1803_4958>
+...
+024 (1049.009.000) 2022-12-30 03:19:00 Job reconnection failed
+    Job disconnected too long: JobLeaseDuration (2400 seconds) expired
+    Can not reconnect to slot1@gauss.esat.kuleuven.be, rescheduling job
+...
+001 (1049.009.000) 2022-12-30 03:22:43 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1823_013d>
+...
+022 (1049.009.000) 2022-12-30 03:34:10 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@gauss.esat.kuleuven.be <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1823_013d>
+...
+024 (1049.009.000) 2022-12-30 04:14:10 Job reconnection failed
+    Job disconnected too long: JobLeaseDuration (2400 seconds) expired
+    Can not reconnect to slot1@gauss.esat.kuleuven.be, rescheduling job
+...
+001 (1049.009.000) 2022-12-30 04:18:31 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1833_dd30>
+...
+006 (1049.009.000) 2022-12-30 07:54:01 Image size of job updated: 453697088
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 08:04:02 Image size of job updated: 453836568
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 08:09:03 Image size of job updated: 455251964
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 08:19:04 Image size of job updated: 463596456
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 08:24:05 Image size of job updated: 465378056
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 10:24:17 Image size of job updated: 465473428
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 10:54:21 Image size of job updated: 465684936
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 10:59:21 Image size of job updated: 466159200
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 11:04:22 Image size of job updated: 466473264
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 11:49:26 Image size of job updated: 466504524
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 11:54:26 Image size of job updated: 467301916
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 11:59:27 Image size of job updated: 468274812
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 12:09:27 Image size of job updated: 468274824
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 12:14:28 Image size of job updated: 468323828
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 12:19:29 Image size of job updated: 468334108
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+006 (1049.009.000) 2022-12-30 13:04:34 Image size of job updated: 468717336
+	12208  -  MemoryUsage of job (MB)
+	12500000  -  ResidentSetSize of job (KB)
+...
+005 (1049.009.000) 2022-12-30 15:05:26 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 1 21:54:16, Sys 0 10:32:54  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 2 10:08:03, Sys 0 13:24:05  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     3.12       16        16 
+	   Disk (KB)            :     1           1   7367279 
+	   Gpus (Average)       :     0.44        1         1 "CUDA0"
+	   GpusMemory (MB)      :  7187                       
+	   Memory (MB)          : 12208       16384     16384 
+
+	Job terminated of its own accord at 2022-12-30T14:05:26Z.
+...

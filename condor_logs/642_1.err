@@ -1,0 +1,30 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2023/01/06 15:13:09	INFO	wandb	Watching
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_1.py", line 68, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_1.py", line 64, in main
+    agent.run()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 180, in run
+    self.trainer.sleep_train_step(trial)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 39, in sleep_train_step
+    pbar = tqdm(enumerate(self.agent.data_loader.train_loader), desc="Training", leave=None, disable=self.agent.config.training_params.tdqm_disable, position=0)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 435, in __iter__
+    return self._get_iterator()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 381, in _get_iterator
+    return _MultiProcessingDataLoaderIter(self)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1034, in __init__
+    w.start()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/context.py", line 223, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/context.py", line 277, in _Popen
+    return Popen(process_obj)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/popen_fork.py", line 70, in _launch
+    self.pid = os.fork()
+BlockingIOError: [Errno 11] Resource temporarily unavailable

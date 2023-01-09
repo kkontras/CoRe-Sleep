@@ -1,0 +1,61 @@
+{
+  "exp_name": "Sleep Fusion Seq Big",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+
+  "cuda": true,
+  "gpu_device": [0],
+  "seed": 50,
+
+  "batch_size": 512,
+  "test_batch_size": 512,
+  "num_classes": 2,
+
+  "learning_rate": 0.00005,
+  "max_lr":  0.003,
+  "scheduler": "cosanneal",
+  "lr_finder": false,
+
+  "momentum": 0.2,
+
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+
+  "max_epoch": 61,
+
+  "log_interval": 10,
+  "save_every": 5,
+  "n_epochs_stop": 15,
+
+  "data_roots": "/esat/stadiustempdatasets/sleep_data/kkontras/Image_Dataset",
+  "data_view_dir": [["Version_1/train/image_file_map.txt", "Version_1/test/image_file_map.txt"], ["Version_1/train/stft_file_map.txt", "Version_1/test/stft_file_map.txt"]],
+  "split_method": "random",
+  "rand_splits": 13,
+  "rand_split": 0,
+  "val_patient_num": 3,
+  "split_rate": 0.17,
+  "validation": true,
+  "rec_test": false,
+  "verbose": false,
+  "model_class": "B_MAtt_FC",
+  "post_proc_step": 15,
+  "seq_legth": [1,0],
+  "test_postprocessing": true,
+  "val_postprocessing": false,
+  "freeze_encoders": false,
+
+  "save_dir": "/users/sista/kkontras/Documents/Sleep_Project/data/att0_016.pth.tar",
+  "save_dir_encoder": ["/users/sista/kkontras/Documents/Sleep_Project/data/2020_data/encoders/eeg_type2_c_encoder.pth.tar", "/users/sista/kkontras/Documents/Sleep_Project/data/2020_data/encoders/stft_type2_c_encoder.pth.tar"],
+  "encoder_models": [["EEG_Encoder",2],["STFT_Encoder",2]],
+  "pretrainedEncoder":  false,
+  "savetrainedEncoder": false,
+
+  "data_loader_workers": 12,
+  "pin_memory": true,
+  "async_loading": true,
+  "load_ongoing": false,
+
+  "tdqm_disable": false,
+  "res": false
+}

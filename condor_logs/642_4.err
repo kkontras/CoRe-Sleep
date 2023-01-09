@@ -1,0 +1,22 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2023/01/06 15:13:22	INFO	wandb	Watching
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_4.py", line 71, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_4.py", line 67, in main
+    agent.run()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 180, in run
+    self.trainer.sleep_train_step(trial)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 39, in sleep_train_step
+    pbar = tqdm(enumerate(self.agent.data_loader.train_loader), desc="Training", leave=None, disable=self.agent.config.training_params.tdqm_disable, position=0)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 435, in __iter__
+    return self._get_iterator()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 381, in _get_iterator
+    return _MultiProcessingDataLoaderIter(self)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1049, in __init__
+    pin_memory_thread.start()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/threading.py", line 852, in start
+    _start_new_thread(self._bootstrap, ())
+RuntimeError: can't start new thread

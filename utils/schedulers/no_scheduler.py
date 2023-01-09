@@ -1,0 +1,10 @@
+import wandb
+
+class No_Scheduler():
+    def __init__(self, base_lr):
+        self.lr_history = []
+        self.base_lr = base_lr
+        print("No scheduler is used in this training")
+    def step(self, step_num=0):
+        self.lr_history.append(self.base_lr)
+        wandb.log({"lr":self.base_lr})

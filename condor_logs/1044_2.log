@@ -1,0 +1,109 @@
+000 (1044.002.000) 2022-12-22 14:14:56 Job submitted from host: <10.87.28.129:9618?addrs=10.87.28.129-9618&alias=timmermans.esat.kuleuven.be&noUDP&sock=schedd_2118_59ad>
+...
+001 (1044.002.000) 2022-12-22 14:15:04 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1786_a03c>
+...
+006 (1044.002.000) 2022-12-22 14:15:13 Image size of job updated: 247664
+	123  -  MemoryUsage of job (MB)
+	125104  -  ResidentSetSize of job (KB)
+...
+022 (1044.002.000) 2022-12-22 14:21:13 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@gauss.esat.kuleuven.be <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1786_a03c>
+...
+024 (1044.002.000) 2022-12-22 15:01:13 Job reconnection failed
+    Job disconnected too long: JobLeaseDuration (2400 seconds) expired
+    Can not reconnect to slot1@gauss.esat.kuleuven.be, rescheduling job
+...
+001 (1044.002.000) 2022-12-22 15:05:31 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1818_9344>
+...
+022 (1044.002.000) 2022-12-22 15:11:59 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@gauss.esat.kuleuven.be <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1818_9344>
+...
+024 (1044.002.000) 2022-12-22 15:51:59 Job reconnection failed
+    Job disconnected too long: JobLeaseDuration (2400 seconds) expired
+    Can not reconnect to slot1@gauss.esat.kuleuven.be, rescheduling job
+...
+001 (1044.002.000) 2022-12-22 15:56:36 Job executing on host: <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1779_d312>
+...
+022 (1044.002.000) 2022-12-22 16:04:05 Job disconnected, attempting to reconnect
+    Socket between submit and execute hosts closed unexpectedly
+    Trying to reconnect to slot1@gauss.esat.kuleuven.be <10.87.24.56:9618?addrs=10.87.24.56-9618&alias=gauss.esat.kuleuven.be&noUDP&sock=startd_1779_d312>
+...
+024 (1044.002.000) 2022-12-22 16:44:05 Job reconnection failed
+    Job disconnected too long: JobLeaseDuration (2400 seconds) expired
+    Can not reconnect to slot1@gauss.esat.kuleuven.be, rescheduling job
+...
+001 (1044.002.000) 2022-12-22 16:48:17 Job executing on host: <10.87.24.205:9618?addrs=10.87.24.205-9618&alias=durian.esat.kuleuven.be&noUDP&sock=startd_2225_be50>
+...
+006 (1044.002.000) 2022-12-22 16:48:26 Image size of job updated: 801944
+	147  -  MemoryUsage of job (MB)
+	150000  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 16:53:27 Image size of job updated: 19225572
+	5993  -  MemoryUsage of job (MB)
+	6136292  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 16:58:27 Image size of job updated: 19321692
+	6004  -  MemoryUsage of job (MB)
+	6147196  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:03:27 Image size of job updated: 19321948
+	6008  -  MemoryUsage of job (MB)
+	6152144  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:08:28 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6152684  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:13:29 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6152916  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:23:29 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6152996  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:33:31 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6153004  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:43:31 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6153028  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 17:53:33 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6153180  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 19:28:42 Image size of job updated: 19321948
+	6009  -  MemoryUsage of job (MB)
+	6153208  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 19:38:42 Image size of job updated: 19321948
+	6010  -  MemoryUsage of job (MB)
+	6153244  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 19:48:44 Image size of job updated: 19321948
+	6010  -  MemoryUsage of job (MB)
+	6153284  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 20:48:50 Image size of job updated: 19321948
+	6010  -  MemoryUsage of job (MB)
+	6153288  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 20:58:51 Image size of job updated: 19321948
+	6010  -  MemoryUsage of job (MB)
+	6153324  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 21:08:52 Image size of job updated: 19321948
+	6010  -  MemoryUsage of job (MB)
+	6153348  -  ResidentSetSize of job (KB)
+...
+006 (1044.002.000) 2022-12-22 21:18:53 Image size of job updated: 19321948
+	6010  -  MemoryUsage of job (MB)
+	6153404  -  ResidentSetSize of job (KB)
+...
+009 (1044.002.000) 2022-12-25 14:28:14 Job was aborted.
+	The system macro SYSTEM_PERIODIC_REMOVE expression '(JobStatus == 5 && CurrentTime - EnteredCurrentStatus > 3600 * 24 * 30) || (JobStatus == 4 && CurrentTime - EnteredCurrentStatus > 3600 * 24 * 30) || (JobStatus == 1 && CurrentTime - EnteredCurrentStatus > 3600 * 24 * 90) || (JobStatus == 2 && (ProportionalSetSizeKb > (1024 * My.RequestMemory))) || (JobStatus == 2 && ((RemoteWallClockTime - CumulativeSuspensionTime) > My.RequestWalltime))' evaluated to TRUE
+...

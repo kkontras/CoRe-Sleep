@@ -1,0 +1,72 @@
+{
+  "exp_name": "Sleep EEG CNN Signle View Experiment",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+
+  "cuda": true,
+  "gpu_device": [0,1],
+  "seed": 28,
+
+  "batch_size": 6,
+  "test_batch_size": 6,
+  "num_classes": 2,
+
+  "learning_rate": 0.00005,
+  "max_lr":  0.003,
+  "scheduler": "cosanneal",
+  "lr_finder": false,
+
+  "momentum": 0.2,
+
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+
+  "max_epoch": 251,
+
+  "log_interval": 10,
+  "save_every": 5,
+  "n_epochs_stop": 15,
+
+  "data_roots": "/esat/stadiustempdatasets/sleep_data/kkontras/Image_Dataset",
+  "data_view_dir": [["Version_1/train/image_file_map.txt", "Version_1/test/image_file_map.txt"]],
+  "split_method": "random",
+  "val_patient_num": 3,
+  "split_rate": 0.1,
+  "rand_splits": 13,
+  "rand_split": 0,
+  "validation": true,
+  "rec_test": true,
+  "verbose": true,
+  "model_class": "EEG_CNN_Ch_Best",
+  "post_proc_step": 15,
+  "seq_legth": [1,0],
+  "seq_views": [false],
+  "keep_view": [0, 0],
+  "inner_overlap": [0.5,0.5],
+  "num_modalities": 1,
+  "channel": 0,
+
+  "test_postprocessing": true,
+  "val_postprocessing": false,
+  "test_on_tops": true,
+
+  "save_dir": "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/0ch1d_4.pth.tar",
+  "save_dir_encoder": ["/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/0ch1d_enc.pth.tar,"],
+
+  "encoder_models": [["EEG_Transformer",2, "My_Transformer_Layer_8nets"]],
+  "pretrainedEncoder":  false,
+  "savetrainedEncoder": false,
+  "freeze_encoders": false,
+  "load_ongoing": false,
+
+
+  "save_plots": true,
+
+  "data_loader_workers": 12,
+  "pin_memory": true,
+  "async_loading": true,
+
+  "tdqm_disable": false,
+  "res": false
+}

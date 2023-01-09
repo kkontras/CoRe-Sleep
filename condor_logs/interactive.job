@@ -1,0 +1,10 @@
+RequestCpus     = 16
+RequestMemory   = 30G
++RequestWallTime = 14400
+Request_GPUS    = 1
+Requirements = ( CUDAGlobalMemoryMb > 20000 || CUDA0GlobalMemoryMb > 20000 ) && (distribution == "Fedora") && (machine != "vladimir.esat.kuleuven.be")
+
+# If you want X11 forwarding, uncomment this
+#Requirements = ( HasX11 == True )
+
+Queue

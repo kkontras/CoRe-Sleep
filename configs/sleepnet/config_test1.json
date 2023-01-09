@@ -1,0 +1,48 @@
+{
+  "exp_name": "Sleep Unet Multiview Experiment",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+
+  "cuda": true,
+  "gpu_device": 1,
+  "seed": 1,
+
+  "some_model_attribute": 0,
+
+  "batch_size": 100,
+  "test_batch_size": 100,
+  "num_classes": 2,
+
+  "learning_rate": 0.05,
+
+  "momentum": 0.2,
+
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+
+  "max_epoch": 150,
+
+  "log_interval": 10,
+
+  "validate_every": 5,
+
+  "checkpoint_file": "cityscapes/final/500imgs_150e_training.pth.tar",
+
+  "data_roots": "/users/sista/kkontras/Documents/Sleep_images",
+  "data_view_1_dir": ["/users/sista/kkontras/Documents/Sleep_images/train/image_file_map.txt","/users/sista/kkontras/Documents/Sleep_images/test/image_file_map.txt"],
+  "data_view_2_dir": ["/users/sista/kkontras/Documents/Sleep_images/train/stft_file_map.txt","/users/sista/kkontras/Documents/Sleep_images/test/stft_file_map.txt"],
+  "pretrainedEncoder":  "pretrained_weights/erfnet_encoder_pretrained.pth.tar",
+
+  "data_loader": "SleepDataLoader",
+  "data_loader_workers": 2,
+  "pin_memory": true,
+  "async_loading": true,
+
+  "epsilon": 0.01,
+  "training_type": "norm",
+  "valid_dataset_percent": 0.2,
+  "num_models": 5,
+  "res": false,
+  "enc": true
+}

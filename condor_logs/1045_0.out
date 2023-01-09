@@ -1,0 +1,177 @@
+Starting Job
+/users/sista/kkontras/Documents/Sleep_Project/main_paper.py
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/bin/python
+Python 3.7.10
+/users/sista/kkontras/Documents/Sleep_Project
+5
+ THE Configuration of your experiment ..
+{'agent': 'Sleep_Agent_Init_Train',
+ 'augmentation': {},
+ 'channel': 0,
+ 'dataset': {'cache_datasets': {'test': False, 'train': False, 'valid': False},
+             'data_roots': '/esat/biomeddata/SHHS_Dataset/no_backup',
+             'data_split': {'fold': 0,
+                            'fold_size': 7,
+                            'folds_file': '/users/sista/kkontras/Documents/Huy_shhs1/HUY '
+                                          'SHHS1 CODE/data_split_eval.mat',
+                            'rand_split': 0,
+                            'rand_splits': 13,
+                            'split_method': 'patients_huy',
+                            'test_split_rate': 0.3,
+                            'val_patient_num': 3,
+                            'val_split_rate': 0.01692},
+             'data_view_dir': [{'data_type': 'stft',
+                                'list_dir': 'patient_eog_mat_list.txt',
+                                'mod': 'eog',
+                                'num_ch': 1}],
+             'dataloader_class': 'SleepDataLoader_mat_huy',
+             'huy_data': True,
+             'inner_overlap': [0.5, 0.5],
+             'keep_view': [1, 0],
+             'seq_length': [21, 0],
+             'seq_views': [False],
+             'shuffle_train': True},
+ 'early_stopping': {'log_interval': 10,
+                    'max_epoch': 1000,
+                    'n_steps_stop': 1000,
+                    'n_steps_stop_after': 600,
+                    'save_every': 1,
+                    'validate_after': 0,
+                    'validate_every': 400},
+ 'exp_name': 'Sleep EEG-EOG BLIP Experiment',
+ 'lr_finder': False,
+ 'lr_finder_steps': 100,
+ 'mode': 'train',
+ 'model': {'args': {'dmodel': 128, 'fc_inner': 1024, 'num_classes': 5},
+           'encoders': [{'args': {'dim_feedforward': 1024,
+                                  'dim_proj': 128,
+                                  'dmodel': 128,
+                                  'inner_biased': False,
+                                  'outer_biased': False,
+                                  'pos': False,
+                                  'rpos': True},
+                         'freeze_encoder': False,
+                         'model': 'SleepEnc_EOG',
+                         'pretrainedEncoder': {'dir': '', 'use': False},
+                         'savetrainedEncoder': {'dir': '', 'save': False}}],
+           'load_ongoing': False,
+           'model_class': 'EEG_SLEEP_BLIP_GM_EEG',
+           'pretrained_model': {'dir': '', 'use': False},
+           'save_dir': '/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/shhs1/multi_modal/paper_models/fourier_transformer_eog_trial1.pth.tar'},
+ 'normalization': {'calculate_metrics': False,
+                   'dir': '/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl',
+                   'metrics_type': 'train_dataset',
+                   'save_metrics': False,
+                   'use': True},
+ 'num_classes': 5,
+ 'num_modalities': 1,
+ 'optimizer': {'beta1': 0.9,
+               'beta2': 0.999,
+               'learning_rate': 0.0001,
+               'momentum': 0.2,
+               'type': 'Adam',
+               'weight_decay': 0.0001},
+ 'plots': {'plot_stft_num': 0, 'save': False},
+ 'post_proc': {'post_proc_step': 15,
+               'test_postprocessing': False,
+               'val_postprocessing': False},
+ 'scheduler': {'max_lr': 0.03, 'type': 'cosanneal', 'warm_up': 55},
+ 'statistics': {'ce_weights': {'temp': 0.1, 'use': False}, 'print': False},
+ 'training_params': {'adversarial_training': {'adv_epsilon': 0.01,
+                                              'use': False},
+                     'async_loading': True,
+                     'batch_size': 16,
+                     'cuda': True,
+                     'data_loader_workers': 6,
+                     'gpu_device': [0],
+                     'pin_memory': True,
+                     'rec_test': False,
+                     'res': True,
+                     'seed': 28,
+                     'tdqm_disable': True,
+                     'test_batch_size': 16,
+                     'test_on_tops': True,
+                     'use_test_set': True,
+                     'validation': True,
+                     'verbose': True,
+                     'wandb_disable': True}}
+ *************************************** 
+The experiment name is Sleep EEG-EOG BLIP Experiment
+ *************************************** 
+We are splitting dataset by huy splits
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+Loading metrics from /esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl
+Weights are [1. 1. 1. 1. 1.]
+11070
+400
+28
+tensor([1., 1., 1., 1., 1.], device='cuda:0')
+We are not shuffling the data
+Training function is sleep_train_one_step
+Loss Weights are {'total': 1}
+We are not shuffling the data
+<class 'graphs.models.attention_models.windowFeature_base.SleepEnc_EOG'>
+Total number of trainable parameters are: 3851397
+Available cuda devices: 1, current device:0
+Total number of trainable parameters are: 3851397
+[37mEpoch 0 step 1 with [31mtotal : 0.876699 [94mAcc_combined: 67.51 [92mF1_combined: 52.37 [92mK_combined: 0.5190 [34mF1_perclass_combined: [72.98, 0.0, 71.4, 58.35, 59.1] 
+[37mEpoch 0 step 2 with [31mtotal : 0.812232 [94mAcc_combined: 72.65 [92mF1_combined: 57.36 [92mK_combined: 0.6034 [34mF1_perclass_combined: [78.41, 0.0, 75.29, 71.51, 61.62] 
+[37mEpoch 0 step 3 with [31mtotal : 0.742045 [94mAcc_combined: 73.84 [92mF1_combined: 58.90 [92mK_combined: 0.6370 [34mF1_perclass_combined: [80.21, 0.0, 76.82, 68.69, 68.77] 
+[37mEpoch 0 step 4 with [31mtotal : 0.732043 [94mAcc_combined: 73.90 [92mF1_combined: 58.96 [92mK_combined: 0.6325 [34mF1_perclass_combined: [78.68, 0.0, 77.02, 67.64, 71.44] 
+[37mEpoch 0 step 5 with [31mtotal : 0.721783 [94mAcc_combined: 74.59 [92mF1_combined: 60.74 [92mK_combined: 0.6531 [34mF1_perclass_combined: [81.85, 0.11, 73.08, 70.61, 78.02] 
+[37mEpoch 0 step 6 with [31mtotal : 0.681020 [94mAcc_combined: 76.03 [92mF1_combined: 61.23 [92mK_combined: 0.6583 [34mF1_perclass_combined: [78.36, 0.0, 78.65, 71.66, 77.51] 
+[37mEpoch 0 step 9 with [31mtotal : 0.635513 [94mAcc_combined: 77.01 [92mF1_combined: 62.80 [92mK_combined: 0.6824 [34mF1_perclass_combined: [81.85, 0.0, 76.34, 73.53, 82.29] 
+[37mEpoch 0 step 10 with [31mtotal : 0.593478 [94mAcc_combined: 79.42 [92mF1_combined: 64.46 [92mK_combined: 0.7117 [34mF1_perclass_combined: [83.96, 0.39, 80.16, 76.96, 80.83] 
+[37mEpoch 0 step 14 with [31mtotal : 0.552879 [94mAcc_combined: 80.39 [92mF1_combined: 67.98 [92mK_combined: 0.7232 [34mF1_perclass_combined: [84.81, 13.3, 81.03, 76.32, 84.44] 
+[37mEpoch 0 step 16 with [31mtotal : 0.548649 [94mAcc_combined: 80.80 [92mF1_combined: 69.18 [92mK_combined: 0.7307 [34mF1_perclass_combined: [85.72, 18.38, 81.73, 75.99, 84.08] 
+[37mEpoch 0 step 19 with [31mtotal : 0.548579 [94mAcc_combined: 79.97 [92mF1_combined: 65.44 [92mK_combined: 0.7162 [34mF1_perclass_combined: [84.09, 3.6, 81.24, 75.08, 83.21] 
+[37mEpoch 0 step 23 with [31mtotal : 0.536583 [94mAcc_combined: 80.89 [92mF1_combined: 68.92 [92mK_combined: 0.7317 [34mF1_perclass_combined: [84.99, 17.25, 82.12, 77.11, 83.11] 
+[37mEpoch 0 step 27 with [31mtotal : 0.513869 [94mAcc_combined: 81.51 [92mF1_combined: 71.33 [92mK_combined: 0.7426 [34mF1_perclass_combined: [86.6, 26.06, 82.26, 76.82, 84.93] 
+[37mEpoch 1 step 31 with [31mtotal : 0.504067 [94mAcc_combined: 81.70 [92mF1_combined: 68.13 [92mK_combined: 0.7394 [34mF1_perclass_combined: [87.82, 11.86, 82.67, 73.07, 85.22] 
+[37mEpoch 1 step 36 with [31mtotal : 0.493433 [94mAcc_combined: 82.17 [92mF1_combined: 71.55 [92mK_combined: 0.7505 [34mF1_perclass_combined: [87.73, 24.3, 82.53, 77.68, 85.51] 
+[37mEpoch 1 step 39 with [31mtotal : 0.484469 [94mAcc_combined: 82.38 [92mF1_combined: 71.40 [92mK_combined: 0.7535 [34mF1_perclass_combined: [88.14, 23.13, 82.56, 76.86, 86.32] 
+[37mEpoch 1 step 44 with [31mtotal : 0.482817 [94mAcc_combined: 82.64 [92mF1_combined: 71.18 [92mK_combined: 0.7569 [34mF1_perclass_combined: [88.62, 19.86, 82.54, 78.26, 86.63] 
+[37mEpoch 1 step 47 with [31mtotal : 0.471526 [94mAcc_combined: 82.99 [92mF1_combined: 72.44 [92mK_combined: 0.7625 [34mF1_perclass_combined: [88.8, 25.59, 83.13, 78.33, 86.36] 
+[37mEpoch 2 step 59 with [31mtotal : 0.453941 [94mAcc_combined: 83.49 [92mF1_combined: 72.79 [92mK_combined: 0.7684 [34mF1_perclass_combined: [89.6, 26.33, 83.89, 77.02, 87.09] 
+[37mEpoch 2 step 64 with [31mtotal : 0.452243 [94mAcc_combined: 83.53 [92mF1_combined: 72.18 [92mK_combined: 0.7684 [34mF1_perclass_combined: [90.11, 22.75, 83.63, 77.01, 87.42] 
+[37mEpoch 2 step 65 with [31mtotal : 0.448683 [94mAcc_combined: 83.64 [92mF1_combined: 72.42 [92mK_combined: 0.7712 [34mF1_perclass_combined: [90.24, 23.02, 83.54, 77.66, 87.64] 
+[37mEpoch 2 step 73 with [31mtotal : 0.440667 [94mAcc_combined: 83.97 [92mF1_combined: 73.33 [92mK_combined: 0.7753 [34mF1_perclass_combined: [90.54, 26.66, 84.02, 77.87, 87.54] 
+[37mEpoch 2 step 74 with [31mtotal : 0.438997 [94mAcc_combined: 84.00 [92mF1_combined: 73.27 [92mK_combined: 0.7759 [34mF1_perclass_combined: [90.56, 25.82, 83.9, 78.4, 87.69] 
+[37mEpoch 3 step 90 with [31mtotal : 0.437139 [94mAcc_combined: 83.83 [92mF1_combined: 72.42 [92mK_combined: 0.7726 [34mF1_perclass_combined: [90.52, 23.08, 83.92, 76.71, 87.84] 
+[37mEpoch 3 step 93 with [31mtotal : 0.435780 [94mAcc_combined: 83.90 [92mF1_combined: 73.18 [92mK_combined: 0.7745 [34mF1_perclass_combined: [90.26, 26.11, 83.97, 77.57, 87.98] 
+[37mEpoch 3 step 94 with [31mtotal : 0.433023 [94mAcc_combined: 83.94 [92mF1_combined: 73.00 [92mK_combined: 0.7744 [34mF1_perclass_combined: [90.59, 24.93, 83.96, 77.45, 88.07] 
+[37mEpoch 4 step 117 with [31mtotal : 0.429552 [94mAcc_combined: 84.29 [92mF1_combined: 73.17 [92mK_combined: 0.7802 [34mF1_perclass_combined: [90.82, 24.87, 84.36, 77.54, 88.25] 
+[37mEpoch 4 step 124 with [31mtotal : 0.428882 [94mAcc_combined: 84.33 [92mF1_combined: 73.11 [92mK_combined: 0.7801 [34mF1_perclass_combined: [90.82, 24.29, 84.46, 78.12, 87.88] 
+[37mEpoch 4 step 125 with [31mtotal : 0.428757 [94mAcc_combined: 84.30 [92mF1_combined: 74.36 [92mK_combined: 0.7806 [34mF1_perclass_combined: [90.88, 30.45, 84.45, 78.21, 87.82] 
+[37mEpoch 4 step 127 with [31mtotal : 0.426445 [94mAcc_combined: 84.33 [92mF1_combined: 72.40 [92mK_combined: 0.7793 [34mF1_perclass_combined: [91.22, 20.86, 84.44, 77.18, 88.31] 
+[37mEpoch 4 step 128 with [31mtotal : 0.426221 [94mAcc_combined: 84.47 [92mF1_combined: 73.99 [92mK_combined: 0.7834 [34mF1_perclass_combined: [91.12, 27.68, 84.42, 78.65, 88.08] 
+[37mEpoch 4 step 129 with [31mtotal : 0.424797 [94mAcc_combined: 84.47 [92mF1_combined: 73.76 [92mK_combined: 0.7830 [34mF1_perclass_combined: [91.02, 26.9, 84.51, 78.2, 88.18] 
+[37mEpoch 4 step 135 with [31mtotal : 0.423196 [94mAcc_combined: 84.32 [92mF1_combined: 73.86 [92mK_combined: 0.7790 [34mF1_perclass_combined: [91.3, 29.34, 84.7, 75.43, 88.55] 
+[37mEpoch 4 step 136 with [31mtotal : 0.421176 [94mAcc_combined: 84.39 [92mF1_combined: 74.04 [92mK_combined: 0.7804 [34mF1_perclass_combined: [91.29, 29.74, 84.74, 75.92, 88.53] 
+[37mEpoch 7 step 195 with [31mtotal : 0.417099 [94mAcc_combined: 84.52 [92mF1_combined: 74.16 [92mK_combined: 0.7828 [34mF1_perclass_combined: [91.07, 28.81, 84.61, 77.72, 88.6] 
+[37mEpoch 7 step 200 with [31mtotal : 0.414556 [94mAcc_combined: 84.60 [92mF1_combined: 73.75 [92mK_combined: 0.7838 [34mF1_perclass_combined: [91.21, 27.03, 84.8, 76.8, 88.89] 
+[37mEpoch 7 step 207 with [31mtotal : 0.414514 [94mAcc_combined: 84.50 [92mF1_combined: 74.05 [92mK_combined: 0.7822 [34mF1_perclass_combined: [91.15, 28.58, 84.62, 77.15, 88.73] 
+[37mEpoch 7 step 208 with [31mtotal : 0.411805 [94mAcc_combined: 84.67 [92mF1_combined: 74.28 [92mK_combined: 0.7851 [34mF1_perclass_combined: [91.24, 28.94, 84.8, 77.75, 88.69] 
+[37mEpoch 7 step 210 with [31mtotal : 0.411424 [94mAcc_combined: 84.69 [92mF1_combined: 73.70 [92mK_combined: 0.7852 [34mF1_perclass_combined: [91.3, 25.66, 84.75, 78.17, 88.65] 
+[37mEpoch 7 step 212 with [31mtotal : 0.411145 [94mAcc_combined: 84.78 [92mF1_combined: 74.27 [92mK_combined: 0.7872 [34mF1_perclass_combined: [91.32, 28.28, 84.83, 78.31, 88.64] 
+[37mEpoch 7 step 213 with [31mtotal : 0.411036 [94mAcc_combined: 84.73 [92mF1_combined: 74.39 [92mK_combined: 0.7860 [34mF1_perclass_combined: [91.37, 29.55, 84.88, 77.39, 88.76] 
+[37mEpoch 12 step 343 with [31mtotal : 0.409799 [94mAcc_combined: 84.73 [92mF1_combined: 74.87 [92mK_combined: 0.7863 [34mF1_perclass_combined: [91.44, 31.72, 84.85, 77.48, 88.86] 
+[37mEpoch 12 step 346 with [31mtotal : 0.406761 [94mAcc_combined: 84.77 [92mF1_combined: 74.44 [92mK_combined: 0.7866 [34mF1_perclass_combined: [91.47, 29.74, 84.95, 77.39, 88.66] 
+[37mEpoch 12 step 358 with [31mtotal : 0.406496 [94mAcc_combined: 84.86 [92mF1_combined: 75.25 [92mK_combined: 0.7888 [34mF1_perclass_combined: [91.57, 32.97, 84.95, 77.96, 88.8] 
+[37mEpoch 13 step 367 with [31mtotal : 0.405799 [94mAcc_combined: 84.86 [92mF1_combined: 74.76 [92mK_combined: 0.7881 [34mF1_perclass_combined: [91.56, 30.78, 84.94, 77.68, 88.87] 
+[37mEpoch 13 step 368 with [31mtotal : 0.405742 [94mAcc_combined: 84.81 [92mF1_combined: 74.68 [92mK_combined: 0.7873 [34mF1_perclass_combined: [91.56, 30.34, 84.86, 77.76, 88.9] 
+[37mEpoch 13 step 369 with [31mtotal : 0.405323 [94mAcc_combined: 84.84 [92mF1_combined: 74.74 [92mK_combined: 0.7879 [34mF1_perclass_combined: [91.6, 30.26, 84.82, 78.06, 88.96] 
+[37mEpoch 13 step 370 with [31mtotal : 0.405172 [94mAcc_combined: 84.84 [92mF1_combined: 74.77 [92mK_combined: 0.7880 [34mF1_perclass_combined: [91.61, 30.3, 84.79, 78.24, 88.91] 
+[37mEpoch 13 step 371 with [31mtotal : 0.404902 [94mAcc_combined: 84.84 [92mF1_combined: 74.92 [92mK_combined: 0.7880 [34mF1_perclass_combined: [91.57, 31.25, 84.86, 78.03, 88.87] 
+[37mEpoch 13 step 375 with [31mtotal : 0.404796 [94mAcc_combined: 84.83 [92mF1_combined: 74.75 [92mK_combined: 0.7877 [34mF1_perclass_combined: [91.6, 30.53, 84.85, 77.86, 88.92] 
+[37mEpoch 13 step 376 with [31mtotal : 0.404634 [94mAcc_combined: 84.85 [92mF1_combined: 74.75 [92mK_combined: 0.7880 [34mF1_perclass_combined: [91.62, 30.42, 84.86, 77.93, 88.93] 
+[37mEpoch 13 step 377 with [31mtotal : 0.404567 [94mAcc_combined: 84.85 [92mF1_combined: 74.72 [92mK_combined: 0.7880 [34mF1_perclass_combined: [91.62, 30.22, 84.85, 77.98, 88.93] 
+[37mEpoch 13 step 378 with [31mtotal : 0.404434 [94mAcc_combined: 84.86 [92mF1_combined: 74.74 [92mK_combined: 0.7883 [34mF1_perclass_combined: [91.62, 30.26, 84.87, 78.05, 88.91] 
+[37mEpoch 23 step 654 with [31mtotal : 0.404279 [94mAcc_combined: 85.07 [92mF1_combined: 75.08 [92mK_combined: 0.7918 [34mF1_perclass_combined: [91.81, 31.03, 85.1, 78.35, 89.09] 
+[37mEpoch 23 step 661 with [31mtotal : 0.404077 [94mAcc_combined: 85.03 [92mF1_combined: 75.69 [92mK_combined: 0.7916 [34mF1_perclass_combined: [91.92, 34.03, 85.03, 78.47, 89.02] 
+[37mEpoch 24 step 681 with [31mtotal : 0.404063 [94mAcc_combined: 84.99 [92mF1_combined: 74.80 [92mK_combined: 0.7901 [34mF1_perclass_combined: [91.78, 29.96, 84.99, 78.16, 89.12] 
+[37mEpoch 24 step 682 with [31mtotal : 0.403447 [94mAcc_combined: 85.06 [92mF1_combined: 75.09 [92mK_combined: 0.7916 [34mF1_perclass_combined: [91.83, 31.17, 85.06, 78.29, 89.1] 
+[37mEpoch 24 step 683 with [31mtotal : 0.403318 [94mAcc_combined: 85.07 [92mF1_combined: 75.15 [92mK_combined: 0.7916 [34mF1_perclass_combined: [91.83, 31.58, 85.11, 78.13, 89.12] 

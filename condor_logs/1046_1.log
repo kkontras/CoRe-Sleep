@@ -1,0 +1,148 @@
+000 (1046.001.000) 2022-12-26 01:56:10 Job submitted from host: <10.87.28.129:9618?addrs=10.87.28.129-9618&alias=timmermans.esat.kuleuven.be&noUDP&sock=schedd_2118_59ad>
+...
+001 (1046.001.000) 2022-12-26 01:56:14 Job executing on host: <10.87.24.46:9618?addrs=10.87.24.46-9618&alias=molder.esat.kuleuven.be&noUDP&sock=startd_1835_3c60>
+...
+006 (1046.001.000) 2022-12-26 01:56:22 Image size of job updated: 317668
+	178  -  MemoryUsage of job (MB)
+	181620  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 02:01:23 Image size of job updated: 571851768
+	7022  -  MemoryUsage of job (MB)
+	7190456  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 02:06:24 Image size of job updated: 576788452
+	7039  -  MemoryUsage of job (MB)
+	7207692  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 02:11:24 Image size of job updated: 576814764
+	7056  -  MemoryUsage of job (MB)
+	7225212  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 02:16:24 Image size of job updated: 576846788
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 02:21:25 Image size of job updated: 577307536
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 02:36:27 Image size of job updated: 577319812
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 03:01:30 Image size of job updated: 681280916
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 03:06:30 Image size of job updated: 681300540
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 03:21:32 Image size of job updated: 682873424
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 04:01:36 Image size of job updated: 683906328
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 04:06:37 Image size of job updated: 684482796
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 05:06:42 Image size of job updated: 684488520
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 05:11:42 Image size of job updated: 684533736
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 05:16:44 Image size of job updated: 684808724
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 06:01:48 Image size of job updated: 684821792
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 07:36:57 Image size of job updated: 684864204
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 08:42:04 Image size of job updated: 684918220
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 12:02:23 Image size of job updated: 685042208
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 18:03:02 Image size of job updated: 685057828
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 18:33:05 Image size of job updated: 685071132
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 19:03:08 Image size of job updated: 685104880
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 19:08:08 Image size of job updated: 685202492
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 20:08:16 Image size of job updated: 685237564
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 20:38:18 Image size of job updated: 685279196
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 21:03:22 Image size of job updated: 685484460
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 22:33:31 Image size of job updated: 685504112
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 22:58:33 Image size of job updated: 685511864
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-26 23:18:35 Image size of job updated: 685692204
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-27 03:29:01 Image size of job updated: 685798332
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-27 05:49:15 Image size of job updated: 685832452
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+006 (1046.001.000) 2022-12-27 06:19:18 Image size of job updated: 686131172
+	7060  -  MemoryUsage of job (MB)
+	7229376  -  ResidentSetSize of job (KB)
+...
+004 (1046.001.000) 2022-12-27 12:30:46 Job was evicted.
+	(0) CPU times
+		Usr 2 17:41:58, Sys 0 18:52:54  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     2.06        8         8 
+	   Disk (KB)            :     1           1   1443137 
+	   Gpus (Average)       :     0.72        1         1 "CUDA0"
+	   GpusMemory (MB)      :  4057                       
+	   Memory (MB)          :  7060       16384     16384 
+...
+009 (1046.001.000) 2022-12-27 12:30:46 Job was aborted.
+	via condor_rm (by user kkontras)
+...

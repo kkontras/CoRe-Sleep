@@ -1,0 +1,47 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2022/12/26 11:48:34	INFO	wandb	Watching
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_5.py", line 39, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_5.py", line 35, in main
+    agent.run()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 180, in run
+    self.trainer.sleep_train_step(trial)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 74, in sleep_train_step
+    early_stop, val_loss = self.agent.monitor_n_saver.checkpointing(batch_loss = mean_batch, predictions = preds, targets = tts, incomplete_idxs=incomplete_idxs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Monitor_n_Save.py", line 135, in checkpointing
+    val_metrics = self.agent.validator_tester.sleep_validate()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Validator_Tester.py", line 110, in sleep_validate
+    for batch_idx, served_dict in pbar:
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/tqdm/std.py", line 1183, in __iter__
+    for obj in iterable:
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 628, in __next__
+    data = self._next_data()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1333, in _next_data
+    return self._process_data(data)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1359, in _process_data
+    data.reraise()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/_utils.py", line 543, in reraise
+    raise exception
+OSError: Caught OSError in DataLoader worker process 10.
+Original Traceback (most recent call last):
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/_utils/worker.py", line 302, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/_utils/fetch.py", line 58, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/_utils/fetch.py", line 58, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/users/sista/kkontras/Documents/Sleep_Project/datasets/sleepset.py", line 776, in __getitem__
+    mod=view, num_channels=num_channels)
+  File "/users/sista/kkontras/Documents/Sleep_Project/datasets/sleepset.py", line 609, in loadnnorm_mat_huy
+    signal = f["X2"][:,:,data_idx:end_idx]
+  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
+  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/h5py/_hl/dataset.py", line 741, in __getitem__
+    return self._fast_reader.read(args)
+  File "h5py/_selector.pyx", line 370, in h5py._selector.Reader.read
+OSError: [Errno 5] Can't read data (file read failed: time = Mon Dec 26 20:59:18 2022
+, filename = '/esat/biomeddata/SHHS_Dataset/no_backup/n0628_eog.mat', file descriptor = 128, errno = 5, error message = 'Input/output error', buf = 0x55b9cb58e9c5, total read size = 25978, bytes this sub-read = 25978, bytes actually read = 18446744073709551615, offset = 0)
+

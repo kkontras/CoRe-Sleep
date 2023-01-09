@@ -1,0 +1,57 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2023/01/04 08:10:40	INFO	wandb	multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2023/01/04 08:10:43	INFO	wandb	communicating current version
+2023/01/04 08:10:43	INFO	wandb	got version response upgrade_message: "wandb version 0.13.7 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2023/01/04 08:10:48	INFO	wandb	atexit reg
+2023/01/04 08:10:48	INFO	wandb	redirect: SettingsConsole.WRAP_RAW
+2023/01/04 08:10:48	INFO	wandb	Wrapping output streams.
+2023/01/04 08:10:48	INFO	wandb	Redirects installed.
+2023/01/04 08:10:57	INFO	wandb	Watching
+Thread SenderThread:
+Traceback (most recent call last):
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/wandb/sdk/internal/internal_util.py", line 51, in run
+    self._run()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/wandb/sdk/internal/internal_util.py", line 102, in _run
+    self._process(record)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/wandb/sdk/internal/internal.py", line 310, in _process
+    self._sm.send(record)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/wandb/sdk/internal/sender.py", line 304, in send
+    send_handler(record)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/wandb/sdk/internal/sender.py", line 1067, in send_output_raw
+    output_raw.start()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/wandb/sdk/internal/sender.py", line 154, in start
+    self._writer_thr.start()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/threading.py", line 852, in start
+    _start_new_thread(self._bootstrap, ())
+RuntimeError: can't start new thread
+wandb: ERROR Internal wandb error: file data was not synced
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_6.py", line 61, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_6.py", line 57, in main
+    agent.run()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 180, in run
+    self.trainer.sleep_train_step(trial)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 39, in sleep_train_step
+    pbar = tqdm(enumerate(self.agent.data_loader.train_loader), desc="Training", leave=None, disable=self.agent.config.training_params.tdqm_disable, position=0)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 435, in __iter__
+    return self._get_iterator()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 381, in _get_iterator
+    return _MultiProcessingDataLoaderIter(self)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/utils/data/dataloader.py", line 1034, in __init__
+    w.start()
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/context.py", line 223, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/context.py", line 277, in _Popen
+    return Popen(process_obj)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/multiprocessing/popen_fork.py", line 70, in _launch
+    self.pid = os.fork()
+BlockingIOError: [Errno 11] Resource temporarily unavailable
+2023/01/04 08:11:13	WARNING	wandb	message_loop has been closed
