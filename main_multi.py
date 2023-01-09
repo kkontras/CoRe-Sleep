@@ -22,9 +22,10 @@ def main():
         ]
     finals = []
     for i in config_list:
-        for j in range(0,10):
+        for j in range(0,8):
             config = process_config(i)
-            config.save_dir = "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/sleep_edf/multi_modal/fourier_transformer_cls_eeg_eog_BIOBLIP_folds_{}.pth.tar".format(j)
+            config.save_dir = "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/{}ch1d.pth.tar".format(j)
+            config.channel = j
             agent_class = globals()[config.agent]
             agent = agent_class(config)
             agent.run()

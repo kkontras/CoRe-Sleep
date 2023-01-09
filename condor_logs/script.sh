@@ -3,7 +3,7 @@ echo "Starting Job"
 train_file=$1
 export PATH="/users/sista/kkontras/anaconda3/bin:$PATH"
 source ~/anaconda3/etc/profile.d/conda.sh
-conda activate /esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env
+conda activate gl_env
 echo $train_file
 which python
 python -V

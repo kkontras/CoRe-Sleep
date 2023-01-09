@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch
 import torch.functional as F
@@ -13,11 +12,6 @@ from graphs.models.custom_layers.MulilogueNet import *
 from graphs.models.custom_layers.LSTHM import *
 import einops
 from graphs.models.attention_models.ViLBERT import MyViLBERT
-from graphs.models.custom_layers.Transformer_Encoder_Huy import TransformerEncoderLayer_Huy
-from typing import Optional, Any
-from torch import Tensor
-from joblib import Parallel, delayed
-from tqdm import tqdm
 
 class EEG_Encoder_E_3(nn.Module):
     def __init__(self, dec):
@@ -318,7 +312,7 @@ class EEG_Encoder_Single(nn.Module):
         return x
 
 class EEG_Encoder_Ch_all(nn.Module):
-    def __init__(self, dec, non_use):
+    def __init__(self, dec):
         super().__init__()
         self.pad_1 = nn.ReflectionPad1d(2)
         self.conv1 = nn.Conv1d(1, 64*dec, kernel_size=5, stride=1)
@@ -1169,1699 +1163,6 @@ class EEG_TransferTransformer(nn.Module):
         # # x = self.outer_att(x).permute(1,0,2).unsqueeze(dim=2)
         return x
 
-class TF_inner_mod_att_diff_fc(nn.Module):
-    def __init__(self, d_model, nhead, modalities=1, dim_feedforward=1024,  dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-        self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        # Implementation of Feedforward model
-        for i in range(modalities):
-            setattr(self,"mod_{}_linear1".format(i),nn.Linear(d_model, dim_feedforward))
-            setattr(self,"mod_{}_dropout".format(i),nn.Dropout(dropout))
-            setattr(self,"mod_{}_linear2".format(i),nn.Linear(dim_feedforward, d_model))
-            setattr(self,"mod_{}_norm2".format(i),nn.LayerNorm(d_model))
-            setattr(self,"mod_{}_dropout2".format(i),nn.Dropout(dropout))
-
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.mod_1_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_1_dropout = nn.Dropout(dropout)
-        self.mod_1_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_1_norm2 = nn.LayerNorm(d_model)
-        self.mod_1_dropout2 = nn.Dropout(dropout)
-
-        self.activation = nn.ReLU()
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
-        src = einops.rearrange(src, "b outer inner mod k -> (inner mod) (b outer) k")
-
-        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
-        src = src + self.dropout1(src2)
-        src = self.norm1(src)
-        src = einops.rearrange(src, "(inner mod) b_outer k -> mod inner b_outer k", inner = self.inner, mod = self.mod)
-
-        src2 = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src[0]))))
-        src[0] = src[0] + self.mod_0_dropout2(src2)
-        src[0] = self.mod_0_norm2(src[0])
-
-        src2 = self.mod_1_linear2(self.mod_1_dropout(self.activation(self.mod_1_linear1(src[1]))))
-        src[1] = src[0] + self.mod_1_dropout2(src2)
-        src[1] = self.mod_1_norm2(src[1])
-
-        src = einops.rearrange(src, "mod inner (b outer) k -> b outer inner mod k",b=self.batch, outer=self.outer, mod=self.mod)
-
-        return src
-
-class BertNormOutput(nn.Module):  # This class is added by Goro Kobayashi
-    def __init__(self, num_attention_heads, hidden_size):
-        super().__init__()
-        self.num_attention_heads = num_attention_heads
-        self.attention_head_size = int(hidden_size / num_attention_heads)
-        self.all_head_size = self.num_attention_heads * self.attention_head_size
-
-    def forward(self, hidden_states, attention_probs, value_layer, dense, LayerNorm, pre_ln_states):
-        # Args:
-        #   hidden_states: Representations from previous layer and inputs to self-attention. (batch, seq_length, all_head_size)
-        #   attention_probs: Attention weights calculated in self-attention. (batch, num_heads, seq_length, seq_length)
-        #   value_layer: Value vectors calculated in self-attention. (batch, num_heads, seq_length, head_size)
-        #   dense: Dense layer in self-attention. nn.Linear(all_head_size, all_head_size)
-        #   LayerNorm: nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        #   pre_ln_states: Vectors just before LayerNorm (batch, seq_length, all_head_size)
-
-        with torch.no_grad():
-
-            # Make transformed vectors f(x) from Value vectors (value_layer) and weight matrix (dense).
-            dense = dense.weight.view(self.all_head_size, self.num_attention_heads, self.attention_head_size)
-            transformed_layer = torch.einsum('bhsv,dhv->bhsd', value_layer, dense)
-
-            # Make weighted vectors αf(x) from transformed vectors (transformed_layer)
-            # and attention weights (attentions):
-            # (batch, num_heads, seq_length, seq_length, all_head_size)
-            weighted_layer = torch.einsum('bhks,bhsd->bhksd', attention_probs, transformed_layer)
-            weighted_norm = torch.norm(weighted_layer, dim=-1)
-
-            # Sum each weighted vectors αf(x) over all heads:
-            # (batch, seq_length, seq_length, all_head_size)
-            summed_weighted_layer = weighted_layer.sum(dim=1)
-            summed_weighted_norm = torch.norm(summed_weighted_layer, dim=-1)
-
-            """ここからがnew"""
-            # Make residual matrix (batch, seq_length, seq_length, all_head_size)
-            hidden_shape = hidden_states.size()  # (batch, seq_length, all_head_size)
-            device = hidden_states.device
-            residual = torch.einsum('sk,bsd->bskd', torch.eye(hidden_shape[1]).to(device), hidden_states)
-
-            # Make matrix of summed weighted vector + residual vectors
-            residual_weighted_layer = summed_weighted_layer + residual
-            residual_weighted_norm = torch.norm(residual_weighted_layer, dim=-1)
-
-            # consider layernorm
-            ln_weight = LayerNorm.weight.data
-            ln_eps = LayerNorm.eps
-
-            # 実際にLayerNormにかけられるベクトル pre_ln_states の平均・分散を計算
-            mean = pre_ln_states.mean(-1, keepdim=True)  # (batch, seq_len, 1)
-            var = (pre_ln_states - mean).pow(2).mean(-1, keepdim=True).unsqueeze(dim=2)  # (batch, seq_len, 1, 1)
-
-            # attention + residual のサムの中のベクトルごとに平均を計算
-            each_mean = residual_weighted_layer.mean(-1, keepdim=True)  # (batch, seq_len, seq_len, 1)
-
-            # attention + residual のサムの中の各ベクトルから，各平均を引き，標準偏差で割る
-            # (LayerNorm の normalization 部分をサムの中のベクトルごとに実行していることに相当)
-            normalized_layer = torch.div(residual_weighted_layer - each_mean,
-                                         (var + ln_eps) ** (1 / 2))  # (batch, seq_len, seq_len, all_head_size)
-
-            # さらに，LayerNorm の重みでエレメント積を各ベクトルに対して実行
-            post_ln_layer = torch.einsum('bskd,d->bskd', normalized_layer,
-                                         ln_weight)  # (batch, seq_len, seq_len, all_head_size)
-            post_ln_norm = torch.norm(post_ln_layer, dim=-1)  # (batch, seq_len, seq_len)
-
-            # Attn-N の mixing ratio
-            attn_preserving = torch.diagonal(summed_weighted_layer, dim1=1, dim2=2).permute(0, 2, 1)
-            attn_mixing = torch.sum(summed_weighted_layer, dim=2) - attn_preserving
-            attn_preserving_norm = torch.norm(attn_preserving, dim=-1)
-            attn_mixing_norm = torch.norm(attn_mixing, dim=-1)
-            attn_n_mixing_ratio = attn_mixing_norm / (attn_mixing_norm + attn_preserving_norm)
-
-            # AttnRes-N の mixing ratio
-            before_ln_preserving = torch.diagonal(residual_weighted_layer, dim1=1, dim2=2).permute(0, 2, 1)
-            before_ln_mixing = torch.sum(residual_weighted_layer, dim=2) - before_ln_preserving
-            before_ln_preserving_norm = torch.norm(before_ln_preserving, dim=-1)
-            before_ln_mixing_norm = torch.norm(before_ln_mixing, dim=-1)
-            attnres_n_mixing_ratio = before_ln_mixing_norm / (before_ln_mixing_norm + before_ln_preserving_norm)
-
-            # AttnResLn-N の mixing ratio
-            post_ln_preserving = torch.diagonal(post_ln_layer, dim1=1, dim2=2).permute(0, 2, 1)
-            post_ln_mixing = torch.sum(post_ln_layer, dim=2) - post_ln_preserving
-            post_ln_preserving_norm = torch.norm(post_ln_preserving, dim=-1)
-            post_ln_mixing_norm = torch.norm(post_ln_mixing, dim=-1)
-            attnresln_n_mixing_ratio = post_ln_mixing_norm / (post_ln_mixing_norm + post_ln_preserving_norm)
-
-            # kkontras
-            # AttnResLn-N の mixing ratio of three neighbors in comparison with the rest
-            post_ln_preserving = torch.diagonal(post_ln_layer, dim1=1, dim2=2).permute(0, 2, 1)
-            post_ln_mixing = torch.sum(post_ln_layer, dim=2) - post_ln_preserving
-            post_ln_preserving_norm = torch.norm(post_ln_preserving, dim=-1)
-            post_ln_mixing_norm = torch.norm(post_ln_mixing, dim=-1)
-            attnresln_n_mixing_ratio = post_ln_mixing_norm / (post_ln_mixing_norm + post_ln_preserving_norm)
-
-            outputs = (weighted_norm,  # ||αf(x)||
-                       summed_weighted_norm,  # ||Σαf(x)||
-                       residual_weighted_norm,  # ||Σαf(x) + x||
-                       post_ln_norm,  # Norm of vectors after LayerNorm
-                       attn_n_mixing_ratio,  # Mixing ratio for Attn-N
-                       attnres_n_mixing_ratio,  # Mixing ratio for AttnRes-N
-                       attnresln_n_mixing_ratio,  # Mixing ratio for AttnResLn-N
-                       )
-        return outputs
-
-class ScaledDotProductAttention(nn.Module):
-    def __init__(self, rpos=False, d_head=16, max_len=7, head_num=8):
-        super().__init__()
-        self.rpos = rpos
-        self.head_num = head_num
-        if rpos:
-            self.k_rpos = Relative_Positional_Embeddings(tokens=max_len, dim_head=d_head, heads=head_num)
-            self.v_rpos = Relative_Positional_Embeddings(tokens=max_len, dim_head=d_head, heads=head_num)
-
-    def forward(self, query, key, value, gbiased, prevalue, mask=None):
-        query = einops.rearrange(query,"seq b f -> b seq f")
-        key = einops.rearrange(key,"seq b f -> b seq f")
-        value = einops.rearrange(value,"seq b f -> b seq f")
-        # attn_output, att_weights = F._scaled_dot_product_attention(query, key, value, attn_mask=mask)
-        dk = query.size()[-1]
-
-        if self.rpos:
-            rel_key = einops.rearrange(key,"(b h) seq f -> b h seq f", b = int(key.shape[0]/self.head_num), h = self.head_num)
-            rel_key = self.k_rpos(rel_key)
-            rel_key = einops.rearrange(rel_key, " b h seq f -> (b h) seq f ")
-            scores = (query.matmul(key.transpose(-2, -1)) + rel_key)/ math.sqrt(dk)
-        else:
-            scores = query.matmul(key.transpose(-2, -1)) / math.sqrt(dk)
-
-        # if mask is not None:
-        #     scores = scores.masked_fill(mask == 0, -1e9)
-
-        if gbiased:
-            attention = gbiased(scores, prevalue)
-        else:
-            attention = nn.functional.softmax(scores, dim=-1)
-
-        attn_output = torch.einsum('b i j , b j d -> b i d', attention, value)
-        attn_output = einops.rearrange(attn_output," b seq f -> seq b f")
-
-        return attn_output, attention
-class ScaledDotProductAttention_HP(nn.Module):
-    def __init__(self, rpos=False, d_head=16, max_len=7, head_num=8):
-        super().__init__()
-        self.rpos = rpos
-        self.head_num = head_num
-        if rpos:
-            self.k_rpos = Relative_Positional_Embeddings(tokens=max_len, dim_head=d_head, heads=head_num)
-            self.v_rpos = Relative_Positional_Embeddings(tokens=max_len, dim_head=d_head, heads=head_num)
-
-    def forward(self, query, key, value, gbiased, prevalue, mask=None):
-
-        mod_shapes = [query[i].shape[0] for i in range(2)]
-        q = torch.cat([einops.rearrange(query[i],"seq b f -> b seq f") for i in range(2)],dim=1)
-        k = torch.cat([einops.rearrange(key[i],"seq b f -> b seq f") for i in range(2)],dim=1)
-        v = torch.cat([einops.rearrange(value[i],"seq b f -> b seq f") for i in range(2)],dim=1)
-
-        # attn_output, att_weights = F._scaled_dot_product_attention(query, key, value, attn_mask=mask)
-        dk = q.size()[-1]
-
-
-        if self.rpos:
-            rel_key = einops.rearrange(k,"(b h) seq f -> b h seq f", b = int(k.shape[0]/self.head_num), h = self.head_num)
-            rel_key = self.k_rpos(rel_key)
-            rel_key = einops.rearrange(rel_key, " b h seq f -> (b h) seq f ")
-            scores = (q.matmul(k.transpose(-2, -1)) + rel_key)/ math.sqrt(dk)
-        else:
-            scores = q.matmul(k.transpose(-2, -1)) / math.sqrt(dk)
-
-        # if mask is not None:
-        #     scores = scores.masked_fill(mask == 0, -1e9)
-
-        if gbiased:
-            attention = gbiased(scores, v)
-        else:
-            attention = nn.functional.softmax(scores, dim=-1)
-
-        attn_output = torch.einsum('b i j , b j d -> b i d', attention, v)
-        attn_output = einops.rearrange(attn_output," b seq f -> seq b f")
-
-        return [attn_output[:mod_shapes[0]],attn_output[mod_shapes[0]:]], attention
-
-class ScaledDotProductAttention_Sparse(nn.Module):
-    def __init__(self):
-        super(ScaledDotProductAttention_Sparse, self).__init__()
-        self.c = nn.Parameter(torch.Tensor([10000]), requires_grad=False)
-        self.step_function = nn.Parameter(torch.Tensor([0]), requires_grad=False)
-
-        self.is_bidirectional = True
-        self.stride = 6
-        self.expressivity = 1
-
-    def compute_fixed_attention_subset(self, word_index, tgt_len):
-        # +1s account for range function; [min, max) -> [min, max]
-        if not self.is_bidirectional:
-            absolute_max = word_index + 1
-        else:
-            absolute_max = tgt_len
-
-        # Subset 1 - whole window
-        rounded_index = (
-            math.floor((word_index + self.stride) / self.stride) * self.stride
-        )
-        if word_index % self.stride == 0 and word_index != 0:
-            subset_one = set(
-                range(word_index - self.stride, min(absolute_max, word_index + 1))
-            )
-        else:
-            subset_one = set(
-                range(
-                    max(0, rounded_index - self.stride),
-                    min(absolute_max, rounded_index + 1),
-                )
-            )
-
-        # Subset 2 - summary per window
-        # If bidirectional, subset 2 is the same for every index
-        subset_two = set()
-        if not self.is_bidirectional:
-            subset_two = self.compute_subset_summaries(absolute_max)
-
-        return subset_one.union(subset_two)
-
-    # Computes Ai(2)
-    def compute_subset_summaries(self, absolute_max):
-        checkpoint_index = self.compute_checkpoint(0)
-        subset_two = set()
-        while checkpoint_index <= absolute_max - 1:
-            print(checkpoint_index)
-            summary = set(
-                range(
-                    checkpoint_index,
-                    min(checkpoint_index + self.expressivity + 1, absolute_max),
-                )
-            )
-            subset_two = subset_two.union(summary)
-            checkpoint_index = self.compute_checkpoint(checkpoint_index + self.stride)
-        return subset_two
-
-    # Used for Ai(2) calculations - beginning of [l-c, l] range
-    def compute_checkpoint(self, word_index):
-        if word_index % self.stride == 0 and word_index != 0:
-            checkpoint_index = word_index - self.expressivity
-        else:
-            checkpoint_index = (
-                math.floor(word_index / self.stride) * self.stride
-                + self.stride
-                - self.expressivity
-            )
-        return checkpoint_index
-
-    # Compute sparse mask - if bidirectional, can pre-compute and store
-    def buffered_sparse_mask(self, tensor, tgt_len, src_len):
-        assert tgt_len > self.stride
-        sparse_mask = torch.empty((tgt_len, src_len)).float().fill_(float("-inf"))
-
-        # # If bidirectional, subset 2 is the same for every index
-        # subset_summaries = set()
-        # if self.is_bidirectional:
-        #     subset_summaries = self.compute_subset_summaries(tgt_len)
-
-        for i in range(tgt_len):
-            fixed_attention_subset = self.compute_fixed_attention_subset(i, tgt_len)
-            # fixed_attention_subset = fixed_attention_subset.union(subset_summaries)
-            included_word_indices = torch.LongTensor(list(fixed_attention_subset))
-            sparse_mask[i].index_fill_(0, included_word_indices, 0)
-        return sparse_mask.type_as(tensor)
-
-    def apply_sparse_mask(self, attn_weights):
-        print(attn_weights.shape)
-        bsz, tgt_len, src_len = attn_weights.shape
-        sparse_mask = self.buffered_sparse_mask(attn_weights, tgt_len, src_len)
-
-        sparse_mask = sparse_mask.unsqueeze(0).expand(
-            bsz, tgt_len, src_len
-        )
-        attn_weights += sparse_mask
-
-    def forward(self, query, key, value, query_sparse, key_sparse, mask=None):
-        query = einops.rearrange(query,"seq b f -> b seq f")
-        query_sparse = einops.rearrange(query_sparse,"seq b f -> b seq f")
-        key = einops.rearrange(key,"seq b f -> b seq f")
-        key_sparse = einops.rearrange(key_sparse,"seq b f -> b seq f")
-        value = einops.rearrange(value,"seq b f -> b seq f")
-        # attn_output, att_weights = F._scaled_dot_product_attention(query, key, value, attn_mask=mask)
-        dk = query.size()[-1]
-
-        scores = query.matmul(key.transpose(-2, -1)) / math.sqrt(dk)
-        # M =  query_sparse.matmul(key_sparse.transpose(-2, -1))
-
-        # scores = torch.exp(scores)
-        # mean_value = scores.mean()
-        # scores.data[scores<mean_value] = 0
-
-        # sparsity_M = self.c * torch.heaviside(M, self.step_function)
-        # #
-        # scores -= sparsity_M
-
-        import matplotlib.pyplot as plt
-        # plt.imshow(copy.deepcopy(scores[0]).cpu().detach().numpy(), cmap='hot', interpolation='nearest')
-        # plt.show()
-        self.apply_sparse_mask(scores)
-
-        attention = F.softmax(scores, dim=-1)
-
-
-        attn_output = torch.einsum('b i j , b j d -> b i d', attention, value)
-
-        attn_output = einops.rearrange(attn_output," b seq f -> seq b f")
-
-        return attn_output, attention
-
-#Attention Bias Choices
-class Gaussian_Attention_Bias(nn.Module):
-
-    def __init__(self, rate=1, std=0.3, temp=5, type="add", with_diagonal=False, n_position=200, rand_runs=500):
-        super().__init__()
-        self.rate = rate
-        self.rand_runs = rand_runs
-        self.n_positions = n_position
-        self.type = type
-
-        assert (type!="mul" or type != "add"  or type != "pass"), "Type of neigh bias should be 'mul' or 'add' or 'pass'"
-
-        gaussian_grads_diag = torch.zeros([self.rand_runs, n_position, n_position])
-        number_of_diagonals = n_position+1 if with_diagonal else n_position
-        diag_scramble = Parallel(n_jobs=8)(delayed(self._parallel_get_diagonal)( i_diagonal, n_position, temp, std, gaussian_grads_diag) for i_diagonal in tqdm(range(number_of_diagonals)))
-        self.gaussian_grads_diag = nn.Parameter(self._gather_diagonals(diag_scramble, torch.zeros([self.rand_runs, n_position, n_position])), requires_grad=False)
-        self.softmax_inf_regulator = nn.Parameter(torch.FloatTensor([float("-inf")]), requires_grad=False)
-        self.epsilon = nn.Parameter(torch.FloatTensor([0.00001]), requires_grad=False)
-
-    def _parallel_get_diagonal(self, i_diagonal, n_position, temp, std, gaussian_grads_diag):
-        diagonal_vals = torch.ones(i_diagonal, dtype=torch.long)
-        diag_matrix = torch.diagflat(diagonal_vals, offset=n_position - i_diagonal) + torch.diagflat(diagonal_vals, offset=-n_position + i_diagonal)
-        diag_matrix = diag_matrix.unsqueeze(0).repeat(self.rand_runs, 1, 1)
-        mean = i_diagonal if temp == 0 else i_diagonal / temp
-        gaussian_grads_diag[diag_matrix > 0] = torch.empty([self.rand_runs, n_position, n_position]).normal_(mean=mean, std=std)[diag_matrix > 0]
-        return gaussian_grads_diag
-
-    def _gather_diagonals(self, diag_scramble, gaussian_grads_diag):
-        for i in diag_scramble:
-            gaussian_grads_diag += i
-        gaussian_grads_diag = nn.functional.softmax(nn.functional.softmax(gaussian_grads_diag, dim=-1), dim=-1)
-        return gaussian_grads_diag
-
-    def forward(self, attention_weigths, prevalues):
-
-        seq = attention_weigths.shape[-1]
-        rand_init_batch = torch.randint(0, self.rand_runs - attention_weigths.shape[0], (1,))
-        rand_init =  torch.randint(0, self.n_positions - seq, (1,))
-        attention_weigths = nn.functional.softmax(attention_weigths, dim=-1)
-
-        if self.type == "add":
-            attention_weigths = nn.functional.softmax(attention_weigths, dim=-1)
-            biased_attention_weights = attention_weigths +  self.rate * self.gaussian_grads_diag[rand_init_batch:rand_init_batch+attention_weigths.shape[0],rand_init:rand_init+seq,rand_init:rand_init+seq]
-            biased_attention_weights = nn.functional.log_softmax(biased_attention_weights, dim=-1)
-
-        elif self.type == "mul":
-            attention_weigths = nn.functional.softmax(attention_weigths, dim=-1)
-            biased_attention_weights = attention_weigths * self.gaussian_grads_diag[rand_init_batch:rand_init_batch+attention_weigths.shape[0],rand_init:rand_init+seq,rand_init:rand_init+seq]
-            biased_attention_weights = (biased_attention_weights - torch.min(biased_attention_weights, dim=-1)[0]) / (
-                        torch.max(biased_attention_weights, dim=-1)[0] - torch.min(biased_attention_weights, dim=-1)[0] + self.epsilon)
-
-        elif self.type == "pass":
-            biased_attention_weights = self.gaussian_grads_diag[rand_init_batch:rand_init_batch+attention_weigths.shape[0],rand_init:rand_init+seq,rand_init:rand_init+seq]
-
-        # biased_attention_weights[biased_attention_weights<0.001] = self.softmax_inf_regulator #This line helps to maintain zeros after softmax
-        # biased_attention_weights = nn.functional.log_softmax(biased_attention_weights, dim=-1)
-        # print("neigh")
-        # print(attention_weigths[0][0])
-        # print(self.gaussian_grads_diag[rand_init_batch:rand_init_batch+attention_weigths.shape[0],rand_init:rand_init+seq,rand_init:rand_init+seq][0][0])
-        # print(biased_attention_weights[0][0])
-
-        # plt.subplot(131)
-        # plt.imshow(attention_weigths[0].detach().cpu().numpy(), cmap="Blues")
-        # plt.axis("off")
-        # plt.title("Attention Weights")
-        # plt.subplot(132)
-        # plt.imshow(self.gaussian_grads_diag[rand_init_batch:rand_init_batch+attention_weigths.shape[0],rand_init:rand_init+seq,rand_init:rand_init+seq][0].detach().cpu().numpy(), cmap="Blues")
-        # plt.axis("off")
-        # plt.title("Gaussian Bias")
-        # plt.subplot(133)
-        # plt.imshow(biased_attention_weights[0].detach().cpu().numpy(), cmap="Blues")
-        # plt.axis("off")
-        # plt.title("Add Output")
-        # plt.show()
-
-        return biased_attention_weights
-
-class Gaussian_Learned_Attention_Bias(nn.Module):
-
-    def __init__(self, dmodel, type="add" , rate=1, heads=8, with_diag=True):
-        super().__init__()
-        self.heads = heads
-        self.rate = rate
-        self.type = type
-        self.with_diag = with_diag
-
-        assert (type!="mul" or type != "add"  or type != "pass"), "Type of neigh bias should be 'mul' or 'add' or 'pass'"
-
-        dh = int(dmodel/heads)
-        # self.linear_pw = nn.Linear(dh, dh)
-        # self.linear_pu = nn.Linear(dh, 1)
-        self.linear_sw = nn.Linear(dh, dh)
-        self.linear_su = nn.Linear(dh, 1)
-        self.tanh = nn.Tanh()
-        self.sigmoid = nn.Sigmoid()
-        self.softmax = nn.Softmax(dim=-1)
-
-
-    def forward(self, attention_weigths, prevalues):
-
-        seq = attention_weigths.shape[-1]
-        prevalues = einops.rearrange(prevalues,"seq b (h f) -> (b h) seq f", h=self.heads)
-
-        #If u want to calculate also the centers of the gaussians
-        # pi = seq * self.sigmoid(self.linear_pu(self.tanh(self.linear_pw(prevalues))))
-        #We use as centers the main diagonal.
-        pi = torch.arange(0,seq, device=prevalues.device).unsqueeze(0).unsqueeze(2).repeat(prevalues.shape[0], 1, 1)
-
-        si = seq * self.sigmoid(self.linear_su(self.tanh(self.linear_sw(prevalues))))
-
-
-        en = - torch.pow((pi.squeeze().unsqueeze(1).repeat(1, seq, 1) - pi.repeat(1, 1, seq)), 2)
-        den = 2 * torch.pow(si.repeat(1, 1, seq), 2)
-        gaussian_bias = en / den
-        # gaussian_bias = self.softmax( en / den )
-
-
-        if not self.with_diag:
-            diagonal_vals = torch.ones(seq, dtype=torch.long)
-            diag_matrix = torch.diagflat(diagonal_vals)
-            gaussian_bias[:, diag_matrix>0] *= torch.zeros([1], device=gaussian_bias.device)
-
-
-        if self.type == "add":
-            attention_weigths = nn.functional.softmax(attention_weigths, dim=-1)
-            biased_attention_weights = attention_weigths +  self.rate * gaussian_bias
-        elif self.type == "mul":
-            attention_weigths = nn.functional.softmax(attention_weigths, dim=-1)
-            biased_attention_weights = attention_weigths * gaussian_bias
-        elif self.type == "pass":
-            biased_attention_weights = gaussian_bias
-
-        biased_attention_weights = nn.functional.softmax(biased_attention_weights, dim=-1)
-
-        # print("neigh")
-        # print(attention_weigths[0][0])
-        # print(gaussian_bias[0][0])
-        # print(biased_attention_weights[0][0])
-        #
-        # plt.subplot(131)
-        # plt.imshow(attention_weigths[0].detach().cpu().numpy(), cmap="Blues")
-        # plt.axis("off")
-        # plt.title("Attention Weights")
-        # plt.subplot(132)
-        # plt.imshow(gaussian_bias[0].detach().cpu().numpy(), cmap="Blues")
-        # plt.axis("off")
-        # plt.title("Learned Gaussian Bias")
-        # plt.subplot(133)
-        # plt.imshow(biased_attention_weights[0].detach().cpu().numpy(), cmap="Blues")
-        # plt.axis("off")
-        # plt.title("Add Output")
-        # plt.show()
-
-        return biased_attention_weights
-
-class Attention_Bias_Neigh(nn.Module):
-
-    def __init__(self, rate=1, type="mul", num_diagonals=2, with_diagonal=False, n_position=200):
-        """
-
-        :param rate: (int) Rate of the bias in case we use type=="add"
-        :param type: (string) 'mul'-> multiply extracted attention with neigh bias
-                           or 'add'-> add extracted attention with neigh bias multiplied by rate
-                           or 'pass'->discard extracted attention and return uniform neigh bias
-        :param num_diagonals: (int) How many diagonals are considered neighborhood. Each one has two diagonals, symmetrical to the main diagonal
-        :param with_diagonal: (bool) True = include the main diagonal in the neigh mask
-        :param n_position: (int) Max seq length
-        """
-        super().__init__()
-        self.rate = rate
-        self.n_positions = n_position
-        self.type = type
-
-        assert (type!="mul" or type != "add"  or type != "pass"), "Type of neigh bias should be 'mul' or 'add' or 'pass'"
-
-        i_diagonal = n_position-1
-        diagonal_vals = torch.ones(i_diagonal, dtype=torch.long)
-        diag_matrix = torch.diagflat(diagonal_vals, offset=n_position - i_diagonal) + torch.diagflat(diagonal_vals, offset=-n_position + i_diagonal)
-
-        if with_diagonal:
-            i_diagonal = n_position
-            diagonal_vals = torch.ones(i_diagonal, dtype=torch.long)
-            diag_matrix += torch.diagflat(diagonal_vals)
-
-        if num_diagonals > 1:
-            for i in range(2,num_diagonals+1):
-                i_diagonal = n_position-i
-
-                diagonal_vals = torch.ones(i_diagonal, dtype=torch.long)
-                diag_matrix += torch.diagflat(diagonal_vals, offset=n_position - i_diagonal) + torch.diagflat(diagonal_vals, offset=-n_position + i_diagonal)
-
-        self.neigh_diag = nn.Parameter(diag_matrix.float(), requires_grad=False)
-        self.softmax_inf_regulator = nn.Parameter(torch.FloatTensor([float("-inf")]), requires_grad=False)
-
-    def forward(self, attention_weigths, prevalues):
-        """
-
-        :param attention_weigths: Attention weights after softmax, [batch*h*(maybe inner seq), seq, seq]
-        :param prevalues: Not used here, aims for other attention bias techniques.
-        :return:
-        """
-        seq = attention_weigths.shape[-1]
-
-        rand_init =  torch.randint(0, self.n_positions - seq, (1,))
-
-        # attention_bias = self.neigh_diag.unsqueeze(0).repeat(attention_weigths.shape[0], 1, 1)
-
-        if self.type == "mul":
-            biased_attention_weights = attention_weigths * self.neigh_diag[rand_init:rand_init + seq, rand_init:rand_init + seq]
-        elif self.type == "add":
-            attention_weigths = nn.functional.softmax(attention_weigths, dim=-1)
-            biased_attention_weights = attention_weigths + self.rate * nn.functional.softmax(self.neigh_diag[rand_init:rand_init + seq, rand_init:rand_init + seq], dim=-1)
-        elif self.type == "pass":
-            biased_attention_weights = self.neigh_diag[rand_init:rand_init + seq, rand_init:rand_init + seq]
-
-        biased_attention_weights[biased_attention_weights==0] = self.softmax_inf_regulator #This line helps to maintain zeros after softmax
-        biased_attention_weights = nn.functional.softmax(biased_attention_weights, dim=-1)
-
-        return biased_attention_weights
-
-class Multimodal_Dropout_outer(nn.Module):
-
-    def __init__(self, dmodel, dropout_prob = 0.1):
-
-        super().__init__()
-        self.dropout_prob = dropout_prob
-        mask = torch.rand([1,dmodel])
-        self.masked_token = nn.Parameter(mask, requires_grad=False)
-
-
-    def forward(self, input):
-
-        input_shape = input.shape
-
-        input = einops.rearrange(input, "b outer inner mod k -> (b outer inner mod) k")
-
-        dropout_idxs = torch.Tensor([1-self.dropout_prob]).repeat((input.shape[0]))
-        dropout_idxs = torch.bernoulli(dropout_idxs)
-        input[dropout_idxs > 0] = self.masked_token.repeat((int(dropout_idxs.sum()), 1))
-
-        input = einops.rearrange(input, " (b outer inner mod) k -> b outer inner mod k", b=input_shape[0], outer=input_shape[1], inner=input_shape[2], mod=input_shape[3])
-
-        return input
-
-
-class My_MultiHeadAttention(nn.Module):
-
-    def __init__(self,
-                 in_features,
-                 head_num,
-                 bias=True,
-                 dim_proj = 128,
-                 activation=F.relu,
-                 gbiased = None,
-                 rpos = False
-                 ):
-        """Multi-head attention.
-        :param in_features: Size of each input sample.
-        :param head_num: Number of heads.
-        :param bias: Whether to use the bias term.
-        :param activation: The activation after each linear transformation.
-        """
-        super(My_MultiHeadAttention, self).__init__()
-        if in_features % head_num != 0:
-            raise ValueError('`in_features`({}) should be divisible by `head_num`({})'.format(in_features, head_num))
-        self.in_features = in_features
-        self.head_num = head_num
-        self.activation = activation
-        self.bias = bias
-        self.gbiased = gbiased
-        self.linear_q = nn.Linear(in_features, dim_proj, bias)
-        self.linear_k = nn.Linear(in_features, dim_proj, bias)
-        self.linear_v = nn.Linear(in_features, dim_proj, bias)
-        self.linear_o = nn.Linear(dim_proj, in_features, False)
-
-        self.scaled_dotproduct_attention =  ScaledDotProductAttention( rpos=rpos, d_head=int(dim_proj / head_num), head_num=head_num)
-
-    def forward(self, q, prev, k, attn_mask=None, key_padding_mask=None):
-        q, k, v = self.linear_q(q), self.linear_k(k), self.linear_v(prev)
-
-        if self.activation is not None:
-            q = self.activation(q)
-            k = self.activation(k)
-            v = self.activation(v)
-
-        q = self._reshape_to_batches(q)
-        k = self._reshape_to_batches(k)
-        v = self._reshape_to_batches(v)
-
-
-        if attn_mask is not None:
-            attn_mask = attn_mask.repeat(self.head_num, 1, 1)
-        y, att = self.scaled_dotproduct_attention(q, k, v, self.gbiased, prevalue=prev, mask=attn_mask)
-
-        y = self._reshape_from_batches(y)
-        y = self.linear_o(y)
-
-        if self.activation is not None:
-            y = self.activation(y)
-
-        return y, att, v, self.linear_o
-
-    @staticmethod
-    def gen_history_mask(x):
-        """Generate the mask that only uses history data.
-        :param x: Input tensor.
-        :return: The mask.
-        """
-        batch_size, seq_len, _ = x.size()
-        return torch.tril(torch.ones(seq_len, seq_len)).view(1, seq_len, seq_len).repeat(batch_size, 1, 1)
-
-    def _reshape_to_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        sub_dim = in_feature // self.head_num
-        return einops.rearrange(x, "seq b (h sub_dim)-> seq (b h) sub_dim", h=self.head_num, sub_dim=sub_dim)
-
-
-    def _reshape_from_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        batch_size //= self.head_num
-        return einops.rearrange(x, "seq (b h) sub_dim -> seq b (h sub_dim)", h=self.head_num, b=batch_size)
-
-    def extra_repr(self):
-        return 'in_features={}, head_num={}, bias={}, activation={}'.format(
-            self.in_features, self.head_num, self.bias, self.activation,
-        )
-class My_MultiHeadAttention_HP(nn.Module):
-
-    def __init__(self,
-                 in_features,
-                 head_num,
-                 bias=True,
-                 dim_proj = 128,
-                 activation=F.relu,
-                 gbiased = None,
-                 rpos = False
-                 ):
-        """Multi-head attention.
-        :param in_features: Size of each input sample.
-        :param head_num: Number of heads.
-        :param bias: Whether to use the bias term.
-        :param activation: The activation after each linear transformation.
-        """
-        super(My_MultiHeadAttention_HP, self).__init__()
-        if in_features % head_num != 0:
-            raise ValueError('`in_features`({}) should be divisible by `head_num`({})'.format(in_features, head_num))
-        self.in_features = in_features
-        self.head_num = head_num
-        self.activation = activation
-        self.bias = bias
-        self.gbiased = gbiased
-
-        self.linear_q = nn.Linear(in_features, dim_proj, bias)
-        self.linear_k = nn.Linear(in_features, dim_proj, bias)
-        self.linear_v = nn.Linear(in_features, dim_proj, bias)
-        self.linear_o = nn.Linear(dim_proj, in_features, False)
-
-        self.scaled_dotproduct_attention =  ScaledDotProductAttention_HP( rpos=rpos, d_head=int(in_features / head_num), head_num=head_num)
-
-    def forward(self, q, k, prev, attn_mask=None, key_padding_mask=None):
-
-        q_eeg, k_eeg, v_eeg = self.linear_q(q[0]), self.linear_k(k[0]), self.linear_v(prev[0])
-        q_eog, k_eog, v_eog = self.linear_q(q[1]), self.linear_k(k[1]), self.linear_v(prev[1])
-
-        if self.activation is not None:
-            q_eeg = self.activation(q_eeg)
-            q_eog = self.activation(q_eog)
-            k_eeg = self.activation(k_eeg)
-            k_eog = self.activation(k_eog)
-            v_eeg = self.activation(v_eeg)
-            v_eog = self.activation(v_eog)
-
-        q_eeg = self._reshape_to_batches(q_eeg)
-        q_eog = self._reshape_to_batches(q_eog)
-        k_eeg = self._reshape_to_batches(k_eeg)
-        k_eog = self._reshape_to_batches(k_eog)
-        v_eeg = self._reshape_to_batches(v_eeg)
-        v_eog = self._reshape_to_batches(v_eog)
-
-
-        if attn_mask is not None:
-            attn_mask = attn_mask.repeat(self.head_num, 1, 1)
-        y, att = self.scaled_dotproduct_attention([q_eeg, q_eog], [k_eeg, k_eog], [v_eeg, v_eog], self.gbiased, prevalue=prev, mask=attn_mask)
-
-        y_eeg = self._reshape_from_batches(y[0])
-        y_eog = self._reshape_from_batches(y[1])
-        y_eeg = self.linear_o(y_eeg)
-        y_eog = self.linear_o(y_eog)
-
-        if self.activation is not None:
-            y_eeg = self.activation(y_eeg)
-            y_eog = self.activation(y_eog)
-
-        return [y_eeg, y_eog], att, [v_eeg, v_eog], self.linear_o
-
-    @staticmethod
-    def gen_history_mask(x):
-        """Generate the mask that only uses history data.
-        :param x: Input tensor.
-        :return: The mask.
-        """
-        batch_size, seq_len, _ = x.size()
-        return torch.tril(torch.ones(seq_len, seq_len)).view(1, seq_len, seq_len).repeat(batch_size, 1, 1)
-
-    def _reshape_to_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        sub_dim = in_feature // self.head_num
-        return einops.rearrange(x, "seq b (h sub_dim)-> seq (b h) sub_dim", h=self.head_num, sub_dim=sub_dim)
-
-
-    def _reshape_from_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        batch_size //= self.head_num
-        return einops.rearrange(x, "seq (b h) sub_dim -> seq b (h sub_dim)", h=self.head_num, b=batch_size)
-
-    def extra_repr(self):
-        return 'in_features={}, head_num={}, bias={}, activation={}'.format(
-            self.in_features, self.head_num, self.bias, self.activation,
-        )
-class My_MultiHeadAttention_Conv(nn.Module):
-
-    def __init__(self,
-                 in_features,
-                 head_num,
-                 bias=True,
-                 dim_proj = 128,
-                 activation=F.relu,
-                 gbiased = None,
-                 rpos = False
-                 ):
-        """Multi-head attention.
-        :param in_features: Size of each input sample.
-        :param head_num: Number of heads.
-        :param bias: Whether to use the bias term.
-        :param activation: The activation after each linear transformation.
-        """
-        super(My_MultiHeadAttention_Conv, self).__init__()
-        if in_features % head_num != 0:
-            raise ValueError('`in_features`({}) should be divisible by `head_num`({})'.format(in_features, head_num))
-        self.in_features = in_features
-        self.head_num = head_num
-        self.activation = activation
-        self.bias = bias
-        self.gbiased = gbiased
-        self.linear_q = nn.Conv1d(in_features,in_features,3, padding=1)
-        self.linear_k = nn.Conv1d(in_features,in_features,3, padding=1)
-        self.linear_v = nn.Linear(in_features, dim_proj, bias)
-        self.linear_o = nn.Linear(dim_proj, in_features, False)
-
-        self.scaled_dotproduct_attention =  ScaledDotProductAttention( rpos=rpos, d_head=int(in_features / head_num), head_num=head_num)
-
-    def forward(self, q, k, prev, attn_mask=None, key_padding_mask=None):
-
-        q = einops.rearrange(q, "seq b f-> b f seq")
-        k = einops.rearrange(k, "seq b f-> b f seq")
-        q, k, = self.linear_q(q), self.linear_k(k)
-        k = einops.rearrange(k, "b f seq -> seq b f")
-        q = einops.rearrange(q, "b f seq -> seq b f")
-
-        v = self.linear_v(prev)
-
-        if self.activation is not None:
-            q = self.activation(q)
-            k = self.activation(k)
-            v = self.activation(v)
-
-        q = self._reshape_to_batches(q)
-        k = self._reshape_to_batches(k)
-        v = self._reshape_to_batches(v)
-
-
-        if attn_mask is not None:
-            attn_mask = attn_mask.repeat(self.head_num, 1, 1)
-        y, att = self.scaled_dotproduct_attention(q, k, v, self.gbiased, prevalue=prev, mask=attn_mask)
-
-        y = self._reshape_from_batches(y)
-        y = self.linear_o(y)
-
-        if self.activation is not None:
-            y = self.activation(y)
-
-        return y, att, v, self.linear_o
-
-    @staticmethod
-    def gen_history_mask(x):
-        """Generate the mask that only uses history data.
-        :param x: Input tensor.
-        :return: The mask.
-        """
-        batch_size, seq_len, _ = x.size()
-        return torch.tril(torch.ones(seq_len, seq_len)).view(1, seq_len, seq_len).repeat(batch_size, 1, 1)
-
-    def _reshape_to_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        sub_dim = in_feature // self.head_num
-        return einops.rearrange(x, "seq b (h sub_dim)-> seq (b h) sub_dim", h=self.head_num, sub_dim=sub_dim)
-
-
-    def _reshape_from_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        batch_size //= self.head_num
-        return einops.rearrange(x, "seq (b h) sub_dim -> seq b (h sub_dim)", h=self.head_num, b=batch_size)
-
-    def extra_repr(self):
-        return 'in_features={}, head_num={}, bias={}, activation={}'.format(
-            self.in_features, self.head_num, self.bias, self.activation,
-        )
-
-class Multiply_Att(nn.Module):
-    def forward(self, v, att):
-        out = torch.einsum('b i j , j b d ->  i b d', att, v)
-        return out
-
-class My_MultiHeadAttention_Norm_RA(nn.Module):
-
-    def __init__(self,
-                 in_features,
-                 head_num,
-                 bias=True,
-                 dim_proj = 128,
-                 activation=F.relu):
-        """Multi-head attention.
-        :param in_features: Size of each input sample.
-        :param head_num: Number of heads.
-        :param bias: Whether to use the bias term.
-        :param activation: The activation after each linear transformation.
-        """
-        super(My_MultiHeadAttention_Norm_RA, self).__init__()
-        if in_features % head_num != 0:
-            raise ValueError('`in_features`({}) should be divisible by `head_num`({})'.format(in_features, head_num))
-        self.in_features = in_features
-        self.head_num = head_num
-        self.activation = activation
-        self.bias = bias
-        self.linear_q = nn.Linear(in_features, dim_proj, bias)
-        self.linear_k = nn.Linear(in_features, dim_proj, bias)
-        self.linear_v = nn.Linear(in_features, dim_proj, bias)
-        self.wo = nn.Parameter(torch.Tensor(dim_proj, in_features))
-        init.kaiming_uniform_(self.wo, a=math.sqrt(5))
-        self.scaled_dotproduct_attention =  ScaledDotProductAttention()
-        self.multiply_att = Multiply_Att()
-
-    def forward(self, q, k, v, attn_mask=None, key_padding_mask=None):
-        q, k, v = self.linear_q(q), self.linear_k(k), self.linear_v(v)
-
-        if self.activation is not None:
-            q = self.activation(q)
-            k = self.activation(k)
-            v = self.activation(v)
-
-        q = self._reshape_to_batches(q)
-        k = self._reshape_to_batches(k)
-        v = self._reshape_to_batches(v)
-
-        if attn_mask is not None:
-            attn_mask = attn_mask.repeat(self.head_num, 1, 1)
-        yout, att = self.scaled_dotproduct_attention(q, k, v, attn_mask)
-
-        v = self._reshape_from_batches(v)
-        y = einops.rearrange(v, 'i b d -> b i d ')
-        y = torch.einsum('bsi,im->bsm ', y, self.wo)
-        y = einops.rearrange(y, 'i b d -> b i d ')
-        y = self._reshape_to_batches(y)
-        y = self.multiply_att(y, att)
-        y = self._reshape_from_batches(y)
-
-        if self.activation is not None:
-            y = self.activation(y)
-        return y
-
-    @staticmethod
-    def gen_history_mask(x):
-        """Generate the mask that only uses history data.
-        :param x: Input tensor.
-        :return: The mask.
-        """
-        batch_size, seq_len, _ = x.size()
-        return torch.tril(torch.ones(seq_len, seq_len)).view(1, seq_len, seq_len).repeat(batch_size, 1, 1)
-
-    def _reshape_to_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        sub_dim = in_feature // self.head_num
-        return einops.rearrange(x, "seq b (h sub_dim)-> seq (b h) sub_dim", h=self.head_num, sub_dim=sub_dim)
-
-
-    def _reshape_from_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        batch_size //= self.head_num
-        return einops.rearrange(x, "seq (b h) sub_dim -> seq b (h sub_dim)", h=self.head_num, b=batch_size)
-
-    def extra_repr(self):
-        return 'in_features={}, head_num={}, bias={}, activation={}'.format(
-            self.in_features, self.head_num, self.bias, self.activation,
-        )
-class My_MultiHeadAttention_Sparse(nn.Module):
-
-    def __init__(self,
-                 in_features,
-                 head_num,
-                 bias=True,
-                 dim_proj = 128,
-                 activation=F.relu):
-        """Multi-head attention.
-        :param in_features: Size of each input sample.
-        :param head_num: Number of heads.
-        :param bias: Whether to use the bias term.
-        :param activation: The activation after each linear transformation.
-        """
-        super(My_MultiHeadAttention_Sparse, self).__init__()
-        if in_features % head_num != 0:
-            raise ValueError('`in_features`({}) should be divisible by `head_num`({})'.format(in_features, head_num))
-        self.in_features = in_features
-        self.head_num = head_num
-        self.activation = activation
-        self.bias = bias
-        self.linear_q = nn.Linear(in_features, dim_proj, bias)
-        self.linear_qs = nn.Linear(in_features, dim_proj, bias)
-        self.linear_k = nn.Linear(in_features, dim_proj, bias)
-        self.linear_ks = nn.Linear(in_features, dim_proj, bias)
-        self.linear_v = nn.Linear(in_features, dim_proj, bias)
-        self.linear_o = nn.Linear(dim_proj, in_features, bias)
-
-        self.scaled_dotproduct_attention =  ScaledDotProductAttention_Sparse()
-
-    def forward(self, q, k, v, attn_mask=None, key_padding_mask=None):
-        qf, kf, v = self.linear_q(q), self.linear_k(k), self.linear_v(v)
-        qs, ks = self.linear_qs(q), self.linear_ks(k)
-
-
-        if self.activation is not None:
-            q = self.activation(q)
-            qs = self.activation(qs)
-            k = self.activation(k)
-            ks = self.activation(ks)
-            v = self.activation(v)
-
-        q = self._reshape_to_batches(qf)
-        qs = self._reshape_to_batches(qs)
-        k = self._reshape_to_batches(kf)
-        ks = self._reshape_to_batches(ks)
-        v = self._reshape_to_batches(v)
-
-        if attn_mask is not None:
-            attn_mask = attn_mask.repeat(self.head_num, 1, 1)
-        y, att = self.scaled_dotproduct_attention(q, k, v, qs, ks, attn_mask)
-        y = self._reshape_from_batches(y)
-        y = self.linear_o(y)
-        if self.activation is not None:
-            y = self.activation(y)
-        return y
-
-    @staticmethod
-    def gen_history_mask(x):
-        """Generate the mask that only uses history data.
-        :param x: Input tensor.
-        :return: The mask.
-        """
-        batch_size, seq_len, _ = x.size()
-        return torch.tril(torch.ones(seq_len, seq_len)).view(1, seq_len, seq_len).repeat(batch_size, 1, 1)
-
-    def _reshape_to_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        sub_dim = in_feature // self.head_num
-        return einops.rearrange(x, "seq b (h sub_dim)-> seq (b h) sub_dim", h=self.head_num, sub_dim=sub_dim)
-
-
-    def _reshape_from_batches(self, x):
-        seq_len, batch_size, in_feature = x.size()
-        batch_size //= self.head_num
-        return einops.rearrange(x, "seq (b h) sub_dim -> seq b (h sub_dim)", h=self.head_num, b=batch_size)
-
-    def extra_repr(self):
-        return 'in_features={}, head_num={}, bias={}, activation={}'.format(
-            self.in_features, self.head_num, self.bias, self.activation,
-        )
-class My_TF(nn.Module):
-    def __init__(self, d_model, nhead, modalities=1, dim_feedforward=1024, dim_proj= 1024, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-        # self.self_attn = My_MultiHeadAttention(d_model,  nhead, dim_proj=dim_proj, activation=None)
-        self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.activation = nn.ReLU()
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        # self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
-        # src = einops.rearrange(src, "b outer inner mod k -> (inner mod) (b outer) k")
-
-        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
-        src = src + self.dropout1(src2)
-        src = self.norm1(src)
-        # src = einops.rearrange(src, "(inner mod) b_outer k -> mod inner b_outer k", inner = self.inner, mod = self.mod)
-
-        src2 = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src))))
-        src = src + self.mod_0_dropout2(src2)
-        src = self.mod_0_norm2(src)
-
-        # src2 = self.mod_1_linear2(self.mod_1_dropout(self.activation(self.mod_1_linear1(src[1]))))
-        # src[1] = src[0] + self.mod_1_dropout2(src2)
-        # src[1] = self.mod_1_norm2(src[1])
-        #
-        # src = einops.rearrange(src, "mod inner (b outer) k -> b outer inner mod k",b=self.batch, outer=self.outer, mod=self.mod)
-
-        return src
-
-class My_TF_RA(nn.Module):
-    def __init__(self, d_model, nhead, gbiased=False, extra_attention = False, rpos=False, modalities=1, dim_feedforward=1024, dim_proj= 128, dropout=0.1, activation="relu", ln_first=False):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-
-        self.ln_first = ln_first
-
-        self.extra_attention = extra_attention
-        if self.extra_attention:
-            self.extra_self_attn = My_MultiHeadAttention(d_model, nhead, dim_proj=128, activation=None, gbiased=self.extra_attention)
-            self.extra_norm = nn.LayerNorm(d_model)
-            self.extra_dropout = nn.Dropout(dropout)
-
-        self.self_attn_my = My_MultiHeadAttention(d_model,  nhead, dim_proj=dim_proj, rpos=rpos, activation=None, gbiased = gbiased)
-
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        if activation == "relu":
-            self.activation = nn.ReLU()
-        elif activation == "gelu":
-            self.activation = nn.GELU()
-        else:
-            raise ValueError('Activation {} does not exist! Available options are "relu", "gelu".')
-        self.norm_calc = BertNormOutput(num_attention_heads=nhead, hidden_size=d_model)
-        self.nhead = nhead
-
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm = False) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        if self.extra_attention:
-            if self.ln_first: src = self.extra_norm(src)
-            src_extr_att, att_0, value_0, linear_o_0 = self.extra_self_attn(src, src, src, attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
-            src_extr_att = src + self.extra_dropout(src_extr_att)
-            if not self.ln_first: src_extr_att = self.extra_norm(src_extr_att)
-        else:
-            src_extr_att = src
-
-        if self.ln_first: src_extr_att = self.norm1(src_extr_att)
-        src_att, att, value, linear_o = self.self_attn_my(src_extr_att, src_extr_att, src_extr_att, attn_mask=src_mask,  key_padding_mask=src_key_padding_mask)
-        src_att_drop_norm = src_extr_att + self.dropout1(src_att)
-        if not self.ln_first: src_att_drop_norm = self.norm1(src_att_drop_norm)
-
-        if self.ln_first: src_att_drop_norm = self.mod_0_norm2(src_att_drop_norm)
-        src_att_drop_norm_fc = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src_att_drop_norm))))
-        src_att_drop_norm_fc_drop_nrom = src_att_drop_norm + self.mod_0_dropout2(src_att_drop_norm_fc)
-        if not self.ln_first: src_att_drop_norm_fc_drop_nrom = self.mod_0_norm2(src_att_drop_norm_fc_drop_nrom)
-
-
-        if extract_norm:
-            batch_size = int(src.shape[1])
-            vector_norms = self.norm_calc(hidden_states=einops.rearrange(src, " s b f -> b s f"),
-                               attention_probs=einops.rearrange(att, "(b h) i j -> b h i j", b=batch_size, h=self.nhead),
-                               value_layer=einops.rearrange(value, "seq (b h) fh -> b h seq fh", b=batch_size, h=self.nhead),
-                               dense=linear_o, LayerNorm=self.norm1,
-                               pre_ln_states=einops.rearrange(src_att_drop_norm, " s b f -> b s f"))
-
-        return src_att_drop_norm_fc_drop_nrom
-class My_TF_Decoder_RA(nn.Module):
-    def __init__(self, d_model, nhead, gbiased=False, extra_attention = False, rpos=False, modalities=1, dim_feedforward=1024, dim_proj= 128, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-
-        self.extra_attention = extra_attention
-        if self.extra_attention:
-            self.extra_self_attn = My_MultiHeadAttention(d_model, nhead, dim_proj=128, activation=None, gbiased=self.extra_attention)
-            self.extra_norm = nn.LayerNorm(d_model)
-            self.extra_dropout = nn.Dropout(dropout)
-
-        self.self_attn_my = My_MultiHeadAttention(d_model,  nhead, dim_proj=dim_proj, rpos=rpos, activation=None, gbiased = gbiased)
-
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.norm2 = nn.LayerNorm(d_model)
-        self.dropout2 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm3 = nn.LayerNorm(d_model)
-        self.mod_0_dropout3 = nn.Dropout(dropout)
-
-        self.activation = nn.ReLU()
-        self.norm_calc = BertNormOutput(num_attention_heads=nhead, hidden_size=d_model)
-        self.nhead = nhead
-
-
-    def forward(self, output: Tensor, input: Tensor,  output_mask: Optional[Tensor] = None, input_mask: Optional[Tensor] = None, extract_norm = False) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = output.shape
-
-        if self.extra_attention:
-            output_extr_att, att_0, value_0, linear_o_0 = self.extra_self_attn(output, output, output, attn_mask=output_mask)
-            output_extr_att = self.extra_norm(output + self.extra_dropout(output_extr_att))
-        else:
-            output_extr_att = output
-
-        output_att, att, value, linear_o = self.self_attn_my(output_extr_att, output_extr_att, output_extr_att, attn_mask=output_mask)
-        output_att = self.norm1(output_extr_att + self.dropout1(output_att))
-
-        input_output_att, att, value, linear_o = self.self_attn_my(output_att, input, input, attn_mask=output_mask)
-        input_output_att = self.norm2(input_output_att + self.dropout2(output_att))
-
-        input_output_att_drop_norm_fc = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(input_output_att))))
-        src_att_drop_norm_fc_drop_norm = self.mod_0_norm3(input_output_att + self.mod_0_dropout3(input_output_att_drop_norm_fc))
-
-        # if extract_norm:
-        #     batch_size = int(src.shape[1])
-        #     vector_norms = self.norm_calc(hidden_states=einops.rearrange(src, " s b f -> b s f"),
-        #                        attention_probs=einops.rearrange(att, "(b h) i j -> b h i j", b=batch_size, h=self.nhead),
-        #                        value_layer=einops.rearrange(value, "seq (b h) fh -> b h seq fh", b=batch_size, h=self.nhead),
-        #                        dense=linear_o, LayerNorm=self.norm1,
-        #                        pre_ln_states=einops.rearrange(src_att_drop_norm, " s b f -> b s f"))
-
-        return src_att_drop_norm_fc_drop_norm
-class My_TF_Conv_RA(nn.Module):
-    def __init__(self, d_model, nhead, gbiased=False, extra_attention = False, rpos=False, modalities=1, dim_feedforward=1024, dim_proj= 128, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-
-        self.extra_attention = extra_attention
-        if self.extra_attention:
-            self.extra_self_attn = My_MultiHeadAttention_Conv(d_model, nhead, dim_proj=128, activation=None, gbiased=self.extra_attention)
-            self.extra_norm = nn.LayerNorm(d_model)
-            self.extra_dropout = nn.Dropout(dropout)
-
-        self.self_attn_my = My_MultiHeadAttention_Conv(d_model,  nhead, dim_proj=dim_proj, rpos=rpos, activation=None, gbiased = gbiased)
-
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.activation = nn.ReLU()
-        self.norm_calc = BertNormOutput(num_attention_heads=nhead, hidden_size=d_model)
-        self.nhead = nhead
-
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm = False) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        if self.extra_attention:
-            src_extr_att, att_0, value_0, linear_o_0 = self.extra_self_attn(src, src, src, attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
-            src_extr_att = src + self.extra_dropout(src_extr_att)
-            src_extr_att = self.extra_norm(src_extr_att)
-        else:
-            src_extr_att = src
-
-        src_att, att, value, linear_o = self.self_attn_my(src_extr_att, src_extr_att, src_extr_att, attn_mask=src_mask,  key_padding_mask=src_key_padding_mask)
-
-        src_att_drop = src_extr_att + self.dropout1(src_att)
-        src_att_drop_norm = self.norm1(src_att_drop)
-
-        src_att_drop_norm_fc = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src_att_drop_norm))))
-        src_att_drop_norm_fc_drop = src_att_drop_norm + self.mod_0_dropout2(src_att_drop_norm_fc)
-        src_att_drop_norm_fc_drop_nrom = self.mod_0_norm2(src_att_drop_norm_fc_drop)
-
-        if extract_norm:
-            batch_size = int(src.shape[1])
-            vector_norms = self.norm_calc(hidden_states=einops.rearrange(src, " s b f -> b s f"),
-                               attention_probs=einops.rearrange(att, "(b h) i j -> b h i j", b=batch_size, h=self.nhead),
-                               value_layer=einops.rearrange(value, "seq (b h) fh -> b h seq fh", b=batch_size, h=self.nhead),
-                               dense=linear_o, LayerNorm=self.norm1,
-                               pre_ln_states=einops.rearrange(src_att_drop_norm, " s b f -> b s f"))
-
-        return src_att_drop_norm_fc_drop_nrom
-class My_TF_normreg_RA(nn.Module):
-    def __init__(self, d_model, nhead, gbiased=False, extra_attention = False, rpos=False, modalities=1, dim_feedforward=1024, dim_proj= 128, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-
-        self.extra_attention = extra_attention
-        if self.extra_attention:
-            self.extra_self_attn = My_MultiHeadAttention(d_model, nhead, dim_proj=128, activation=None, gbiased=self.extra_attention)
-            self.extra_norm = nn.LayerNorm(d_model)
-            self.extra_dropout = nn.Dropout(dropout)
-
-        self.self_attn_my = My_MultiHeadAttention(d_model,  nhead, dim_proj=128, rpos=rpos, activation=None, gbiased = gbiased)
-
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.activation = nn.ReLU()
-        self.norm_calc = BertNormOutput(num_attention_heads=nhead, hidden_size=d_model)
-        self.nhead = nhead
-
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm = False) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        if self.extra_attention:
-            src_extr_att, att_0, value_0, linear_o_0 = self.extra_self_attn(src, src, src, attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
-            src_extr_att = src + self.extra_dropout(src_extr_att)
-            src_extr_att = self.extra_norm(src_extr_att)
-        else:
-            src_extr_att = src
-
-        src_att, att, value, linear_o = self.self_attn_my(src_extr_att, src_extr_att, src_extr_att, attn_mask=src_mask,  key_padding_mask=src_key_padding_mask)
-        norm_att = torch.norm(src_att)
-        norm_prev = torch.norm(src_extr_att)
-
-        src_att_drop = src_extr_att + (norm_prev/norm_att)*self.dropout1(src_att)
-
-        src_att_drop_norm = self.norm1(src_att_drop)
-
-        src_att_drop_norm_fc = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src_att_drop_norm))))
-        src_att_drop_norm_fc_drop = src_att_drop_norm + self.mod_0_dropout2(src_att_drop_norm_fc)
-        src_att_drop_norm_fc_drop_nrom = self.mod_0_norm2(src_att_drop_norm_fc_drop)
-
-        if extract_norm:
-            batch_size = int(src.shape[1])
-            vector_norms = self.norm_calc(hidden_states=einops.rearrange(src, " s b f -> b s f"),
-                               attention_probs=einops.rearrange(att, "(b h) i j -> b h i j", b=batch_size, h=self.nhead),
-                               value_layer=einops.rearrange(value, "seq (b h) fh -> b h seq fh", b=batch_size, h=self.nhead),
-                               dense=linear_o, LayerNorm=self.norm1,
-                               pre_ln_states=einops.rearrange(src_att_drop_norm, " s b f -> b s f"))
-
-        return src_att_drop_norm_fc_drop_nrom
-class My_TF_LSTM(nn.Module):
-    def __init__(self, d_model, nhead, gbiased=False, extra_attention = False, rpos=False, modalities=1, dim_feedforward=1024, dim_proj= 128, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-
-        self.extra_attention = extra_attention
-        if self.extra_attention:
-            self.extra_self_attn = My_MultiHeadAttention(d_model, nhead, dim_proj=128, activation=None, gbiased=self.extra_attention)
-            self.extra_norm = nn.LayerNorm(d_model)
-            self.extra_dropout = nn.Dropout(dropout)
-
-        self.self_attn_my = My_MultiHeadAttention(d_model,  nhead, dim_proj=128, rpos=rpos, activation=None, gbiased = gbiased)
-
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.lstm = nn.LSTM(d_model, hidden_size = d_model, num_layers= 1, bidirectional=False)
-
-        self.norm_calc = BertNormOutput(num_attention_heads=nhead, hidden_size=d_model)
-        self.nhead = nhead
-
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm = False) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        if self.extra_attention:
-            src_extr_att, att_0, value_0, linear_o_0 = self.extra_self_attn(src, src, src, attn_mask=src_mask, key_padding_mask=src_key_padding_mask)
-            src_extr_att = src + self.extra_dropout(src_extr_att)
-            src_extr_att = self.extra_norm(src_extr_att)
-        else:
-            src_extr_att = src
-
-        src_att, att, value, linear_o = self.self_attn_my(src_extr_att, src_extr_att, src_extr_att, attn_mask=src_mask,  key_padding_mask=src_key_padding_mask)
-
-        src_att_drop = src_extr_att + self.dropout1(src_att)
-        src_att_drop_norm = self.norm1(src_att_drop)
-
-        src_att_drop_norm_fc = self.lstm(src_att_drop_norm)[0]
-        src_att_drop_norm_fc_drop = src_att_drop_norm + self.mod_0_dropout2(src_att_drop_norm_fc)
-        src_att_drop_norm_fc_drop_nrom = self.mod_0_norm2(src_att_drop_norm_fc_drop)
-
-        if extract_norm:
-            batch_size = int(src.shape[1])
-            vector_norms = self.norm_calc(hidden_states=einops.rearrange(src, " s b f -> b s f"),
-                               attention_probs=einops.rearrange(att, "(b h) i j -> b h i j", b=batch_size, h=self.nhead),
-                               value_layer=einops.rearrange(value, "seq (b h) fh -> b h seq fh", b=batch_size, h=self.nhead),
-                               dense=linear_o, LayerNorm=self.norm1,
-                               pre_ln_states=einops.rearrange(src_att_drop_norm, " s b f -> b s f"))
-
-        return src_att_drop_norm_fc_drop_nrom
-class My_TF_HPFC_RA(nn.Module):
-    def __init__(self, d_model, nhead, gbiased=False, modalities=1, rpos=False, extra_attention = False, dim_feedforward=1024, dim_proj= 1024, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-
-        self.self_attn_my = My_MultiHeadAttention_HP(d_model,  nhead, dim_proj=128, activation=None, gbiased = gbiased)
-
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-        self.activation = nn.ReLU()
-        self.modalities = modalities
-
-        # self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        # self.mod_0_dropout = nn.Dropout(dropout)
-        # self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        # self.mod_0_dropout2 = nn.Dropout(dropout)
-        for i in range(modalities):
-            setattr(self,"mod{}_fc".format(i),nn.Sequential( nn.Linear(d_model, dim_feedforward),
-                                           self.activation,
-                                           nn.Dropout(dropout),
-                                           nn.Linear(dim_feedforward, d_model),
-                                           nn.Dropout(dropout)
-                                           ))
-            setattr(self,"mod{}_norm1".format(i), nn.LayerNorm(d_model))
-            setattr(self,"mod{}_norm2".format(i), nn.LayerNorm(d_model))
-            setattr(self,"mod{}_dropout".format(i), nn.Dropout(dropout))
-
-        self.norm_calc = BertNormOutput(num_attention_heads=nhead, hidden_size=d_model)
-        self.nhead = nhead
-
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm = False) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src[0].shape
-
-        src_att, att, value, linear_o = self.self_attn_my(src, src, src, attn_mask=src_mask,  key_padding_mask=src_key_padding_mask)
-
-        # src_att_drop = src + self.dropout1(src_att)
-        # src_att_drop_norm = self.norm1(src_att_drop)
-        #
-        # seq_mod_split = int(x_shape[0]/self.modalities)
-        src_att_drop = []
-        for i in range(self.modalities):
-            fc = getattr(self, "mod{}_fc".format(i))
-            norm1 = getattr(self, "mod{}_norm1".format(i))
-            norm2 = getattr(self, "mod{}_norm2".format(i))
-            dropout1 = getattr(self, "mod{}_dropout".format(i))
-            src_att[i] = src[i] + dropout1(src_att[i])
-            src_att[i] = norm1(src_att[i])
-            src_att[i] = fc(src_att[i]) + src_att[i]
-            src_att[i] = norm2(src_att[i])
-
-        # if self.modalities>1:
-        #     src_att_output = torch.cat([locals()[ "src_att_norm_mod0"], locals()["src_att_norm_mod1"]],dim=0)
-        # else:
-        #     src_att_output = locals()["src_att_norm_mod0"]
-        # if extract_norm:
-        #     batch_size = int(src.shape[1])
-        #     norms = [getattr(self, "mod{}_norm".format(i)) for i in range(self.modalities)]
-        #
-        #     vector_norms = self.norm_calc(hidden_states=einops.rearrange(src, " s b f -> b s f"),
-        #                        attention_probs=einops.rearrange(att, "(b h) i j -> b h i j", b=batch_size, h=self.nhead),
-        #                        value_layer=einops.rearrange(value, "seq (b h) fh -> b h seq fh", b=batch_size, h=self.nhead),
-        #                        dense=linear_o, LayerNorm=self.norm1,
-        #                        pre_ln_states=einops.rearrange(src_att_output, " s b f -> b s f"))
-
-        return src_att
-
-class My_TF_Sparse_RA(nn.Module):
-    def __init__(self, d_model, nhead, modalities=1, dim_feedforward=1024, dim_proj= 1024, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-        self.self_attn_my = My_MultiHeadAttention_Sparse(d_model,  nhead, dim_proj=dim_proj, activation=None)
-        # self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.activation = nn.ReLU()
-
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        # self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
-        # src = einops.rearrange(src, "b outer inner mod k -> (inner mod) (b outer) k")
-        # src2_0 = self.self_attn(src, src, src, attn_mask=src_mask,
-        #                       key_padding_mask=src_key_padding_mask)[0]
-
-        src2 = self.self_attn_my(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
-
-        # print(src2_0[0,0,0:10])
-        # print(src2[0,0,0:10])
-
-        src = src + self.dropout1(src2)
-        src = self.norm1(src)
-        # src = einops.rearrange(src, "(inner mod) b_outer k -> mod inner b_outer k", inner = self.inner, mod = self.mod)
-
-        src2 = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src))))
-        src = src + self.mod_0_dropout2(src2)
-        src = self.mod_0_norm2(src)
-
-        # src2 = self.mod_1_linear2(self.mod_1_dropout(self.activation(self.mod_1_linear1(src[1]))))
-        # src[1] = src[0] + self.mod_1_dropout2(src2)
-        # src[1] = self.mod_1_norm2(src[1])
-        #
-        # src = einops.rearrange(src, "mod inner (b outer) k -> b outer inner mod k",b=self.batch, outer=self.outer, mod=self.mod)
-
-        return src
-
-class My_TF_diff_fc(nn.Module):
-    def __init__(self, d_model, nhead, modalities=2, dim_feedforward=1024, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-        self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        self.mod_0_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_0_dropout = nn.Dropout(dropout)
-        self.mod_0_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_0_norm2 = nn.LayerNorm(d_model)
-        self.mod_0_dropout2 = nn.Dropout(dropout)
-
-        self.mod_1_linear1 = nn.Linear(d_model, dim_feedforward)
-        self.mod_1_dropout = nn.Dropout(dropout)
-        self.mod_1_linear2 = nn.Linear(dim_feedforward, d_model)
-        self.mod_1_norm2 = nn.LayerNorm(d_model)
-        self.mod_1_dropout2 = nn.Dropout(dropout)
-
-        self.cls_token = nn.Parameter(torch.randn(1, 1, d_model))
-
-        self.activation = nn.ReLU()
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-
-        mod, inner = src.shape[0], src.shape[1]
-        src = einops.rearrange(src, "mod inner b_outer k -> (inner mod) b_outer k ")
-
-        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
-        src = src + self.dropout1(src2)
-        src = self.norm1(src)
-        src = einops.rearrange(src, "(inner mod) b_outer k  -> mod inner b_outer k", mod=mod, inner=inner)
-
-        src2 = self.mod_0_linear2(self.mod_0_dropout(self.activation(self.mod_0_linear1(src[0]))))
-        src[0] = src[0] + self.mod_0_dropout2(src2)
-        src[0] = self.mod_0_norm2(src[0])
-
-        src2 = self.mod_1_linear2(self.mod_1_dropout(self.activation(self.mod_1_linear1(src[1]))))
-        src[1] = src[0] + self.mod_1_dropout2(src2)
-        src[1] = self.mod_1_norm2(src[1])
-
-        return src
-
-class TF_outer_mod_att_inner_diff_fc(nn.Module):
-    def __init__(self, d_model, nhead, modalities=1, dim_feedforward=1024, dropout=0.1, activation="relu"):
-        # super(nn.TransformerEncoderLayer, self).__init__()
-        super().__init__()
-        self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
-
-        # Implementation of Feedforward model
-        for i in range(modalities):
-            setattr(self,"mod_{}_linear1".format(i),nn.Linear(d_model, dim_feedforward))
-            setattr(self,"mod_{}_dropout".format(i),nn.Dropout(dropout))
-            setattr(self,"mod_{}_linear2".format(i),nn.Linear(dim_feedforward, d_model))
-            setattr(self,"mod_{}_norm2".format(i),nn.LayerNorm(d_model))
-            setattr(self,"mod_{}_dropout2".format(i),nn.Dropout(dropout))
-
-        self.activation = nn.ReLU()
-
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None) -> Tensor:
-        r"""Pass the input through the encoder layer.
-
-        Args:
-            src: the sequence to the encoder layer (required).
-            src_mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        x_shape = src.shape
-
-        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
-        src = einops.rearrange(src, "b outer inner mod k -> (outer mod) b (inner k)")
-
-        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
-        src = src + self.dropout1(src2)
-        src = self.norm1(src)
-        src = einops.rearrange(src, "(outer mod) b inner_k -> mod outer b inner_k", outer = self.outer, mod = self.mod)
-
-        for i in range(len(src)):
-            lin1 = getattr(self,"mod_{}_linear1".format(i))
-            drop = getattr(self,"mod_{}_dropout".format(i))
-            lin2 = getattr(self,"mod_{}_linear2".format(i))
-            norm2 = getattr(self,"mod_{}_norm2".format(i))
-            drop2 = getattr(self,"mod_{}_dropout2".format(i))
-            src2 = lin2(drop(self.activation(lin1(src[i]))))
-            src[i] = src[i] + drop2(src2)
-            src[i] = norm2(src[i])
-
-        src = einops.rearrange(src, "mod outer b (inner k) -> b outer inner mod k",b=self.batch, inner=self.inner,
-                             mod=self.mod)
-        return src
-
 class inner_mod_att(nn.Module):
     def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
@@ -2877,7 +1178,6 @@ class inner_mod_att(nn.Module):
         x_shape = x.shape
         self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
-
         x = einops.rearrange(x, "b outer inner mod k -> (inner mod) (b outer) k")
         if self.pos:
             x = einops.rearrange(x, "(inner mod) (b outer) k -> inner (b outer mod) k", mod=self.mod, outer = self.outer, b=self.batch, inner = self.inner)
@@ -2888,8 +1188,10 @@ class inner_mod_att(nn.Module):
         x = self.inner_tf(x)
         x = einops.rearrange(x, "(inner mod) (b outer) k -> b outer inner mod k", mod=self.mod, outer = self.outer, b=self.batch, inner = self.inner)
         return x
+
+
 class inner_outer_cross_att(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         if pos:
@@ -2902,8 +1204,7 @@ class inner_outer_cross_att(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
         if self.pos:
             x = einops.rearrange(x, "b outer inner mod k -> inner (b outer mod) k")
@@ -2914,7 +1215,7 @@ class inner_outer_cross_att(nn.Module):
             x = self.pos_mod(x.permute(1, 0, 2)).permute(1, 0, 2)
             x = einops.rearrange(x, "outer (b inner mod) k -> b outer inner mod k", mod=self.mod, inner=self.inner, b = self.b)
 
-        x = einops.rearrange(x, "b outer inner mod ch k -> (outer inner) (mod ch) b k")
+        x = einops.rearrange(x, "b outer inner mod k -> (outer inner) mod b k")
         x0 = x[:,0,:,:]
         x1 = x[:,1,:,:]
         for i in range(self.num_layers):
@@ -2923,11 +1224,11 @@ class inner_outer_cross_att(nn.Module):
         x0 = einops.rearrange(x0, "(outer inner mod) b k -> (outer inner) mod b k", outer=self.outer, inner=self.inner, mod=1)
         x1 = einops.rearrange(x1, "(outer inner mod) b k -> (outer inner) mod b k", outer=self.outer, inner=self.inner, mod=1)
         x = torch.cat([x0,x1], dim=1)
-        x = einops.rearrange(x, "(outer inner) (mod ch) b k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,
+        x = einops.rearrange(x, "(outer inner) mod b k -> b outer inner mod k", outer=self.outer, mod=self.mod,
                              b=self.batch)
         return x
 class inner_cross_att(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         if pos:
@@ -2940,7 +1241,7 @@ class inner_cross_att(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
         if self.pos:
             x = einops.rearrange(x, "b outer inner mod k -> inner (b outer mod) k")
@@ -2962,6 +1263,7 @@ class inner_cross_att(nn.Module):
         x = torch.cat([x0,x1], dim=1)
         x = einops.rearrange(x, "inner mod (outer b) k -> b outer inner mod k", outer=self.outer, mod=self.mod, b=self.batch)
         return x
+
 class outer_cross_att(nn.Module):
     def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
@@ -2975,8 +1277,7 @@ class outer_cross_att(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
         if self.pos:
             x = einops.rearrange(x, "b outer inner mod k -> outer (b outer mod) k")
@@ -3000,6 +1301,7 @@ class outer_cross_att(nn.Module):
         x = einops.rearrange(x, "outer mod (inner b) k -> b outer inner mod k", inner=self.inner, mod=self.mod,
                              b=self.batch)
         return x
+
 class inner_mod_outer_att(nn.Module):
     def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
@@ -3013,8 +1315,7 @@ class inner_mod_outer_att(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
         if self.pos:
             x = einops.rearrange(x, "b outer inner mod k -> inner (b outer mod) k")
@@ -3043,8 +1344,7 @@ class outer_mod_att(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
         if self.pos:
             x = einops.rearrange(x, "b outer inner mod k -> inner (outer mod b) k")
@@ -3060,355 +1360,25 @@ class outer_mod_att(nn.Module):
         x = einops.rearrange(x, "(outer mod) (b inner) k -> b outer inner mod k", mod=self.mod, outer = self.outer, b=self.batch, inner = self.inner)
         return x
 class inner_att(nn.Module):
-        def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024):
+        def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
             super().__init__()
             self.pos = pos
             if pos:
                 self.pos_inner = PositionalEncoder(d_model=dmodel)
 
-            enc = nn.TransformerEncoderLayer(dmodel, nhead=heads, dim_feedforward=dim_feedforward)
+            enc = nn.TransformerEncoderLayer(dmodel, nhead=heads, dim_feedforward=1024)
             self.inner_tf = nn.TransformerEncoder(enc, num_layers)
         def forward(self, x):
             x_shape = x.shape
-            self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
+            self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
-            x = einops.rearrange(x, "b outer inner mod k -> inner (b outer mod) k")
+            x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
             if self.pos:
                 x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
             x = self.inner_tf(x)
-            x = einops.rearrange(x, "inner (b outer mod) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
+            x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
                                  b=self.batch)
             return x
-
-
-# class inner_att_RA(nn.Module):
-#     def __init__(self, dmodel, pos, inner, outer, modalities, gbiased=False, extra_attention=False, rpos=False, num_layers=1, dim_proj=128, heads=8, dim_feedforward=1024, ln_first=False):
-#         super().__init__()
-#         self.pos = pos
-#         if pos:
-#             self.pos_inner = PositionalEncoder(d_model=dmodel)
-#
-#         enc = My_TF_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_proj=dim_proj, dim_feedforward=dim_feedforward, gbiased=gbiased, ln_first=ln_first)
-#         self.inner_tf = My_TransformerEncoder(enc, num_layers)
-#
-#     def forward(self, x, extract_norm=False):
-#         x_shape = x.shape
-#         self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-#
-#         x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-#         x = self.inner_tf(x, extract_norm=extract_norm)
-#         x = einops.rearrange(x, "inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-#         return x
-class inner_ch_att_HPFC_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, gbiased=False, extra_attention=False, rpos=False, num_layers=1, dim_proj=128, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_HPFC_RA(dmodel, extra_attention=extra_attention, modalities=modalities, nhead=heads, rpos=rpos, dim_proj=dim_proj, dim_feedforward=dim_feedforward, gbiased=gbiased)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x[0].shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x[0] = einops.rearrange(x[0], "b outer inner mod ch k -> (inner mod ch) (b outer) k")
-        x[1] = einops.rearrange(x[1], "b outer inner mod ch k -> (inner mod ch) (b outer) k")
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x[0] = einops.rearrange(x[0], "(inner mod ch) (b outer) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        x[1] = einops.rearrange(x[1], "(inner mod ch) (b outer) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        return x
-class inner_att_conv_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, gbiased=False, extra_attention=False, rpos=False, num_layers=1, dim_proj=128, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_Conv_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_proj=dim_proj, dim_feedforward=dim_feedforward, gbiased=gbiased)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, "inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        return x
-
-class inner_rn_RA(nn.Module):
-    def __init__(self, dmodel, inner, outer, modalities, num_layers=1, bidirectional=False):
-        super().__init__()
-
-        self.inner_rn = nn.GRU(dmodel, dmodel, num_layers= num_layers, bidirectional=False)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-        _, x = self.inner_rn(x)
-        x = x[-1:] #Last layer
-        x = einops.rearrange(x, "inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        return x
-
-class inner_att_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, dropout=0.1,  gbiased=False, extra_attention=False, rpos=False, num_layers=1, dim_proj=128, heads=8, dim_feedforward=1024, ln_first=False):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_RA(dmodel, extra_attention=extra_attention, dropout=dropout, nhead=heads, rpos=rpos, dim_proj=dim_proj, dim_feedforward=dim_feedforward, gbiased=gbiased, ln_first=ln_first)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, " inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        return x
-class inner_mod_ch_att_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, dropout=0.1, gbiased=False, extra_attention=False, rpos=False, num_layers=1, dim_proj=128, heads=8, dim_feedforward=1024, ln_first=False):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_RA(dmodel, dropout=dropout, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_proj=dim_proj, dim_feedforward=dim_feedforward, gbiased=gbiased, ln_first=ln_first)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> (inner mod ch) (b outer) k")
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, " (inner mod ch) (b outer) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        return x
-class inner_locglob_att_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, gbiased=False, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward=1024, ln_first=False):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, gbiased=gbiased, ln_first=ln_first)
-        self.inner_tf_loc = My_TransformerEncoder(enc, num_layers)
-
-        enc = My_TF_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, gbiased=gbiased, ln_first=ln_first)
-        self.inner_tf_glob = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-        x = self.inner_tf_loc(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, " inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> (inner mod ch) (b outer) k")
-        x = self.inner_tf_glob(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, "(inner mod ch) (b outer) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, ch=self.ch,  b=self.batch)
-        return x
-
-class inner_att_normreg_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_normreg_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
-        if self.pos:
-            x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        return x
-class inner_intlstm(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_LSTM(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
-        if self.pos:
-            x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        return x
-class inner_att_fc_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_FC_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, modalities=modalities, dim_feedforward=dim_feedforward)
-        self.inner_tf = My_TransformerEncoder(enc, num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
-        if self.pos:
-            x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
-        x = self.inner_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        return x
-
-class inner_att_Sparse_RA(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_Sparse_RA(dmodel, nhead=heads, dim_feedforward=dim_feedforward)
-        self.inner_tf = nn.TransformerEncoder(enc, num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
-        x = self.inner_tf(x)
-        x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        return x
-
-class inner_mod_att_diff_FC_cls(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward=1024, dim_proj=128):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF_diff_fc(d_model=dmodel, modalities=modalities, nhead=heads, dim_feedforward=1024)
-        self.inner_tf = nn.TransformerEncoder(enc, num_layers-1)
-
-        enc = My_TF_diff_fc(d_model=dmodel, modalities=modalities, nhead=heads, dim_feedforward=1024)
-        self.inner_tf_cls = nn.TransformerEncoder(enc, 1)
-
-        self.cls_token = nn.Parameter(torch.randn(1, 1, 1, 1, dmodel))
-
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> mod inner (b outer) k")
-
-        x = self.inner_tf(x)
-        x = einops.rearrange(x, "mod inner (b outer) k -> b outer inner mod k", outer=self.outer, inner=self.inner, mod=self.mod, b=self.batch)
-        x = torch.cat([self.cls_token.repeat( x.shape[0], x.shape[1], 1, x.shape[3], 1), x], dim=2)
-        x = einops.rearrange(x, "b outer inner mod k -> mod inner (b outer) k")
-        x = self.inner_tf_cls(x)
-        x = einops.rearrange(x, "mod inner (b outer) k -> b outer inner mod k", outer=self.outer, b=self.batch)
-
-        x = x[:,:,0].unsqueeze(dim=2)
-
-        return x
-class inner_att_avg_aggr(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward=1024, dim_proj = 1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = nn.TransformerEncoderLayer(dmodel, nhead=heads, dim_feedforward=dim_feedforward)
-        self.inner_tf = nn.TransformerEncoder(enc, num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[
-            4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
-        if self.pos:
-            x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
-        x = self.inner_tf(x)
-        x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        x = x.mean(axis=2).unsqueeze(dim=2)
-        return x
-class inner_att_cls_aggr(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward=1024, dim_proj = 1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = My_TF(dmodel, nhead=heads, dim_feedforward=dim_feedforward, dim_proj = dim_proj)
-        self.inner_tf = nn.TransformerEncoder(enc, num_layers-1)
-
-        enc_2 = My_TF(dmodel, nhead=heads, dim_feedforward=dim_feedforward, dim_proj = dim_proj)
-        self.inner_tf_2 = nn.TransformerEncoder(enc_2, 1)
-
-        self.cls_token = nn.Parameter(torch.randn(1, 1, 1, 1, dmodel))
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[
-            4]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-        if self.pos:
-            x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
-        x = self.inner_tf(x)
-        x = einops.rearrange(x, "inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod, b=self.batch)
-        x = torch.cat([self.cls_token.repeat( x.shape[0], x.shape[1], 1, x.shape[3], 1, 1), x], dim=2)
-        x = einops.rearrange(x, "b outer inner mod ch k -> inner (b outer mod ch) k")
-        x = self.inner_tf_2(x)
-        x = x[0].unsqueeze(dim=0)
-        x = einops.rearrange(x, "inner (b outer mod ch) k -> b outer inner mod ch k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        return x
-class inner_att_huy(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward=1024):
-        super().__init__()
-        self.pos = pos
-        if pos:
-            self.pos_inner = PositionalEncoder(d_model=dmodel)
-
-        enc = TransformerEncoderLayer_Huy(dmodel, nhead=heads, dim_feedforward=dim_feedforward)
-        self.inner_tf = nn.TransformerEncoder(enc, num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[
-            4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> inner (b mod outer) k")
-        if self.pos:
-            x = self.pos_inner(x.permute(1, 0, 2)).permute(1, 0, 2)
-        x = self.inner_tf(x)
-        x = einops.rearrange(x, "inner (b mod outer) k -> b outer inner mod k", outer=self.outer, mod=self.mod,
-                             b=self.batch)
-        return x
 class inner_att_mod(nn.Module):
         def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8):
             super().__init__()
@@ -3420,8 +1390,7 @@ class inner_att_mod(nn.Module):
             self.inner_tf = nn.TransformerEncoder(enc, num_layers)
         def forward(self, x):
             x_shape = x.shape
-            self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+            self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
             x = einops.rearrange(x, "b outer inner mod k -> inner (b outer) (mod k)")
             if self.pos:
@@ -3441,8 +1410,7 @@ class inner_att_outer(nn.Module):
             self.inner_tf = nn.TransformerEncoder(enc, num_layers)
         def forward(self, x):
             x_shape = x.shape
-            self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+            self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
             x = einops.rearrange(x, "b outer inner mod k -> inner (mod b) (outer k)")
             if self.pos:
@@ -3462,8 +1430,7 @@ class inner_att_mod_outer(nn.Module):
             self.inner_tf = nn.TransformerEncoder(enc, num_layers)
         def forward(self, x):
             x_shape = x.shape
-            self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+            self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
             x = einops.rearrange(x, "b outer inner mod k -> inner b (outer mod k)")
             if self.pos:
@@ -3472,7 +1439,6 @@ class inner_att_mod_outer(nn.Module):
             x = einops.rearrange(x, " inner b (outer mod k) -> b outer inner mod k", outer=self.outer, mod=self.mod,
                                  b=self.batch)
             return x
-
 class mod_att(nn.Module):
     def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
@@ -3485,8 +1451,7 @@ class mod_att(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x, "b outer inner mod k -> mod (inner outer b) k")
         if self.pos:
             x = self.pos_mod(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3506,8 +1471,7 @@ class mod_att_inner(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x, "b outer inner mod k -> mod (outer b) (inner k)")
         if self.pos:
             x = self.pos_mod(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3527,8 +1491,7 @@ class mod_att_outer(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x, "b outer inner mod k -> mod (inner b) (outer k)")
         if self.pos:
             x = self.pos_mod(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3548,8 +1511,7 @@ class mod_att_inner_outer(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x, "b outer inner mod k -> mod b (inner outer k)")
         if self.pos:
             x = self.pos_mod(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3557,289 +1519,19 @@ class mod_att_inner_outer(nn.Module):
         x = einops.rearrange(x, "mod b (inner outer k)-> b outer inner mod k", outer=self.outer, inner=self.inner,
                              b=self.batch)
         return x
-
 class outer_att(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128):
-        super().__init__()
-
-        enc = My_TF(dmodel, nhead=heads, dim_feedforward=dim_feedforward, dim_proj = dim_proj)
-        self.outer_tf = nn.TransformerEncoder(enc,num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod ch k -> outer (b inner mod ch) k")
-        x = self.outer_tf(x)
-        x = einops.rearrange(x,"outer (b inner mod ch) k-> b outer inner mod ch k", mod =self.mod, inner =self.inner, b=self.batch, ch = self.ch)
-        return x
-
-class outer_att_tf(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128):
-        super().__init__()
-
-        enc = nn.TransformerEncoderLayer(dmodel, nhead=heads, dim_feedforward=dim_feedforward)
-        self.outer_tf = nn.TransformerEncoder(enc,num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> outer (b inner mod) k")
-        x = self.outer_tf(x)
-        x = einops.rearrange(x,"outer (b inner mod) k-> b outer inner mod k", mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-
-class channel_att_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False, ln_first=False):
-        super().__init__()
-
-        enc = My_TF_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos,  dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased, ln_first=ln_first)
-        self.channel_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x,"b outer inner mod ch k -> ch (b outer inner mod) k")
-        x = self.channel_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x,"ch (b outer inner mod) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return x
-
-class outer_mod_att_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, dropout=0.1, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False, ln_first=False):
-        super().__init__()
-
-        enc = My_TF_RA(dmodel, extra_attention=extra_attention, dropout=dropout, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased, ln_first=ln_first)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, **kwargs):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x,"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        x = self.outer_tf(x, **kwargs)
-        x = einops.rearrange(x,"(outer mod ch) (b inner) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return x
-class outer_mod_inner_att_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, dropout,  extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False, ln_first=False):
-        super().__init__()
-
-        enc = My_TF_RA(dmodel, dropout=dropout, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased, ln_first=ln_first)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x,"b outer inner mod ch k -> (outer inner mod ch) b k")
-        x = self.outer_tf(x, extract_norm=extract_norm)
-
-        x = einops.rearrange(x,"(outer inner mod ch) b k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return x
-class outer_decoder_att_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        enc = My_TF_Decoder_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased)
-        self.outer_tf = My_TransformerDecoder(enc, num_layers)
-
-        self.outer_positional_embedding = huy_pos_outer(dmodel, pos=False, inner=29, outer=21, modalities=1,
-                                                        channels=1)
-
-    def forward(self, tgt, memory, extract_norm=False):
-
-        x_shape = memory.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        memory = einops.rearrange(memory,"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        tgt = einops.rearrange(tgt,"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        for i in range(self.outer):
-            tgt_i = self.outer_tf(tgt=tgt, memory=memory, extract_norm=extract_norm)
-            if i ==0:
-                tgt = tgt_i
-            else:
-                tgt = torch.cat([tgt, tgt_i[-1:]],dim=0)
-        tgt = einops.rearrange(tgt,"(outer mod ch) (b inner) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return tgt
-class outer_mod_att_HPFC_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        enc = My_TF_HPFC_RA(dmodel, extra_attention=extra_attention,  modalities=modalities, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x[0].shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x[0] = einops.rearrange(x[0],"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        x[1] = einops.rearrange(x[1],"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        x = self.outer_tf(x, extract_norm=extract_norm)
-        x[0] = einops.rearrange(x[0],"(outer mod ch) (b inner) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        x[1] = einops.rearrange(x[1],"(outer mod ch) (b inner) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return x
-class outer_mod_att_conv_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        enc = My_TF_Conv_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos, dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x,"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        x = self.outer_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x,"(outer mod ch) (b inner) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return x
-class outer_mod_rn_RA(nn.Module):
-    def __init__(self, dmodel,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, bidirectional=False):
-        super().__init__()
-
-        self.outer_rn = nn.GRU(dmodel, dmodel, num_layers=num_layers, bidirectional=bidirectional)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch, self.features = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4], x_shape[5]
-
-        x = einops.rearrange(x,"b outer inner mod ch k -> (outer mod ch) (b inner) k")
-        x, _ = self.outer_rn(x)
-        x = einops.rearrange(x,"(outer mod ch) (b inner) k-> b outer inner mod ch k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch, ch=self.ch)
-        return x
-class outer_mod_att_normreg_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        enc = My_TF_normreg_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos,  dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer mod) (b inner) k")
-        x = self.outer_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x,"(outer mod) (b inner) k-> b outer inner mod k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-class outer_mod_intlstm(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        enc = My_TF_LSTM(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos,  dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer mod) (b inner) k")
-        x = self.outer_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x,"(outer mod) (b inner) k-> b outer inner mod k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-class outer_mod_lstm(nn.Module):
-    def __init__(self, dmodel,  inner, outer, modalities, extra_attention=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        self.outer_lstm = nn.LSTM(dmodel, hidden_size = dmodel, num_layers= num_layers, bidirectional=True)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer mod) (b inner) k")
-        x = self.outer_lstm(x)[0]
-        x = einops.rearrange(x,"(outer mod) (b inner) k-> b outer inner mod k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-class outer_mod_att_fc_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, extra_attention=False, rpos=False, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128,  gbiased=False):
-        super().__init__()
-
-        enc = My_TF_FC_RA(dmodel, extra_attention=extra_attention, nhead=heads, rpos=rpos,  modalities=modalities, dim_feedforward=dim_feedforward, dim_proj = dim_proj, gbiased=gbiased)
-        self.outer_tf = My_TransformerEncoder(enc,num_layers)
-
-    def forward(self, x, extract_norm=False):
-
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer mod) (b inner) k")
-        x = self.outer_tf(x, extract_norm=extract_norm)
-        x = einops.rearrange(x,"(outer mod) (b inner) k-> b outer inner mod k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-
-class outer_mod_att_Norm_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128):
-        super().__init__()
-
-        enc = My_TF_Norm_RA(dmodel, nhead=heads, dim_feedforward=dim_feedforward, dim_proj = dim_proj)
-        self.outer_tf = nn.TransformerEncoder(enc,num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer mod) (b inner) k")
-        x = self.outer_tf(x)
-        x = einops.rearrange(x,"(outer mod) (b inner) k-> b outer inner mod k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-class outer_mod_att_Sparse_RA(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128):
-        super().__init__()
-
-        enc = My_TF_Sparse_RA(dmodel, nhead=heads, dim_feedforward=dim_feedforward, dim_proj = dim_proj)
-        self.outer_tf = nn.TransformerEncoder(enc,num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer mod) (b inner) k")
-        x = self.outer_tf(x)
-        x = einops.rearrange(x,"(outer mod) (b inner) k-> b outer inner mod k", outer =self.outer, mod =self.mod, inner =self.inner, b=self.batch)
-        return x
-
-class outer_mod_att(nn.Module):
-
-    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024, dim_proj= 128):
-        super().__init__()
-
-        enc = My_TF(dmodel, nhead=heads, dim_feedforward=dim_feedforward, dim_proj = dim_proj)
-        self.outer_tf = nn.TransformerEncoder(enc,num_layers)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x,"b outer inner mod k -> (outer inner mod) b k")
-        x = self.outer_tf(x)
-        x = einops.rearrange(x,"(outer inner mod) b k-> b outer inner mod k", mod =self.mod, outer =self.outer, inner =self.inner, b=self.batch)
-        return x
-
-class outer_att_huy(nn.Module):
-    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8, dim_feedforward = 1024):
+    def __init__(self, dmodel, pos,  inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         if pos:
             self.pos_outer = PositionalEncoder(d_model=dmodel)
 
-        enc_outer = TransformerEncoderLayer_Huy(dmodel, nhead=heads, dim_feedforward=dim_feedforward)
-
+        enc_outer = nn.TransformerEncoderLayer(dmodel, nhead=heads, dim_feedforward=1024)
         self.outer_tf = nn.TransformerEncoder(enc_outer,num_layers)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> outer (b inner mod) k")
         if self.pos:
             x  = self.pos_outer(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3847,7 +1539,7 @@ class outer_att_huy(nn.Module):
         x = einops.rearrange(x,"outer (b inner mod) k-> b outer inner mod k", mod =self.mod, inner =self.inner, b=self.batch)
         return x
 class outer_att_mod(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         if pos:
@@ -3858,8 +1550,7 @@ class outer_att_mod(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> outer (b inner) (mod k)")
         if self.pos:
             x  = self.pos_outer(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3867,7 +1558,7 @@ class outer_att_mod(nn.Module):
         x = einops.rearrange(x,"outer (b inner) (mod k)-> b outer inner mod k", mod =self.mod, inner =self.inner, b=self.batch)
         return x
 class outer_att_inner(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         if pos:
@@ -3878,8 +1569,7 @@ class outer_att_inner(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> outer (b mod) (inner k)")
         if self.pos:
             x  = self.pos_outer(x.permute(1, 0, 2)).permute(1, 0, 2)
@@ -3887,7 +1577,7 @@ class outer_att_inner(nn.Module):
         x = einops.rearrange(x,"outer (b mod) (inner k)-> b outer inner mod k", mod =self.mod, inner =self.inner, b=self.batch)
         return x
 class outer_att_inner_mod(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         if pos:
@@ -3898,69 +1588,47 @@ class outer_att_inner_mod(nn.Module):
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> outer b (inner mod k)")
         if self.pos:
             x  = self.pos_outer(x.permute(1, 0, 2)).permute(1, 0, 2)
         x = self.outer_tf(x)
         x = einops.rearrange(x,"outer b (inner mod k) -> b outer inner mod k", mod =self.mod, inner =self.inner, b=self.batch)
         return x
-class outer_mod_att_inner_diff_FC(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8, dim_feedforward=1024, dim_proj=128):
-        super().__init__()
-
-        enc = My_TF_diff_fc(d_model=dmodel, modalities=modalities, nhead=heads, dim_feedforward=dim_feedforward)
-        self.inner_tf = nn.TransformerEncoder(enc, num_layers)
-
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-        x = einops.rearrange(x, "b outer inner mod k -> mod outer (b inner) k")
-        x = self.inner_tf(x)
-        x = einops.rearrange(x, "mod outer (b inner) k -> b outer inner mod k", b=self.batch, inner=self.inner)
-
-
-        return x
-
 class aggregation_att_outer(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.mod_att = Attention(dmodel)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> outer (b inner mod) k ", mod =self.mod, inner =self.inner, b=self.batch)
         w = self.mod_att(x)
         x = torch.einsum("ijk,jmi -> mjk", x, w)
         x = einops.rearrange(x," outer (b inner mod) k  -> b outer inner mod k ", b=self.batch, inner=self.inner, mod=self.mod)
         return x
 class aggregation_att_inner(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.mod_att = Attention(dmodel*modalities)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> inner (b outer) (mod k) ", mod =self.mod, inner =self.inner, b=self.batch)
         w = self.mod_att(x)
         x = torch.einsum("ijk,jmi -> mjk", x, w)
         x = einops.rearrange(x,"inner (b outer mod) k  -> b outer inner mod k ", b=self.batch, outer=self.outer, mod=self.mod)
         return x
 class aggregation_att_contx_inner(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.mod_att = Context_Attention(dmodel*modalities, 64)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> (b outer) inner (mod k) ", mod =self.mod, inner =self.inner, b=self.batch)
 
         w = self.mod_att(x)
@@ -3969,332 +1637,91 @@ class aggregation_att_contx_inner(nn.Module):
         x = einops.rearrange(x,"(b outer inner) (mod k)  -> b outer inner mod k ", b=self.batch, outer=self.outer, mod=self.mod, inner=1)
         return x
 class aggregation_att_contx_inner_mod(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.mod_att = Context_Attention(dmodel, 64)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> (b outer) (inner mod) k", mod =self.mod, inner =self.inner, b=self.batch)
         w = self.mod_att(x)
         x = torch.einsum("ijk,im -> ik", x, w)
         x = einops.rearrange(x,"(b outer inner mod) k  -> b outer inner mod k ", b=self.batch, outer=self.outer, mod=1, inner=1)
         return x
 class aggregation_att_contx_mod(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.mod_att = Context_Attention(dmodel, 64)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> (b outer inner) mod k ", mod =self.mod, inner =self.inner, b=self.batch)
         w = self.mod_att(x)
         x = torch.einsum("ijk,im -> ik", x, w)
         x = einops.rearrange(x,"(b outer inner mod)  k  -> b outer inner mod k ", b=self.batch, outer=self.outer, mod=1, inner=self.inner)
         return x
 class aggregation_att_mod(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.mod_att = Attention(dmodel)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> mod (inner outer b) k ", mod =self.mod, inner =self.inner, b=self.batch)
         w = self.mod_att(x)
         x = torch.einsum("ijk,jmi -> mjk", x, w)
         x = einops.rearrange(x,"mod (inner outer b) k  -> b outer inner mod k -> ", inner =self.inner, b=self.batch)
         return x
 class fourier_pos(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = Fourier_Sleep_PositionalEncoder(dmodel, outer, inner, modalities)
 
     def forward(self, x):
         return self.pos(x)
 class huy_pos_inner(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8, dim_proj=0, npoints=400):
-        super().__init__()
-        self.pos = PositionalEncoding_AIAYN(dmodel, n_position=npoints)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod ch k -> (b outer mod ch) inner k")
-        x = self.pos(x)
-        x = einops.rearrange(x, "(b outer mod ch) inner k -> b outer inner mod ch k", b = self.batch, outer = self.outer, mod = self.mod, ch=self.ch)
-        return x
-
-    def forward_time(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.time, self.ch  = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
-        x = einops.rearrange(x, "b outer time ch k -> (b outer ch) time k")
-        x = self.pos(x)
-        x = einops.rearrange(x, "(b outer ch) time k-> b outer time ch k", b = self.batch, outer = self.outer, mod = self.mod, ch=self.ch)
-        return x
-class learnable_pos_inner(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8, dim_proj=0):
-        super().__init__()
-        self.pos = nn.Parameter(torch.randn([1,inner,dmodel]))
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod k -> (b outer mod) inner k")
-        x = x + self.pos[:,:x.shape[1]]
-        x = einops.rearrange(x, "(b outer mod) inner k -> b outer inner mod k", b = self.batch, outer = self.outer, mod = self.mod)
-        return x
-class huy_pos_concat_inner(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8, dim_proj=0):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = PositionalEncoding_AIAYN(dmodel)
 
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x, "b outer inner mod k -> (b outer mod) inner k")
-        x = self.pos.forward_concat(x)
+        x = self.pos(x)
         x = einops.rearrange(x, "(b outer mod) inner k -> b outer inner mod k", b = self.batch, outer = self.outer, mod = self.mod)
         return x
+
 class huy_pos_outer(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8, dim_proj=0, npoints=400):
-        super().__init__()
-        self.pos = PositionalEncoding_AIAYN(dmodel, n_position=npoints)
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
-        x = einops.rearrange(x, "b outer inner mod ch k ->(b inner mod ch) outer k")
-        x = self.pos(x)
-        x = einops.rearrange(x, "(b inner mod ch) outer k -> b outer inner mod ch k", b = self.batch, inner = self.inner, mod = self.mod, ch = self.ch)
-        return x
-
-class learnable_pos_outer(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8, dim_proj=0):
-        super().__init__()
-        self.pos = nn.Parameter(torch.randn([1,outer,dmodel]))
-
-    def forward(self, x):
-        x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
-        x = einops.rearrange(x, "b outer inner mod k ->(b inner mod) outer k")
-        x = x + self.pos[:,:x.shape[1]]
-        x = einops.rearrange(x, "(b inner mod) outer k -> b outer inner mod k", b = self.batch, inner = self.inner, mod = self.mod)
-        return x
-class huy_pos_concat_outer(nn.Module):
-    def __init__(self, dmodel, pos, inner, outer, modalities, channels, num_layers=1, heads=8, dim_proj=0):
+    def __init__(self, dmodel, pos, inner, outer, modalities, num_layers=1, heads=8):
         super().__init__()
         self.pos = PositionalEncoding_AIAYN(dmodel)
 
     def forward(self, x):
         x_shape = x.shape
         self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
-
         x = einops.rearrange(x, "b outer inner mod k ->(b inner mod) outer k")
-        x = self.pos.forward_concat(x)
+        x = self.pos(x)
         x = einops.rearrange(x, "(b inner mod) outer k -> b outer inner mod k", b = self.batch, inner = self.inner, mod = self.mod)
         return x
 
 class Multi_Transformer(nn.Module):
 
-    def __init__(self, dmodel, pos, inner, outer, layers = ["inner_att", "outer_att"], modalities =1, num_layers=1, heads=8, dim_feedforward=1024, dim_proj=1024):
+    def __init__(self, dmodel, pos, inner, outer, layers = ["inner_att", "outer_att"], modalities =1, num_layers=1, heads=8):
         super().__init__()
         self.pos = pos
         self.layers = layers
         for layer in self.layers:
-            setattr(self, layer, globals()[layer](dmodel, pos, inner, outer, modalities, num_layers, heads, dim_feedforward, dim_proj))
+            setattr(self, layer, globals()[layer](dmodel, pos, inner, outer, modalities, num_layers, heads))
 
     def forward(self,x):
         for layer in self.layers:
             this_layer = getattr(self, layer)
             x = this_layer(x)
         return x
-
-class My_TransformerEncoder(nn.Module):
-    r"""TransformerEncoder is a stack of N encoder layers
-
-    Args:
-        encoder_layer: an instance of the TransformerEncoderLayer() class (required).
-        num_layers: the number of sub-encoder-layers in the encoder (required).
-        norm: the layer normalization component (optional).
-
-    Examples::
-        >>> encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
-        >>> transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=6)
-        >>> src = torch.rand(10, 32, 512)
-        >>> out = transformer_encoder(src)
-    """
-    __constants__ = ['norm']
-
-    def __init__(self, encoder_layer, num_layers, norm=None):
-        super(My_TransformerEncoder, self).__init__()
-        self.layers = _get_clones(encoder_layer, num_layers)
-        self.num_layers = num_layers
-        self.norm = norm
-
-    def forward(self, src: Tensor, src_ca: Optional[Tensor]=None, src_ca_ca: Optional[Tensor]=None, mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, return_layer="last", ca_type=None, **kwargs) -> Tensor:
-        r"""Pass the input through the encoder layers in turn.
-
-        Args:
-            src: the sequence to the encoder (required).
-            mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        extract_norm = kwargs["extract_norm"] if "extract_norm" in kwargs else False
-
-        output = src
-        output_list = []
-        for li, mod in enumerate(self.layers):
-            if (src_ca is not None) and (src_ca_ca is not None):
-                this_ca = src_ca[li] if ca_type=="full" else src_ca
-                this_ca_ca = src_ca_ca[li] if ca_type=="full" else src_ca_ca
-                output = mod(output, crossatt_src=this_ca, crossatt_src_1=this_ca_ca,  src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-            elif (src_ca is not None):
-                this_ca = src_ca[li] if ca_type=="full" else src_ca
-                output = mod(output, crossatt_src=this_ca, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-            elif (src_ca_ca is not None):
-                this_ca_ca = src_ca_ca[li] if ca_type=="full" else src_ca_ca
-                output = mod(output, crossatt_ca_src=this_ca_ca, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-            else:
-                output = mod(output, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-            if return_layer != "last":
-                output_list.append(output)
-
-        if return_layer=="all":
-            output = torch.cat([i.unsqueeze(dim=0) for i in output_list])
-        return output
-
-class My_TransformerEncoder_shared(nn.Module):
-    def __init__(self, encoder_layers):
-        super(My_TransformerEncoder_shared, self).__init__()
-        for i, shared_enc in enumerate(encoder_layers):
-            setattr(self, "shared_enc_{}".format(i), shared_enc)
-        self.num_encoders = len(encoder_layers)
-
-    def forward(self, src: Tensor, mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm=False) -> Tensor:
-
-        for enc_i in range(self.num_encoders):
-            mod = getattr(self, "shared_enc_{}".format(enc_i))
-            src = mod(src, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-
-        return src
-
-class My_TransformerEncoder_CA_shared(nn.Module):
-
-    def __init__(self, encoder_layers):
-        super(My_TransformerEncoder_CA_shared, self).__init__()
-        for i, shared_enc in enumerate(encoder_layers):
-            setattr(self, "shared_enc_{}".format(i), shared_enc)
-        self.num_encoders = len(encoder_layers)
-
-    def forward(self, src: Tensor, src_ca: Tensor, mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm=False) -> Tensor:
-
-        for enc_i in range(self.num_encoders):
-            mod = getattr(self, "shared_enc_{}".format(enc_i))
-            src = mod(src, crossatt_src = src_ca, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-
-        return src
-
-class My_TransformerEncoder_CA(nn.Module):
-
-    __constants__ = ['norm']
-
-    def __init__(self, encoder_layer, num_layers, norm=None):
-        super(My_TransformerEncoder_CA, self).__init__()
-        self.layers = _get_clones(encoder_layer, num_layers)
-        self.num_layers = num_layers
-        self.norm = norm
-
-    def forward(self, src: Tensor, src_ca: Tensor, mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm=False) -> Tensor:
-        r"""Pass the input through the encoder layers in turn.
-
-        Args:
-            src: the sequence to the encoder (required).
-            mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        output = src
-
-        for mod in self.layers:
-            output = mod(output, crossatt_src = src_ca, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-
-        if self.norm is not None:
-            output = self.norm(output)
-
-        return output
-class My_TransformerEncoder_CA_CA(nn.Module):
-
-    __constants__ = ['norm']
-
-    def __init__(self, encoder_layer, num_layers, norm=None):
-        super(My_TransformerEncoder_CA_CA, self).__init__()
-        self.layers = _get_clones(encoder_layer, num_layers)
-        self.num_layers = num_layers
-        self.norm = norm
-
-    def forward(self, src: Tensor, src_ca_0: Tensor, src_ca_1: Tensor, mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None, extract_norm=False) -> Tensor:
-        r"""Pass the input through the encoder layers in turn.
-
-        Args:
-            src: the sequence to the encoder (required).
-            mask: the mask for the src sequence (optional).
-            src_key_padding_mask: the mask for the src keys per batch (optional).
-
-        Shape:
-            see the docs in Transformer class.
-        """
-        output = src
-
-        for mod in self.layers:
-            output = mod(output, src_ca_0, src_ca_1, src_mask=mask, src_key_padding_mask=src_key_padding_mask, extract_norm=extract_norm)
-
-        if self.norm is not None:
-            output = self.norm(output)
-
-        return output
-
-class My_TransformerDecoder(nn.Module):
-
-    __constants__ = ['norm']
-
-    def __init__(self, encoder_layer, num_layers, norm=None):
-        super(My_TransformerDecoder, self).__init__()
-        self.layers = _get_clones(encoder_layer, num_layers)
-        self.num_layers = num_layers
-        self.norm = norm
-
-    def forward(self, tgt: Tensor, memory: Tensor, tgt_mask: Optional[Tensor] = None,
-                memory_mask: Optional[Tensor] = None, tgt_key_padding_mask: Optional[Tensor] = None,
-                memory_key_padding_mask: Optional[Tensor] = None, extract_norm=False) -> Tensor:
-        output = tgt
-
-        for mod in self.layers:
-            output = mod(output = output, input = memory, output_mask=tgt_mask, input_mask=memory_mask, extract_norm=extract_norm)
-
-        if self.norm is not None:
-            output = self.norm(output)
-
-        return output
-
-def _get_clones(module, N):
-    return nn.ModuleList([copy.deepcopy(module) for i in range(N)])
 
 class Attention(nn.Module):
     def __init__(self, hidden_size):
@@ -4333,9 +1760,11 @@ class Context_Attention(nn.Module):
 
     def forward(self, x):
         # batch
-        at = self.tanh(self.attn(x))
-        at = self.softmax(einsum("bij, j -> bi",at,self.ae))
-        return at
+        x = self.tanh(self.attn(x))
+        ae = self.ae.repeat(x.size(0), 1).unsqueeze(1)
+        x = einsum("bij, bmj-> bi",x,ae)
+        x = self.softmax(x)
+        return x
 
 
 class EEG_TransferTransformer_Fusion(nn.Module):
@@ -4528,8 +1957,7 @@ class EEG_Embedding_EDF_STFT(nn.Module):
         # )
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> b (outer inner) (mod k) ")
         x = self.embedding(x)
         x = einops.rearrange(x,"b (outer inner) (mod k) -> b outer inner mod k ", mod =1, inner =self.inner, b=self.batch)
@@ -4567,8 +1995,7 @@ class EEG_Embedding_EDF_STFT_1(nn.Module):
     def forward(self, xeeg, xeog):
 
         x_shape = xeeg.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
 
         xeeg = einops.rearrange(xeeg,"b outer inner mod k -> (b outer) mod k inner ")
         xeeg = self.conv1(xeeg)
@@ -4616,8 +2043,7 @@ class EEG_Embedding_EDF_STFT_2(nn.Module):
         # )
     def forward(self, x):
         x_shape = x.shape
-        self.batch, self.outer, self.inner, self.mod, self.ch = x_shape[0], x_shape[1], x_shape[2], x_shape[3], x_shape[4]
-
+        self.batch, self.outer, self.inner, self.mod = x_shape[0], x_shape[1], x_shape[2], x_shape[3]
         x = einops.rearrange(x,"b outer inner mod k -> b (outer inner) (mod k) ")
         x = self.embedding(x)
         x = einops.rearrange(x,"b (outer inner) (mod k) -> b outer inner mod k ", mod =1, inner =self.inner, b=self.batch)

@@ -1,0 +1,40 @@
+#### Copy this file for each experiment as 'YYYYMMDD_experiment_name.job'
+#### and edit the lines with '## EDIT' with your configuration.
+#### Add one or more python opts_files to the list at the bottom (not comma-seperated)
+#### Check https://wiki.esat.kuleuven.be/visics/condor for more information about requirements
+
+
+##################################
+######### FIXED SETTINGS #########
+##################################
+# Normal execution
+Universe = Vanilla
+# Mail me for everything
+Notification = Always
+# executable or script to run
+executable = /users/sista/kkontras/Documents/Sleep_Project/condor_logs/script.sh
+# The job will 'cd' to this directory before starting, make sure to have _write_ access here.
+initialdir = /users/sista/kkontras/Documents/Sleep_Project/condor_logs
+# Log, Output and Error of condor handling of the jobs, saved in 'initifaaldir'
+Log          = $(ClusterId)_$(Process).log
+Output       = $(ClusterId)_$(Process).out
+Error        = $(ClusterId)_$(Process).err
+
+
+##################################
+####### VARIABLE SETTINGS ########
+##################################
+# Specify Requirements
+RequestCpus    = 12
+RequestMemory  = 10G
++RequestWalltime = 259198
+Request_GPUs   = 1
+NiceUser = true
+Requirements = ( machineowner == "Visics" ) && ( CUDAGlobalMemoryMb > 10000 || CUDA0GlobalMemoryMb > 10000 ) && (distribution == "Fedora")
+
+# Queue jobs (relative to <root-directory>/train_files/)
+Queue Arguments from (
+        /users/sista/kkontras/Documents/Sleep_Project/main_1.py
+        /users/sista/kkontras/Documents/Sleep_Project/main_1.py
+        /users/sista/kkontras/Documents/Sleep_Project/main_1.py
+)

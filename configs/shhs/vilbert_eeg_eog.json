@@ -1,0 +1,104 @@
+{
+  "exp_name": "Sleep EEG CNN Signle View Experiment",
+  "agent": "Sleep_Agent_Init_Train",
+  "mode": "train",
+  "cuda": true,
+  "gpu_device": [
+    0
+  ],
+  "seed": 28,
+  "batch_size": 32,
+  "test_batch_size": 32,
+  "num_classes": 5,
+  "learning_rate": 0.0001,
+  "max_lr": 0.03,
+  "scheduler": "cosanneal",
+  "lr_finder": false,
+  "momentum": 0.2,
+  "weight_decay": 1e-4,
+  "beta1": 0.9,
+  "beta2": 0.999,
+  "max_epoch": 1000,
+  "log_interval": 10,
+  "save_every": 5,
+  "validate_every": 100,
+  "n_epochs_stop": 5000,
+  "n_epochs_stop_after": 5,
+  "data_roots": "/esat/stadiustempdatasets/sleep_data/kkontras/Image_Dataset/Sleep_SHHS",
+  "data_view_dir": [
+    [
+      "Version_6_shhs1_lights_30/train/image_stft_eeg_file_map.txt"
+    ],
+    [
+      "Version_6_shhs1_lights_30/train/image_stft_eog_file_map.txt"
+    ]
+  ],
+  "split_method": "patients_test",
+  "folds_file": "/esat/smcdata/users/kkontras/Image_Dataset/Sleep_EDFX/Version_1_30min/huy_folds.pkl",
+  "val_patient_num": 3,
+  "fold_size": 7,
+  "fold": 0,
+  "val_split_rate": 0.016920,
+  "test_split_rate": 0.3,
+  "rand_splits": 13,
+  "rand_split": 0,
+  "validation": true,
+  "rec_test": false,
+  "use_test_set": true,
+  "verbose": true,
+  "model_class": "EEG_SLEEP_EDF78_2",
+  "post_proc_step": 15,
+  "seq_legth": [
+    21,
+    0
+  ],
+  "shuffle_train": true,
+  "seq_views": [
+    false
+  ],
+  "keep_view": [
+    1,
+    0
+  ],
+  "inner_overlap": [
+    0.5,
+    0.5
+  ],
+  "num_modalities": 1,
+  "channel": 0,
+  "test_postprocessing": false,
+  "val_postprocessing": false,
+  "test_on_tops": true,
+  "dataloader_class": "SleepDataLoader_EDF",
+  "save_dir": "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/shhs_sleepTransformer_eegeog.pth.tar",
+  "save_dir_encoder": [
+    "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_emb.pth.tar",
+    "/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/tf_seq_0.pth.tar"
+  ],
+  "encoder_models": [],
+  "pretrainedEncoder": [
+    false,
+    false,
+    false
+  ],
+  "savetrainedEncoder": [
+    false,
+    false,
+    false
+  ],
+  "freeze_encoders": [
+    false,
+    false,
+    false
+  ],
+  "load_ongoing": false,
+  "augmentation": {},
+  "save_plots": true,
+  "plot_stft_num": 0,
+  "print_statistics": true,
+  "data_loader_workers": 12,
+  "pin_memory": true,
+  "async_loading": true,
+  "tdqm_disable": true,
+  "res": true
+}

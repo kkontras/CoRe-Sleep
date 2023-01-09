@@ -4,14 +4,13 @@ Code adapted from: https://pytorch.org/tutorials/intermediate/reinforcement_q_le
 """
 
 import torch
-# import torchvision.transforms as transforms
+import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
 
-# resize = transforms.Compose([transforms.ToPILImage(),
-#                              transforms.Resize(40, interpolation=Image.CUBIC),
-#                              transforms.ToTensor()])
-resize = 0
+resize = transforms.Compose([transforms.ToPILImage(),
+                             transforms.Resize(40, interpolation=Image.CUBIC),
+                             transforms.ToTensor()])
 class CartPoleEnv:
     def __init__(self, screen_width):
         super().__init__()

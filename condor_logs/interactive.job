@@ -1,10 +1,31 @@
-RequestCpus     = 16
-RequestMemory   = 30G
-+RequestWallTime = 14400
-Request_GPUS    = 1
-Requirements = ( CUDAGlobalMemoryMb > 20000 || CUDA0GlobalMemoryMb > 20000 ) && (distribution == "Fedora") && (machine != "vladimir.esat.kuleuven.be")
+###########################
+# Submit an interactive job
+###########################
+
+RequestCpus     = 1
+RequestMemory   = 2G
++RequestWallTime = 3600
+Request_GPUS    = 3
 
 # If you want X11 forwarding, uncomment this
 #Requirements = ( HasX11 == True )
 
-Queue
+Queue Arguments from (
+        /users/sista/kkontras/Documents/Sleep_Project/main_test.py
+)
+
+##################################
+######### FIXED SETTINGS #########
+##################################
+# Normal execution
+Universe = Vanilla
+# Mail me for everything
+Notification = Always
+# executable or script to run
+executable = /users/sista/kkontras/Documents/Sleep_Project/condor_logs/script.sh
+# The job will 'cd' to this directory before starting, make sure to have _write_ access here.
+initialdir = /users/sista/kkontras/Documents/Sleep_Project/condor_logs
+# Log, Output and Error of condor handling of the jobs, saved in 'initialdir'
+Log          = $(ClusterId)_$(Process).log
+Output       = $(ClusterId)_$(Process).out
+Error        = $(ClusterId)_$(Process).err

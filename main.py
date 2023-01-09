@@ -9,11 +9,26 @@ import numpy as np
 
 def main():
     config_list = [
-        "./configs/shhs/single_channel/fourier_transformer_cls_eeg_conv.json",
-        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_v2.json",
-        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_rpos.json",
-        # "./configs/shhs/multi_modal/eeg_eog/fourier_transformer_eeg_eog_mat_merged_glearnedbias_rpos.json",
-
+        # "./configs/sleepnet/eeg.json",
+        # "./configs/sleepnet/eeg_channels.json",
+        # "./configs/sleepnet/eeg_1ch.json",
+        # "./configs/sleep_edf/cnn/cnn.json",
+        # "./configs/sleepnet/eeg_seq.json",
+        # "./configs/sleepnet/eeg_att.json",
+        # "./configs/sleepnet/stft.json",
+        # "./configs/sleepnet/stft_att.json",
+        # "./configs/sleepnet/fusion.json",
+        # "./configs/sleepnet/fusion_att.json",
+        # "./configs/sleepnet/fusion_MulT.json",
+        # "./configs/sleepnet/fusion_seq_small.json",
+        # "./configs/sleepnet/fusion_seq_big_test.json",
+        # "./configs/sleepnet/fusion_xbig.json",
+        # "./configs/sleepnet/fusion_xbig_duo.json",
+        # "./configs/sleepnet/fusion_xbig_duo_matt.json",
+        # "./configs/sleepnet/fusion_xbig_duo_satt.json",
+        # "./configs/sleepnet/fusion_xbig_duo_eatt.json",
+        # "./configs/sleepnet/fusion_xbig_quad.json",
+        # "./configs/sleepnet/config_eeg_unet.json",
     ]
     finals = []
     for i in config_list:
