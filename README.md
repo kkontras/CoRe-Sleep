@@ -40,6 +40,16 @@ CoRe-Sleep/
 │── requirements.txt    # Dependencies
 └── README.md           # You are here
 ```
+## Downloading Large Model Files
+
+This repository uses **Git LFS** to track large model weights in the `experintents/ and utils/` folders. Follow these steps to get all files correctly:
+
+```bash
+git lfs install
+git clone https://github.com/kkontras/CoRe-Sleep.git
+cd repo
+git lfs pull
+```
 
 ## 🔍 Evaluation & Post-hoc
 ```bash
