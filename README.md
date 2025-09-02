@@ -21,7 +21,7 @@ Key features:
 
 ---
 
-
+ 
 ## 📂 Repository Structure
 
 ```text
@@ -47,7 +47,7 @@ This repository uses **Git LFS** to track large model weights in the `experinten
 ```bash
 git lfs install
 git clone https://github.com/kkontras/CoRe-Sleep.git
-cd repo
+cd CoRe-Sleep
 git lfs pull
 ```
 
@@ -90,7 +90,7 @@ Following the pipeline described in the paper:
 - Labels are merged as: **{Wake, N1, N2, N3, REM}** (N3 = N3 + N4)
 
 ### 4. Implementation
-Preprocessing and dataset handling were implemented using SleepTransformer paper. 
+Preprocessing and dataset handling were implemented using SleepTransformer paper. [Preprocessing Code](https://github.com/pquochuy/SleepTransformer/tree/main/shhs)
 
 
 ##  Citation
