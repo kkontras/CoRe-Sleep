@@ -188,10 +188,12 @@ config_list = [
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_mult_aligninner_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_mult_aligninner_trial2_pt.json",
 
-    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial1_pt.json",
-    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial2_pt.json",
+    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial1_pt.json",
+    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial2_pt.json",
+    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial2_pt.json",
+    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial2.json",
 
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_trial1_pt.json",
@@ -199,12 +201,27 @@ config_list = [
 
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al40_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al40_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al40_trial2.json",
+
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al60_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al60_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al60_trial2.json",
+
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al80_trial1_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial2.json",
+
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al80_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al80_trial2.json",
+
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial1_pt.json",
-    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial1_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial2.json",
+
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial2.json",
+
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al200_trial1_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al200_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al200_trial2.json",
 
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_sharedall_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_sharedall_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_trial1_pt.json",
@@ -253,9 +270,9 @@ config_list = [
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_mult_aligninner_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_mult_aligninner_trial2_pt.json",
 
-    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_aligninner_v2_trial1.json",
-    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_aligninner_v2_trial1_pt.json",
-    "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_aligninner_v2_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_aligninner_v2_trial1.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_aligninner_v2_trial1_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_aligninner_v2_trial2_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_nomult_al01_aligninner_v2_trial1.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_nomult_al01_aligninner_v2_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Early_nomult_al01_aligninner_v2_trial2_pt.json",
@@ -301,7 +318,7 @@ for i, config_name in enumerate(config_list):
             continue
         plotter = LogsPlotter(config=importer.config, logs=importer.checkpoint["logs"])
 
-        importer.fold = count*10 + fold
+        importer.fold = count * 10 + fold
         # try:
         #     importer.change_config(attr="model.args.shared_preds", value=False)
         #     a = importer.get_model()
@@ -311,51 +328,70 @@ for i, config_name in enumerate(config_list):
         #     continue
 
         multi_fold_results = importer.print_progress(multi_fold_results=multi_fold_results, latex_version=False)
-        importer.print_progress_aggregated(multi_fold_results=multi_fold_results, latex_version=True)
+        # importer.print_progress_aggregated(multi_fold_results=multi_fold_results, latex_version=True)
 
 
 
-        # if (i+1)%3 == 0:
-        #     print(multi_fold_results.keys())
-        #     eeg.append(np.array([multi_fold_results[i]["k"]["eeg"] for i in multi_fold_results]).mean())
-        #     eog.append(np.array([multi_fold_results[i]["k"]["eog"] for i in multi_fold_results]).mean())
-        #     mm.append(np.array([multi_fold_results[i]["k"]["combined"] for i in multi_fold_results]).mean())
-        #     eeg_std.append(np.array([multi_fold_results[i]["k"]["eeg"] for i in multi_fold_results]).std())
-        #     eog_std.append(np.array([multi_fold_results[i]["k"]["eog"] for i in multi_fold_results]).std())
-        #     mm_std.append(np.array([multi_fold_results[i]["k"]["combined"] for i in multi_fold_results]).std())
+        # if (i+1)%2 == 0:
+        #     print(len(multi_fold_results.keys()))
+        #     metric = "k"
+        #     if len(multi_fold_results.keys()) == 1:
+        #         eeg.append(multi_fold_results[list(multi_fold_results.keys())[0]][metric]["eeg"])
+        #         eog.append(multi_fold_results[list(multi_fold_results.keys())[0]][metric]["eog"])
+        #         mm.append(multi_fold_results[list(multi_fold_results.keys())[0]][metric]["combined"])
+        #         eeg_std.append(0)
+        #         eog_std.append(0)
+        #         mm_std.append(0)
+        #     else:
+        #         eeg.append(np.array([multi_fold_results[i][metric]["eeg"] for i in multi_fold_results]).mean())
+        #         eog.append(np.array([multi_fold_results[i][metric]["eog"] for i in multi_fold_results]).mean())
+        #         mm.append(np.array([multi_fold_results[i][metric]["combined"] for i in multi_fold_results]).mean())
+        #         eeg_std.append(np.array([multi_fold_results[i][metric]["eeg"] for i in multi_fold_results]).std())
+        #         eog_std.append(np.array([multi_fold_results[i][metric]["eog"] for i in multi_fold_results]).std())
+        #         mm_std.append(np.array([multi_fold_results[i][metric]["combined"] for i in multi_fold_results]).std())
         #     multi_fold_results = {}
 
         # plotter.sleep_plot_losses()
         # plotter.sleep_plot_performance()
-    count +=1
+    count = count + 1
 
+print(eeg)
+print(eeg_std)
+eeg, eog, mm = np.array(eeg), np.array(eog), np.array(mm)
+eeg_std, eog_std, mm_std = np.array(eeg_std), np.array(eog_std), np.array(mm_std)
 # eeg = np.array([multi_fold_results[i]["k"]["eeg"] for i in multi_fold_results])
 # eog = np.array([multi_fold_results[i]["k"]["eog"] for i in multi_fold_results])
 # mm = np.array([multi_fold_results[i]["k"]["combined"] for i in multi_fold_results])
-# x = np.array([ 10, 20, 40, 60, 80])
-# import matplotlib.pyplot as plt
-# plt.figure(figsize=(10,6))
-#
-# ax = plt.subplot(111)
-# plt.plot(x, eeg, color="blue", label="EEG")
-#
-# plt.plot(x, eog, color="orange", label="EOG")
-# plt.plot(x, mm, color="black", label="Multimodal")
-# plt.legend(fontsize=12, frameon=False, ncol=3,  bbox_to_anchor=(0.28, 0.88))
-# plt.xlabel("Outer Sequence Length", fontsize=12)
-# plt.ylabel("Cohens Kappa", fontsize=12)
-# plt.xticks(x, fontsize = 8)
-# ax.spines['top'].set_visible(False)
-# ax.spines['right'].set_visible(False)
-#
-# # ax.spines['bottom'].set_visible(False)
-# plt.yticks([0.75,0.80,0.85], fontsize = 8)
-#
-# plt.xlim(0,100)
-# plt.ylim(0.75,0.9)
-# plt.title("Training with different outer sequence", fontsize=14)
+x = np.array([ 5, 10, 21, 40, 60, 80])
+import matplotlib.pyplot as plt
+plt.figure(figsize=(14,6))
+ax = plt.subplot(111)
+plt.fill_between(x, mm-mm_std, mm+mm_std, alpha=0.5, color="black")
+plt.fill_between(x, eeg-eeg_std, eeg+eeg_std, alpha=0.5, color="blue")
+plt.fill_between(x, eog-eog_std, eog+eog_std, alpha=0.5, color="orange")
+plt.plot(x, mm, color="black", label="Multimodal")
+plt.plot(x, eeg, color="blue", label="EEG")
+plt.plot(x, eog, color="orange", label="EOG")
+plt.scatter(x, mm, color="black")
+plt.scatter(x, eeg, color="blue")
+plt.scatter(x, eog, color="orange")
+leg = plt.legend(fontsize=28, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1))
+for line in leg.get_lines():
+    line.set_linewidth(4.0)
 
-# plt.show()
+plt.xlabel("Outer Sequence Length", fontsize=28)
+plt.ylabel("Cohens Kappa", fontsize=28)
+plt.xticks(x, fontsize = 8)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.yticks([0.80,0.85], fontsize = 14)
+plt.xticks(x, fontsize = 14)
+plt.xlim(0,85)
+plt.ylim(0.75,0.88)
+plt.title("Models with different outer sequence length", fontsize=32)
+plt.tight_layout()
+plt.savefig("./alignment_outer_sequence.svg")
+plt.show()
 
 # eeg, eog, mm = np.array(eeg), np.array(eog), np.array(mm)
 # eeg_std, eog_std, mm_std = np.array(eeg_std), np.array(eog_std), np.array(mm_std)
@@ -392,3 +428,4 @@ for i, config_name in enumerate(config_list):
 # plt.savefig("./incomplete_100c_2000e_0o.svg")
 # plt.savefig("./incomplete_100c_2000e_0o.png")
 # plt.show()
+

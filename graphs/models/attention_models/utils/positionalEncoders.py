@@ -3,6 +3,8 @@ import torch.nn as nn
 import math
 from torch.autograd.variable import Variable
 import numpy as np
+import einops
+from einops import rearrange
 
 class PositionalEncoder(nn.Module):
     """
@@ -113,7 +115,7 @@ class Fourier_Sleep_PositionalEncoder_Outer(nn.Module):
 
 class PositionalEncoding_AIAYN(nn.Module):
 
-    def __init__(self, d_hid, n_position=200):
+    def __init__(self, d_hid, n_position=400):
         super(PositionalEncoding_AIAYN, self).__init__()
 
         # Not a parameter
@@ -134,3 +136,71 @@ class PositionalEncoding_AIAYN(nn.Module):
 
     def forward(self, x):
         return x + self.pos_table[:, :x.size(1)].clone().detach()
+
+    def forward_concat(self, x):
+        pos = self.pos_table[:, :x.size(1)].detach()
+        x = torch.cat([ x, pos.repeat( x.shape[0], 1, 1)], dim=2)
+        return x
+
+
+def relative_to_absolute(q):
+    """
+    Converts the dimension that is specified from the axis
+    from relative distances (with length 2*tokens-1) to absolute distance (length tokens)
+      Input: [bs, heads, length, 2*length - 1]
+      Output: [bs, heads, length, length]
+    """
+    b, h, l, _, device, dtype = *q.shape, q.device, q.dtype
+    dd = {'device': device, 'dtype': dtype}
+
+
+
+    col_pad = torch.zeros((b, h, l, 1), **dd)
+
+    x = torch.cat((q, col_pad), dim=3)  # zero pad 2l-1 to 2l
+    flat_x = rearrange(x, 'b h l c -> b h (l c)')
+    flat_pad = torch.zeros((b, h, l - 1), **dd)
+    flat_x_padded = torch.cat((flat_x, flat_pad), dim=2)
+    final_x = flat_x_padded.reshape(b, h, l + 1, 2 * l - 1)
+    final_x = final_x[:, :, :l, (l - 1):]
+    return final_x
+
+
+
+
+class Relative_Positional_Embeddings(nn.Module):
+    def __init__(self, tokens, dim_head, max_tokens = 2000, heads=None):
+        """
+        Output: [batch head tokens tokens]
+        Args:
+            tokens: the number of the tokens of the seq
+            dim_head: the size of the last dimension of q
+            heads: if None representation is shared across heads.
+            else the number of heads must be provided
+        """
+        super().__init__()
+        scale = dim_head ** -0.5
+        self.shared_heads = heads if heads is not None else True
+        if self.shared_heads:
+            self.rel_pos_emb = nn.Parameter(torch.randn(heads, 2 * tokens - 1, dim_head) * scale)
+        else:
+            self.rel_pos_emb = nn.Parameter(torch.randn(2 * tokens - 1, dim_head) * scale)
+
+        #Create an indice table to call the matrix and speed up during training
+        indices = torch.arange(-tokens, tokens+1)
+        self.indices_ext = torch.cat([indices[0].repeat(int((max_tokens - 2 * tokens + 1))), indices, indices[-1].repeat(int((max_tokens - 2 * tokens + 1)))], dim=0)
+        self.indices_ext = self.indices_ext.unsqueeze(dim=0).repeat(max_tokens, 1)
+        for i in range(max_tokens):
+            self.indices_ext[i] = torch.roll(self.indices_ext[i], shifts=i)
+        self.indices_ext = self.indices_ext[:max_tokens - tokens + 2, max_tokens - tokens + 1:]
+
+    def forward(self, q):
+        if self.shared_heads:
+            this_indices_ext = self.indices_ext[:q.shape[2], :q.shape[2]]
+            emb = torch.einsum('b h t d, h r t d -> b h t r', q, self.rel_pos_emb[:,this_indices_ext])
+        else:
+            this_indices_ext = self.indices_ext[:q.shape[2],q.shape[2]]
+            emb = torch.einsum('b h t d, r t d -> b h t r', q, self.rel_pos_emb[this_indices_ext])
+
+        return emb
+

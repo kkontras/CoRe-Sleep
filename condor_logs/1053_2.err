@@ -1,0 +1,30 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2023/01/11 04:13:31	INFO	wandb	multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2023/01/11 04:13:33	INFO	wandb	communicating current version
+2023/01/11 04:13:33	INFO	wandb	got version response upgrade_message: "wandb version 0.13.8 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2023/01/11 04:13:34	INFO	wandb	atexit reg
+2023/01/11 04:13:34	INFO	wandb	redirect: SettingsConsole.WRAP_RAW
+2023/01/11 04:13:34	INFO	wandb	Wrapping output streams.
+2023/01/11 04:13:34	INFO	wandb	Redirects installed.
+2023/01/11 04:13:37	INFO	wandb	Watching
+wandb: - 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: \ 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: | 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: / 0.001 MB of 0.008 MB uploaded (0.000 MB deduped)wandb: - 0.001 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: \ 0.001 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: | 1.046 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: / 1.046 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: - 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: \ 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: | 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: / 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: - 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: \ 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb: | 1.051 MB of 1.051 MB uploaded (0.000 MB deduped)wandb:                                                                                
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_3.py", line 104, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_3.py", line 100, in main
+    agent.run()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 173, in run
+    self.mem_loader.sleep_load(self.config.model.save_dir)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Loader.py", line 120, in sleep_load
+    checkpoint = torch.load(file_name)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/serialization.py", line 771, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/serialization.py", line 270, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/serialization.py", line 251, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: '/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/shhs1/multi_modal/paper_models/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_rpos_nopos_nonsharedpreds_drop03_aligninner_al40_trial2.pth.tar'
+2023/01/11 04:13:45	WARNING	wandb	message_loop has been closed

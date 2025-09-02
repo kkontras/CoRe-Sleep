@@ -1,0 +1,64 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2023/01/14 16:19:52	INFO	wandb	multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2023/01/14 16:19:59	INFO	wandb	communicating current version
+2023/01/14 16:20:00	INFO	wandb	got version response upgrade_message: "wandb version 0.13.9 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2023/01/14 16:20:05	INFO	wandb	atexit reg
+2023/01/14 16:20:05	INFO	wandb	redirect: SettingsConsole.WRAP_RAW
+2023/01/14 16:20:05	INFO	wandb	Wrapping output streams.
+2023/01/14 16:20:05	INFO	wandb	Redirects installed.
+2023/01/14 16:20:46	INFO	wandb	Watching
+wandb: - 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: \ 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: | 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: / 0.001 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: - 0.001 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: \ 0.001 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: | 0.386 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: / 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: - 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: \ 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: | 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: / 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: - 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: \ 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb: | 1.054 MB of 1.054 MB uploaded (0.000 MB deduped)wandb:                                                                                
+Traceback (most recent call last):
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_5.py", line 72, in <module>
+    main()
+  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_5.py", line 68, in main
+    agent.run()
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 180, in run
+    self.trainer.sleep_train_step(trial)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 52, in sleep_train_step
+    loss, pred, label, incomplete_idx  = self.this_train_step_func(served_dict)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 237, in sleep_train_one_step_alignment_order_multisupervised
+    output = self.get_predictions_time_series_onlyskip(views=data, inits=inits, skip_modality=served_dict["skip_view"], return_matches=return_matches)
+  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 648, in get_predictions_time_series_onlyskip
+    global_pred = self.agent.model(views, skip_modality=skip_modality, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/parallel/data_parallel.py", line 169, in forward
+    return self.module(*inputs[0], **kwargs[0])
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 65, in forward
+    x = enc(x, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/parallel/data_parallel.py", line 169, in forward
+    return self.module(*inputs[0], **kwargs[0])
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 243, in forward
+    output = self.forward_common(xeeg=xeeg, xeog=xeog, output=output, skip_modality=skip_modality, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 295, in forward_common
+    xeeg_ca_common = self.inner_tf_eeg.forward_inner(xeeg, xeog_common_i)[:, :, :1]
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 1473, in forward_inner
+    x = self.tf(x, src_ca = x_ca, src_ca_ca = x_ca_ca,  **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 1630, in forward
+    output = mod(output, crossatt_src=this_ca, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 1576, in forward
+    src_att, att = self.self_attn(src_extr_att, src_extr_att, src_extr_att, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 1779, in forward
+    y, att = self.scaled_dotproduct_attention(q, k, v, self.gbiased, prevalue=prev, mask=attn_mask, **kwargs)
+  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 1835, in forward
+    scores = (query.matmul(key.transpose(-2, -1)) + rel_key)/ math.sqrt(dk)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 36.00 MiB (GPU 0; 7.93 GiB total capacity; 7.10 GiB already allocated; 9.19 MiB free; 7.37 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+2023/01/14 16:21:32	WARNING	wandb	message_loop has been closed

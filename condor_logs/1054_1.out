@@ -1,0 +1,146 @@
+Starting Job
+/users/sista/kkontras/Documents/Sleep_Project/main_paper_2.py
+/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/bin/python
+Python 3.7.10
+/users/sista/kkontras/Documents/Sleep_Project
+1
+ THE Configuration of your experiment ..
+{'agent': 'Sleep_Agent_Init_Train',
+ 'augmentation': {},
+ 'channel': 0,
+ 'dataset': {'cache_datasets': {'test': False, 'train': False, 'valid': False},
+             'data_roots': '/esat/biomeddata/SHHS_Dataset/no_backup',
+             'data_split': {'fold': 0,
+                            'fold_size': 7,
+                            'folds_file': '/users/sista/kkontras/Documents/Huy_shhs1/HUY '
+                                          'SHHS1 CODE/data_split_eval.mat',
+                            'rand_split': 0,
+                            'rand_splits': 13,
+                            'split_method': 'patients_huy',
+                            'test_split_rate': 0.3,
+                            'val_patient_num': 3,
+                            'val_split_rate': 0.01692},
+             'data_view_dir': [{'data_type': 'stft',
+                                'list_dir': 'patient_mat_list.txt',
+                                'mod': 'eeg',
+                                'num_ch': 1},
+                               {'data_type': 'stft',
+                                'list_dir': 'patient_eog_mat_list.txt',
+                                'mod': 'eog',
+                                'num_ch': 1}],
+             'dataloader_class': 'SleepDataLoader_mat_huy',
+             'huy_data': True,
+             'inner_overlap': [0.5, 0.5],
+             'keep_view': [1, 0],
+             'seq_length': [10, 0],
+             'seq_views': [False],
+             'shuffle_train': True},
+ 'early_stopping': {'log_interval': 10,
+                    'max_epoch': 1000,
+                    'n_steps_stop': 250,
+                    'n_steps_stop_after': 400,
+                    'save_every': 1,
+                    'validate_after': 0,
+                    'validate_every': 400},
+ 'exp_name': 'Sleep EEG-EOG BLIP Experiment',
+ 'lr_finder': False,
+ 'lr_finder_steps': 100,
+ 'mode': 'train',
+ 'model': {'args': {'augment_within': False,
+                    'dmodel': 128,
+                    'dropout': 0.3,
+                    'fc_inner': 1024,
+                    'ignore_alignment_val': True,
+                    'multi_loss': {'multi_loss_weights': {'alignment_loss': 0.1,
+                                                          'multi_supervised_loss': {'combined': 1,
+                                                                                    'eeg': 1,
+                                                                                    'eog': 1},
+                                                          'order_loss': 0}},
+                    'num_classes': 5,
+                    'shared_pred': False,
+                    'three_modes': True,
+                    'training_type': 'alignment_order_multisupervised'},
+           'encoders': [{'args': {'align_inner': True,
+                                  'd_model': 128,
+                                  'dim_feedforward': 1024,
+                                  'dim_proj': 128,
+                                  'dropout': 0.3,
+                                  'inner_biased': False,
+                                  'mod_token': False,
+                                  'num_heads': 8,
+                                  'num_layers': 4,
+                                  'outer_biased': False,
+                                  'outer_rep': False,
+                                  'pos': False,
+                                  'rpos': True,
+                                  'shared': True,
+                                  'skip_random_mod': False},
+                         'encoders': [],
+                         'freeze_encoder': False,
+                         'model': 'SleepEnc_BLIP_EEG_EOG_shared_free_cliplike',
+                         'pretrainedEncoder': {'dir': '', 'use': False},
+                         'savetrainedEncoder': {'dir': '', 'save': False}}],
+           'load_ongoing': False,
+           'model_class': 'EEG_SLEEP_BLIP_GM_MultiMode',
+           'pretrained_model': {'dir': '', 'use': False},
+           'save_dir': '/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/shhs1/multi_modal/paper_models/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_rpos_nopos_nonsharedpreds_drop03_aligninner_al10_trial2.pth.tar'},
+ 'normalization': {'calculate_metrics': False,
+                   'dir': '/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl',
+                   'metrics_type': 'train_dataset',
+                   'save_metrics': False,
+                   'use': True},
+ 'num_classes': 5,
+ 'num_modalities': 1,
+ 'optimizer': {'beta1': 0.9,
+               'beta2': 0.999,
+               'learning_rate': 0.0001,
+               'momentum': 0.2,
+               'type': 'Adam',
+               'weight_decay': 0.0001},
+ 'plots': {'plot_stft_num': 0, 'save': False},
+ 'post_proc': {'post_proc_step': 15,
+               'test_postprocessing': False,
+               'val_postprocessing': False},
+ 'scheduler': {'max_lr': 0.03, 'type': 'cosanneal', 'warm_up': 55},
+ 'statistics': {'ce_weights': {'temp': 0.1, 'use': False}, 'print': False},
+ 'training_params': {'adversarial_training': {'adv_epsilon': 0.01,
+                                              'use': False},
+                     'async_loading': True,
+                     'batch_size': 16,
+                     'cuda': True,
+                     'data_loader_workers': 8,
+                     'gpu_device': [0],
+                     'pin_memory': True,
+                     'rec_test': False,
+                     'res': True,
+                     'seed': 35,
+                     'tdqm_disable': True,
+                     'test_batch_size': 16,
+                     'test_on_tops': True,
+                     'use_test_set': True,
+                     'validation': True,
+                     'verbose': True,
+                     'wandb_disable': False}}
+ *************************************** 
+The experiment name is Sleep EEG-EOG BLIP Experiment
+ *************************************** 
+We are splitting dataset by huy splits
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+{'use_type': False, 'skip_skips': True}
+Loading metrics from /esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl
+Weights are [1. 1. 1. 1. 1.]
+23246
+400
+59
+tensor([1., 1., 1., 1., 1.], device='cuda:0')
+We are not shuffling the data
+Training function is sleep_train_one_step_alignment_order_multisupervised
+Loss Weights are {'combined': 1, 'eeg': 1, 'eog': 1, 'alignments': 0.1, 'order': 0, 'consistency': 0, 'reconstruction': 0}
+We are not shuffling the data
+<class 'graphs.models.attention_models.BLIP.SleepEnc_BLIP_EEG_EOG_shared_free_cliplike'>
+Total number of trainable parameters are: 10001935
+Available cuda devices: 1, current device:0
+Total number of trainable parameters are: 10001935
+Job finished

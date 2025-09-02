@@ -75,7 +75,7 @@ dependencies:
     - build==0.8.0
     - cached-property==1.5.2
     - cachetools==5.2.0
-    - certifi==2022.9.24
+    - certifi==2020.11.8
     - cffi==1.15.1
     - chardet==3.0.4
     - charset-normalizer==2.1.1
@@ -157,7 +157,6 @@ dependencies:
     - mako==1.2.3
     - markdown==3.4.1
     - markupsafe==2.1.1
-    - matlabengineforpython==R2019b
     - matplotlib==3.5.3
     - matplotlib-inline==0.1.6
     - mistune==2.0.4

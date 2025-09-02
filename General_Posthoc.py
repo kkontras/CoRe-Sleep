@@ -186,16 +186,22 @@ config_list = [
 
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al5_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al10_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al40_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al40_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al40_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al60_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al60_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al60_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al80_trial1_pt.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al80_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al80_trial2.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial1_pt.json",
-    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial1_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial2_pt.json",
+    # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_drop03_aligninner_al100_trial2.json",
 
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Late_aligninner_trial1.json",
     # "./configs/paper_finals/shhs/fourier_transformer_eeg_eog_mat_BLIP_al01_shared_b16_freetrain_nopos_nonsharedpreds_Late_aligninner_trial2.json",
@@ -430,19 +436,19 @@ for i, config_name in enumerate(config_list):
 
         # best_model.module.shared_pred = True
 
-        # importer.change_config(attr="dataset.discard_nonskipped", value=False)
-        importer.change_config(attr="dataset.discard_nonskipped", value=True)
+        importer.change_config(attr="dataset.discard_nonskipped", value=False)
+        # importer.change_config(attr="dataset.discard_nonskipped", value=True)
         importer.change_config(attr="dataset.filter_windows", value={
                                             "train": {"use_type": False, "include_skipped": False},
                                             "val": {"use_type": False, "include_skipped": False},
-                                            # "test": {"use_type": "full", "skip_skips": True, "whole_patient": True, "std_threshold": 41, "perc_threshold": 0.4}})
-                                            "test": {"use_type": "include_only_skipped", "skip_skips":True, "whole_patient": True, "std_threshold": 30, "perc_threshold": 0.2}})
+                                            "test": {"use_type": "full", "skip_skips": True, "whole_patient": True, "std_threshold": 41, "perc_threshold": 0.4}})
+                                            # "test": {"use_type": "include_only_skipped", "skip_skips":True, "whole_patient": True, "std_threshold": 30, "perc_threshold": 0.2}})
                                             # "test": {"use_type": "include_only_skipped", "skip_skips":True, "whole_patient": False, "std_threshold": 41, "perc_threshold": 0.4}})
 
         importer.change_config(attr="dataset.data_split.fold", value=fold)
         # # # # importer.change_config(attr="dataset.seq_length", value=[3,0])
         # importer.change_config(attr="training_params.batch_size", value=64)
-        importer.change_config(attr="training_params.test_batch_size", value=64)
+        importer.change_config(attr="training_params.test_batch_size", value=256)
         #
         data_loader = importer.get_dataloaders()
 
@@ -453,7 +459,7 @@ for i, config_name in enumerate(config_list):
         validator = Validator(model=best_model, data_loader=data_loader, config=importer.config, device=device)
         test_results = validator.get_results(set="Test", print_results=True)
         multi_fold_results[count] = test_results
-        # validator.save_test_results(checkpoint=importer.checkpoint, save_dir=importer.config.model.save_dir, test_results=test_results, skipped = importer.config.dataset.discard_nonskipped)
+        validator.save_test_results(checkpoint=importer.checkpoint, save_dir=importer.config.model.save_dir, test_results=test_results, skipped = importer.config.dataset.discard_nonskipped)
         importer.print_progress_aggregated(multi_fold_results=multi_fold_results, latex_version=True)
 
         count = count+1

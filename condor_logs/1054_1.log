@@ -1,0 +1,31 @@
+000 (1054.001.000) 2023-01-11 13:37:23 Job submitted from host: <10.87.28.129:9618?addrs=10.87.28.129-9618&alias=timmermans.esat.kuleuven.be&noUDP&sock=schedd_2124_773f>
+...
+001 (1054.001.000) 2023-01-11 13:37:43 Job executing on host: <10.87.28.118:9618?addrs=10.87.28.118-9618&alias=stadius-nc-5.esat.kuleuven.be&noUDP&sock=startd_4288_ca31>
+...
+006 (1054.001.000) 2023-01-11 13:37:52 Image size of job updated: 78224
+	56  -  MemoryUsage of job (MB)
+	57228  -  ResidentSetSize of job (KB)
+...
+006 (1054.001.000) 2023-01-11 13:39:00 Image size of job updated: 60583348
+	56  -  MemoryUsage of job (MB)
+	57228  -  ResidentSetSize of job (KB)
+...
+005 (1054.001.000) 2023-01-11 13:39:00 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:21, Sys 0 00:00:06  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:21, Sys 0 00:00:06  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     1.84       16        16 
+	   Disk (KB)            :     1           1   1823526 
+	   Gpus (Average)       :     0.00        1         1 "CUDA1"
+	   GpusMemory (MB)      :   776                       
+	   Memory (MB)          :    56       16384     16384 
+
+	Job terminated of its own accord at 2023-01-11T12:39:00Z.
+...

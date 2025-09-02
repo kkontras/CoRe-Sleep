@@ -1,0 +1,79 @@
+000 (1055.003.000) 2023-01-11 13:44:02 Job submitted from host: <10.87.28.129:9618?addrs=10.87.28.129-9618&alias=timmermans.esat.kuleuven.be&noUDP&sock=schedd_2124_773f>
+...
+001 (1055.003.000) 2023-01-13 14:43:42 Job executing on host: <10.87.24.54:9618?addrs=10.87.24.54-9618&alias=spchcl23.esat.kuleuven.be&noUDP&sock=startd_2106_1e8a>
+...
+006 (1055.003.000) 2023-01-13 14:43:51 Image size of job updated: 340900
+	5  -  MemoryUsage of job (MB)
+	4192  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 14:48:52 Image size of job updated: 222854480
+	10987  -  MemoryUsage of job (MB)
+	11250404  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 14:53:53 Image size of job updated: 224551652
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 14:58:53 Image size of job updated: 456177728
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 15:08:54 Image size of job updated: 462094364
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 15:18:55 Image size of job updated: 462352308
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 16:29:02 Image size of job updated: 522261236
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 16:39:03 Image size of job updated: 522542056
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 17:04:06 Image size of job updated: 522542080
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 17:34:09 Image size of job updated: 522597912
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-13 17:44:10 Image size of job updated: 523103212
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-14 00:04:51 Image size of job updated: 523142384
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-14 16:31:32 Image size of job updated: 547206724
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-14 16:36:33 Image size of job updated: 547276912
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-15 19:24:20 Image size of job updated: 547608012
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-15 20:59:29 Image size of job updated: 569452820
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-15 21:29:32 Image size of job updated: 569621404
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+006 (1055.003.000) 2023-01-16 01:09:53 Image size of job updated: 569716624
+	12644  -  MemoryUsage of job (MB)
+	12947124  -  ResidentSetSize of job (KB)
+...
+009 (1055.003.000) 2023-01-16 14:43:58 Job was aborted.
+	The system macro SYSTEM_PERIODIC_REMOVE expression '(JobStatus == 5 && CurrentTime - EnteredCurrentStatus > 3600 * 24 * 30) || (JobStatus == 4 && CurrentTime - EnteredCurrentStatus > 3600 * 24 * 30) || (JobStatus == 1 && CurrentTime - EnteredCurrentStatus > 3600 * 24 * 90) || (JobStatus == 2 && (ProportionalSetSizeKb > (1024 * My.RequestMemory))) || (JobStatus == 2 && ((RemoteWallClockTime - CumulativeSuspensionTime) > My.RequestWalltime))' evaluated to TRUE
+...

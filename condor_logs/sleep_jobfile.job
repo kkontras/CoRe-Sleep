@@ -10,12 +10,12 @@ RequestMemory  = 16G
 +RequestWalltime = 259199
 Request_GPUs   = 1
 NiceUser = false
-Requirements = ( CUDAGlobalMemoryMb > 5000 || CUDA0GlobalMemoryMb > 5000 ) && (machine != "stadius-nc-4.esat.kuleuven.be")
+Requirements = ( CUDAGlobalMemoryMb > 5000 || CUDA0GlobalMemoryMb > 5000 ) && (machine != "stadius-nc-4.esat.kuleuven.be") && (machine != "stadius-nc-5.esat.kuleuven.be")
 Queue Arguments from (
-    /users/sista/kkontras/Documents/Sleep_Project/main_paper.py
     /users/sista/kkontras/Documents/Sleep_Project/main_paper_1.py
     /users/sista/kkontras/Documents/Sleep_Project/main_paper_2.py
     /users/sista/kkontras/Documents/Sleep_Project/main_paper_3.py
     /users/sista/kkontras/Documents/Sleep_Project/main_paper_4.py
     /users/sista/kkontras/Documents/Sleep_Project/main_paper_5.py
+    /users/sista/kkontras/Documents/Sleep_Project/main_paper_6.py
 )

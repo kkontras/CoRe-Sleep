@@ -13,6 +13,8 @@ from graphs.models.attention_models.stand_alone_att_vision import *
 import sys
 import transformers
 import collections
+from torch import Tensor
+from typing import Optional, Any
 
 sys.path.insert(1, '/users/sista/kkontras/Documents/Sleep_Project/Github_Project/vilbert-multi-task')
 

@@ -1,0 +1,12 @@
+[INFO]: Hi, This is root.
+[INFO]: After the configurations are successfully processed and dirs are created.
+[INFO]: The pipeline of the project will begin now.
+2023/01/11 13:39:01	INFO	wandb	multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2023/01/11 13:39:03	INFO	wandb	communicating current version
+2023/01/11 13:39:03	INFO	wandb	got version response upgrade_message: "wandb version 0.13.8 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2023/01/11 13:39:04	INFO	wandb	atexit reg
+2023/01/11 13:39:04	INFO	wandb	redirect: SettingsConsole.WRAP_RAW
+2023/01/11 13:39:04	INFO	wandb	Wrapping output streams.
+2023/01/11 13:39:04	INFO	wandb	Redirects installed.
+2023/01/11 13:39:07	INFO	wandb	Watching
