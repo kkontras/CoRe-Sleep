@@ -25,7 +25,7 @@
     },
     "load_ongoing": true,
     "pretrained_model": {"dir": "", "use": false},
-    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2025_data/Paper_Models/CoRe_Sleep/core_{}.pth.tar",
+    "save_dir": "./experiments/core_{}.pth.tar",
     "encoders": [
       {
         "model": "SleepEnc_BLIP_EEG_EOG_shared_free_cliplike",

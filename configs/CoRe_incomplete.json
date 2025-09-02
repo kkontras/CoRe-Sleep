@@ -32,7 +32,7 @@
     },
     "load_ongoing": false,
     "pretrained_model": {"dir": "", "use": false},
-    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2025_data/Paper_Models/CoRe_Sleep/core_incomplete_{}.pth.tar",
+    "save_dir": "./experiments/core_incomplete_{}.pth.tar",
     "encoders":[
       {
         "model": "SleepEnc",

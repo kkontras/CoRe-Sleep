@@ -44,7 +44,6 @@ class LogsPlotter():
         loss_max = np.max([np.max(train_loss), np.max(val_loss)])
         plt.ylim([loss_min - 0.05, loss_max + 0.05])
         plt.legend()
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
         plt.show()
 
     def sleep_plot_losses(self, chosen_loss = None):
@@ -96,7 +95,6 @@ class LogsPlotter():
             if not np.isnan(loss_min) and not np.isnan(loss_max):
                 plt.ylim([loss_min - 0.05, loss_max + 0.05])
             plt.legend()
-            # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
             plt.show()
         else:
             plt.close()
@@ -125,7 +123,6 @@ class LogsPlotter():
         plt.title("Total Loss")
         plt.ylim([loss_min - 0.05, loss_max + 0.05])
         plt.legend()
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
         plt.show()
 
     def plot_unimulti_performance(self):
@@ -169,7 +166,6 @@ class LogsPlotter():
         plt.title("Validation: Multimodal and Unimodal predictors")
         # plt.ylim([loss_min - 0.1, loss_max + 0.1])
         plt.legend()
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
         plt.show()
 
     def plot_regularizers(self):
@@ -415,7 +411,6 @@ class LogsPlotter():
             plt.title("F1 {} Predictors".format(loss_key))
             plt.ylim([loss_min - 0.05, loss_max + 0.05])
             plt.legend()
-            # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
             plt.show()
 
         train_k = {pred_key: np.array([self.logs["train_logs"][i]["k"][pred_key] for i in self.logs["train_logs"]]) for pred_key in list_predictors}
@@ -439,7 +434,6 @@ class LogsPlotter():
             plt.title("K {} Predictors".format(loss_key))
             plt.ylim([loss_min - 0.05, loss_max + 0.05])
             plt.legend()
-            # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
             plt.show()
 
         train_acc = {pred_key: np.array([self.logs["train_logs"][i]["acc"][pred_key] for i in self.logs["train_logs"]]) for pred_key in list_predictors}
@@ -463,7 +457,6 @@ class LogsPlotter():
             plt.title("Accuracy {} Predictors".format(loss_key))
             plt.ylim([loss_min - 0.05, loss_max + 0.05])
             plt.legend()
-            # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
             plt.show()
 
         # train_f1_perclass = { pred_key: np.array([self.logs["train_logs"][i]["perclassf1"][pred_key] for i in self.logs["train_logs"]]) for pred_key in list_predictors}
@@ -507,7 +500,6 @@ class LogsPlotter():
         #     plt.yticks([0.4, 0.45, 0.5, 0.55, 0.8, 0.85, 0.9, 0.95])
         #     plt.ylim([score_min - 0.05, score_max + 0.05])
         #     plt.legend()
-        #     # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/loss.png")
         #     plt.show()
 
     def sleep_plot_performance_old(self):
@@ -542,7 +534,6 @@ class LogsPlotter():
         f1_max = np.max([np.max(train_f1), np.max(val_f1)])
         plt.ylim([f1_min - 0.05, f1_max + 0.05])
         plt.legend()
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/f1.png")
         plt.show()
 
         train_k = np.array([self.logs["train_logs"][i]["train_k"] for i in self.logs["train_logs"]])
@@ -575,7 +566,6 @@ class LogsPlotter():
         kappa_min = np.min([np.min(train_k), np.min(val_k)])
         kappa_max = np.max([np.max(train_k), np.max(val_k)])
         plt.ylim([kappa_min, kappa_max + 0.05])
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/kappa.png")
         plt.show()
 
         val_f1 = np.array([self.logs["val_logs"][i]["val_perclassf1"] for i in self.logs["val_logs"]])
@@ -606,7 +596,6 @@ class LogsPlotter():
 
         plt.ylim([f1_min - 0.05, 1.01])
         plt.legend()
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/f1_perclass.png")
         plt.show()
 
     def sleep_plot_lr(self):
@@ -621,5 +610,4 @@ class LogsPlotter():
         plt.xlabel('Steps')
         plt.ylabel('Learning Rate')
         plt.title("Learning Rate during training steps")
-        # plt.savefig("/users/sista/kkontras/Documents/Sleep_Project/data/2021_data/kappa.png")
         plt.show()

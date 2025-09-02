@@ -3,7 +3,7 @@
 Konstantinos Kontras, Christos Chatzichristos, Huy Phan, Johan Suykens, and Maarten De Vos  
 *IEEE Transactions on Neural Systems and Rehabilitation Engineering, 2024*  
 
-This repository contains the official implementation of the paper: [ArXiv](https://arxiv.org/abs/2304.06485) [IEEE TNSR](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10400520)
+This repository contains the official implementation of the paper: [ArXiv](https://arxiv.org/abs/2304.06485), [IEEE TNSR](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10400520)
 
 ---
 

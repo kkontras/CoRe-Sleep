@@ -66,9 +66,9 @@ class Sleep_Agent_Train():
 
         self.logs = {"current_epoch":0,"current_step":0,"steps_no_improve":0, "saved_step": 0, "train_logs":{},"val_logs":{},"test_logs":{},"best_logs":{"loss":{"total":100}, "acc":{"combined":0}} , "seed":self.config.training_params.seed}
         if self.config.training_params.wandb_disable:
-            self.wandb_run = wandb.init(reinit=True, project="sleep_transformers", config=self.config, mode = "disabled", dir="/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/wandb")
+            self.wandb_run = wandb.init(reinit=True, project="sleep_transformers", config=self.config, mode = "disabled")
         else:
-            self.wandb_run = wandb.init(reinit=True, project="sleep_transformers", config=self.config, dir="/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2021_data/wandb" )
+            self.wandb_run = wandb.init(reinit=True, project="sleep_transformers", config=self.config )
 
     def run(self):
         """
