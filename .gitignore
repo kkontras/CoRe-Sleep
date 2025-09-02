@@ -1,0 +1,11 @@
+# Ignore Python cache folders
+**/__pycache__/
+*.py[cod]
+
+# Ignore specific folders
+configs/updated_versions/
+
+# Ignore specific files
+models/Core.py
+
+experiments/noisy_patients_trial2_pp.pkl

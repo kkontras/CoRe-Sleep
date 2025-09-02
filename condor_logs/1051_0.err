@@ -1,52 +1,0 @@
-[INFO]: Hi, This is root.
-[INFO]: After the configurations are successfully processed and dirs are created.
-[INFO]: The pipeline of the project will begin now.
-2023/01/04 00:33:22	INFO	wandb	multiprocessing start_methods=fork,spawn,forkserver, using: spawn
-2023/01/04 00:33:29	INFO	wandb	communicating current version
-2023/01/04 00:33:30	INFO	wandb	got version response upgrade_message: "wandb version 0.13.7 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
-
-2023/01/04 00:33:35	INFO	wandb	atexit reg
-2023/01/04 00:33:35	INFO	wandb	redirect: SettingsConsole.WRAP_RAW
-2023/01/04 00:33:35	INFO	wandb	Wrapping output streams.
-2023/01/04 00:33:35	INFO	wandb	Redirects installed.
-2023/01/04 00:34:01	INFO	wandb	Watching
-wandb: - 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: \ 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: | 0.001 MB of 0.001 MB uploaded (0.000 MB deduped)wandb: / 0.001 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 0.001 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 0.001 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.874 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: / 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: - 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: \ 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb: | 1.878 MB of 1.878 MB uploaded (0.000 MB deduped)wandb:                                                                                
-Traceback (most recent call last):
-  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_2.py", line 71, in <module>
-    main()
-  File "/users/sista/kkontras/Documents/Sleep_Project/main_paper_2.py", line 67, in main
-    agent.run()
-  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/train_c_agent.py", line 180, in run
-    self.trainer.sleep_train_step(trial)
-  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Trainer.py", line 74, in sleep_train_step
-    early_stop, val_loss = self.agent.monitor_n_saver.checkpointing(batch_loss = mean_batch, predictions = preds, targets = tts, incomplete_idxs=incomplete_idxs)
-  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Monitor_n_Save.py", line 135, in checkpointing
-    val_metrics = self.agent.validator_tester.sleep_validate()
-  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Validator_Tester.py", line 118, in sleep_validate
-    loss, pred, label = self.this_valtest_step_func(served_dict)
-  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Validator_Tester.py", line 404, in sleep_valtest_one_step_alignment_order_multisupervised
-    return_matches=return_matches)
-  File "/users/sista/kkontras/Documents/Sleep_Project/agents/sleep_test/helpers/Validator_Tester.py", line 708, in get_predictions_time_series_onlyskip
-    global_pred = self.agent.model(views, skip_modality=skip_modality, **kwargs)
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/parallel/data_parallel.py", line 169, in forward
-    return self.module(*inputs[0], **kwargs[0])
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 65, in forward
-    x = enc(x, **kwargs)
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/parallel/data_parallel.py", line 169, in forward
-    return self.module(*inputs[0], **kwargs[0])
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1190, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 241, in forward
-    output = self.forward_sole(xeeg=xeeg, xeog=xeog, output=output, skip_modality=skip_modality, align_inner = self.align_inner, **kwargs)
-  File "/users/sista/kkontras/Documents/Sleep_Project/graphs/models/attention_models/BLIP.py", line 405, in forward_sole
-    x_match_eeg = torch.einsum('b o f , b m f -> b o m', xeeg_outer_sole_sq_norm, xeog_outer_sole_sq_norm)
-  File "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/envs/gl_env/lib/python3.7/site-packages/torch/functional.py", line 378, in einsum
-    return _VF.einsum(equation, operands)  # type: ignore[attr-defined]
-RuntimeError: einsum(): the number of subscripts in the equation (3) does not match the number of dimensions (2) for operand 0 and no ellipsis was given
-2023/01/04 00:41:29	WARNING	wandb	message_loop has been closed
