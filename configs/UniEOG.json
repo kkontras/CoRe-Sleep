@@ -14,7 +14,7 @@
       }},
     "load_ongoing": true,
     "pretrained_model": {"dir": "", "use": false},
-    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2025_data/Paper_Models/CoRe_Sleep/unieog_{}.pth.tar",
+    "save_dir": "./experiments/unieog_{}.pth.tar",
     "encoders": [
       {
         "model": "SleepEnc_Unimodal_EOG",

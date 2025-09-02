@@ -59,7 +59,7 @@
     },
     "load_ongoing": true,
     "pretrained_model": {"dir": "", "use": false},
-    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2025_data/Paper_Models/CoRe_Sleep/midlate_{}.pth.tar",
+    "save_dir": "./experiments/midlate_{}.pth.tar",
     "encoders": [
       {
         "model": "SleepEnc_Late_EEG_EOG_free_cliplike",
