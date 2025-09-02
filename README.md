@@ -1,14 +1,13 @@
 # CoRe-Sleep: A Multimodal Fusion Framework for Time Series Robust to Imperfect Modalities
 
-This repository contains the official implementation of the paper:
-
-**CoRe-Sleep: A Multimodal Fusion Framework for Time Series Robust to Imperfect Modalities**  
 Konstantinos Kontras, Christos Chatzichristos, Huy Phan, Johan Suykens, and Maarten De Vos  
 *IEEE Transactions on Neural Systems and Rehabilitation Engineering, 2024*  
 
+This repository contains the official implementation of the paper: [ArXiv](https://arxiv.org/abs/2304.06485) [IEEE TNSR](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10400520)
+
 ---
 
-## 🚀 Overview
+## 🚀 Overview 
 CoRe-Sleep is a multimodal deep learning framework for automated **sleep staging**.  
 Unlike previous approaches that rely solely on EEG, CoRe-Sleep leverages **EEG + EOG** with a coordinated representation fusion strategy.  
 
@@ -18,7 +17,10 @@ Key features:
 - **Training with incomplete multimodal data**  
 - **State-of-the-art performance** on the SHHS-1 dataset  
 
+![Training architecture](figs/CoReSleep_architecture.png)
+
 ---
+
 
 ## 📂 Repository Structure
 
@@ -36,8 +38,7 @@ CoRe-Sleep/
 │── run.sh              # Shell script to launch training/testing (full or noisy)
 │── train.py            # Training entry point
 │── requirements.txt    # Dependencies
-│── README.md           # You are here
-└── LICENSE             # License file
+└── README.md           # You are here
 ```
 
 ## 🔍 Evaluation & Post-hoc
