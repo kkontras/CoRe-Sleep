@@ -3,6 +3,7 @@ import random
 import numpy as np
 
 def deterministic(seed):
+    # torch.use_deterministic_algorithms(True)
     torch.backends.cudnn.enabled = False
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)

@@ -1,0 +1,28 @@
+{
+  "dataset": {
+      "data_view_dir": [
+        {"list_dir": "patient_eog_mat_list.txt", "data_type": "stft", "mod":  "eog", "num_ch": 1}
+      ]
+  },
+  "num_modalities": 1,
+  "model": {
+    "model_class": "EEG_SLEEP_BLIP_GM_EEG",
+    "args": {"dmodel": 128, "num_classes": 5, "fc_inner": 1024, "multi_loss": {
+        "supervised_losses": {
+            "combined": 1
+          }
+      }},
+    "load_ongoing": true,
+    "pretrained_model": {"dir": "", "use": false},
+    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2025_data/Paper_Models/CoRe_Sleep/unieog_{}.pth.tar",
+    "encoders": [
+      {
+        "model": "SleepEnc_Unimodal_EOG",
+        "args": {"d_model": 128, "dim_proj": 128, "dim_feedforward": 1024,  "rpos": true, "pos": false, "outer_biased": false, "inner_biased": false},
+        "pretrainedEncoder": {"dir": "", "use": false},
+        "savetrainedEncoder": {"dir": "","save": false},
+        "freeze_encoder": false
+      }
+    ]
+  }
+}

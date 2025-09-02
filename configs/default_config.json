@@ -1,0 +1,93 @@
+{
+  "exp_name": "Sleep SHHS",
+  "agent": "Sleep_Agent_Train",
+  "mode": "train",
+  "num_classes": 5,
+  "training_params": {
+    "cuda": true,
+    "gpu_device": [0],
+    "seed": 28,
+    "batch_size": 16,
+    "test_batch_size": 16,
+    "data_loader_workers": 8,
+    "pin_memory": true,
+    "async_loading": true,
+    "validation": true,
+    "rec_test": false,
+    "test_on_tops": true,
+    "use_test_set": true,
+    "verbose": true,
+    "adversarial_training": {
+      "use": false,
+      "adv_epsilon": 0.01
+    },
+    "tdqm_disable": false,
+    "wandb_disable": true,
+    "res": true
+  },
+  "scheduler": {"type":"cosanneal", "max_lr": 0.03, "warm_up": 55},
+  "optimizer": {
+    "type": "Adam",
+    "learning_rate": 0.0001,
+    "momentum": 0.2,
+    "weight_decay": 0.0001,
+    "beta1": 0.9,
+    "beta2": 0.999
+  },
+  "lr_finder": false,
+  "lr_finder_steps": 100,
+  "early_stopping": {
+    "max_epoch": 1,
+    "log_interval": 10,
+    "save_every": 1,
+    "end_of_epoch_check": false,
+    "validate_every": 58,
+    "save_every_valstep": 1000,
+    "validate_after": 0,
+    "n_steps_stop": 250,
+    "n_steps_stop_after": 400
+  },
+  "dataset": {
+    "dataloader_class": "SleepDataLoader",
+    "data_roots": "/esat/biomeddata/SHHS_Dataset/no_backup",
+    "data_split": {
+        "split_method": "patients_sleeptransformer",
+        "folds_file": "/users/sista/kkontras/Documents/Huy_shhs1/HUY SHHS1 CODE/data_split_eval.mat",
+        "val_split_rate": 0.016920,
+        "test_split_rate": 0.3
+    },
+    "outer_seq_length": 21,
+    "filter_patients": {
+        "total":{"use_type": false, "skip_skips":true},
+        "train":{"use_type": false, "skip_skips":true},
+        "val":{"use_type": false, "skip_skips":true},
+        "test":{"use_type": false, "skip_skips":true}},
+    "broken_patients_filepath": "./experiments/noisy_patients_trial2_pp.pkl",
+    "norm_dir": "/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl"
+  },
+  "post_proc": {
+      "post_proc_step": 15,
+      "test_postprocessing": false,
+      "val_postprocessing": false
+  },
+  "num_modalities": 1,
+  "channel": 0,
+  "normalization": {
+    "use": true,
+    "calculate_metrics": false,
+    "metrics_type": "train_dataset",
+    "save_metrics": false,
+    "dir": "/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl"
+  },
+  "model": {
+    "args": {
+      "dmodel": 128,
+      "num_classes": 5,
+      "fc_inner": 1024
+    },
+    "pretrained_model": {"dir": "", "use": false}
+  },
+  "augmentation": {},
+  "plots": {"save": false,"plot_stft_num": 0},
+  "statistics": {"print": false}
+}

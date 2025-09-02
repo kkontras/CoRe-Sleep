@@ -1,0 +1,93 @@
+{
+  "optimizer": {
+    "type": "Adam",
+    "learning_rate": 0.0001,
+    "momentum": 0.2,
+    "weight_decay": 0.0001,
+    "beta1": 0.9,
+    "beta2": 0.999
+  },
+  "lr_finder": false,
+  "lr_finder_steps": 100,
+  "early_stopping": {
+    "max_epoch": 1000,
+    "log_interval": 10,
+    "save_every": 1,
+    "validate_every": 400,
+    "validate_after": 0,
+    "n_steps_stop": 250,
+    "n_steps_stop_after": 400
+  },
+  "dataset": {
+      "data_view_dir": [
+        {"list_dir": "patient_mat_list.txt", "data_type": "stft", "mod":  "eeg", "num_ch": 1},
+        {"list_dir": "patient_eog_mat_list.txt", "data_type": "stft", "mod":  "eog", "num_ch": 1}
+      ]
+  },
+  "post_proc": {
+      "post_proc_step": 15,
+      "test_postprocessing": false,
+      "val_postprocessing": false
+  },
+  "num_modalities": 1,
+  "channel": 0,
+  "normalization": {
+    "use": true,
+    "calculate_metrics": false,
+    "metrics_type": "train_dataset",
+    "save_metrics": false,
+    "dir": "/esat/biomeddata/SHHS_Dataset/no_backup/metrics_eeg_eog_emg_stft.pkl"
+  },
+  "model": {
+    "model_class": "EEG_SLEEP_BLIP_GM_MultiMode",
+    "args": {
+      "dmodel": 128,
+      "num_classes": 5,
+      "fc_inner": 1024,
+      "dropout": 0.3,
+      "training_type": "alignment_order_multisupervised",
+      "augment_within": false,
+      "three_modes": true,
+      "ignore_alignment_val": true,
+      "shared_pred": false,
+      "multi_loss": {
+        "supervised_losses": {
+            "combined": 1, "eeg": 1, "eog": 1
+          },
+          "alignment_loss": 0.1
+      }
+    },
+    "load_ongoing": true,
+    "pretrained_model": {"dir": "", "use": false},
+    "save_dir": "/esat/smcdata/users/kkontras/Image_Dataset/no_backup/data/2025_data/Paper_Models/CoRe_Sleep/early_{}.pth.tar",
+    "encoders": [
+      {
+        "model": "SleepEnc_EarlyConcat_3pass_EEG_EOG_free_cliplike",
+        "args": {
+          "d_model": 128,
+          "num_heads": 8,
+          "num_layers": 4,
+          "dim_proj": 128,
+          "dim_feedforward": 1024,
+          "dropout": 0.3,
+          "rpos": true,
+          "pos": false,
+          "outer_rep": false,
+          "skip_random_mod": false,
+          "outer_biased": false,
+          "inner_biased": false,
+          "mod_token": true,
+          "shared": true,
+          "align_inner": true
+        },
+        "pretrainedEncoder": { "use": false, "dir": ""},
+        "savetrainedEncoder": { "save": false, "dir": ""},
+        "freeze_encoder": false,
+        "encoders": []
+      }
+    ]
+  },
+  "augmentation": {},
+  "plots": {"save": false,"plot_stft_num": 0},
+  "statistics": {"print": false, "ce_weights": {"use": false,"temp": 0.1}}
+}
